@@ -67,6 +67,8 @@
 
   --tap-min: 44px;
   --gt-tabbar-h: 72px;
+  /* Distance of the floating tab bar from the screen bottom (shared by everything above it). */
+  --gt-tabbar-bottom: max(var(--sp-3), var(--ion-safe-area-bottom, 0px));
   --gt-bottom-stack: 0px;
 
   color-scheme: light;

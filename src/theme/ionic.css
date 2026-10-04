@@ -224,8 +224,10 @@ ion-searchbar .searchbar-input {
 /* ---------- tab bar: floating glass pill ---------- */
 ion-tab-bar {
   --background: var(--gt-glass-strong);
-  height: var(--gt-tabbar-h);
-  margin: 0 var(--sp-5) max(var(--sp-3), var(--ion-safe-area-bottom, 0px));
+  /* Ionic forces content-box: 72px total (design) = content + 2 × 8px padding + 2 × 1px
+     border. The bars stacked above the tab bar rely on that total. */
+  height: calc(var(--gt-tabbar-h) - 18px);
+  margin: 0 var(--sp-5) var(--gt-tabbar-bottom);
   padding: 8px !important;
   border: 1px solid var(--gt-glass-border) !important;
   border-radius: 28px;

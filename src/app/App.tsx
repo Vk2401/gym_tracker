@@ -4,7 +4,6 @@ import {
   IonRouterOutlet,
   IonSpinner,
   IonTabBar,
-  IonTabButton,
   IonTabs,
   useIonAlert,
 } from '@ionic/react';
@@ -32,6 +31,7 @@ import WorkoutsPage from '@/features/workouts/WorkoutsPage';
 import { setPref } from '@/hooks/usePrefs';
 import { useAppStore } from '@/store/appStore';
 import { BottomBars } from './BottomBars';
+import { RootTabButton } from './RootTabButton';
 import { ActionMenuHost } from '@/components/ActionMenu';
 import './App.css';
 
@@ -125,10 +125,10 @@ export default function App() {
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
               {TABS.map((t) => (
-                <IonTabButton key={t.tab} tab={t.tab} href={`/${t.tab}`}>
+                <RootTabButton key={t.tab} tab={t.tab} href={`/${t.tab}`}>
                   <Icon icon={t.icon} aria-hidden="true" />
                   <IonLabel>{t.label}</IonLabel>
-                </IonTabButton>
+                </RootTabButton>
               ))}
             </IonTabBar>
           </IonTabs>

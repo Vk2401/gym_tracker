@@ -344,6 +344,7 @@ Every behaviour that the reference screens did not show directly is fixed here, 
 | PD-14 | Measurements | Opens a list of the measurement types in section 7; each is optional per log. |
 | PD-15 | Completion icon | Matches the reference screens: empty blue-outlined circle when open, filled blue circle with white mark when completed. |
 | PD-16 | Monetisation | Release 1.0 is a free app with no ads, accounts or in-app purchases. |
+| PD-17 | Tab bar taps | Tapping a tab always opens that tab's root screen, never the detail screen last viewed in it; tapping the active tab returns it to its root. Only the back chevron steps back through detail screens. |
 
 ## 13. Validation rules and edge cases
 
