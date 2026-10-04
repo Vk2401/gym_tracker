@@ -10,6 +10,16 @@ import { dragCloses, dragOffset } from './sheetMath';
 /** Design motion: sheets rise in .45s on cubic-bezier(.32,.72,0,1); the scrim fades. */
 const EASE_SHEET = 'cubic-bezier(.32,.72,0,1)';
 const DRAG_START_PX = 6;
+/** Release speed is measured over the last moments of the drag. */
+const VELOCITY_WINDOW_MS = 100;
+
+/** px/ms over the recent samples; 0 when the finger rested before lifting. */
+function releaseVelocity(trail: readonly { t: number; y: number }[], upAt: number): number {
+  const first = trail[0];
+  const last = trail[trail.length - 1];
+  if (!first || !last || last.t <= first.t || upAt - last.t > 150) return 0;
+  return (last.y - first.y) / (last.t - first.t);
+}
 
 /** Inline style writes on DOM nodes the gesture drives (kept outside the hook). */
 function style(
@@ -73,7 +83,15 @@ export function useSheetDrag(
   panel: RefObject<HTMLElement | null>,
   onClose: () => void,
 ) {
-  const s = useRef({ id: -1, y0: 0, dy: 0, dragging: false, t: 0, y: 0, v: 0, swallow: false });
+  const s = useRef({
+    id: -1,
+    y0: 0,
+    dy: 0,
+    dragging: false,
+    /** Recent pointer samples for the release velocity. */
+    trail: [] as { t: number; y: number }[],
+    swallow: false,
+  });
 
   const backdrop = () =>
     modal.current?.shadowRoot?.querySelector('ion-backdrop') as HTMLElement | null;
@@ -98,9 +116,7 @@ export function useSheetDrag(
     s.current.swallow = false;
     if (list && list.scrollTop > 0) return; // let a scrolled list scroll back first
     s.current = { ...s.current, id: e.pointerId, y0: e.clientY, dy: 0, dragging: false };
-    s.current.t = e.timeStamp;
-    s.current.y = e.clientY;
-    s.current.v = 0;
+    s.current.trail = [{ t: e.timeStamp, y: e.clientY }];
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLElement>) => {
@@ -112,10 +128,9 @@ export function useSheetDrag(
       st.dragging = true;
       e.currentTarget.setPointerCapture(e.pointerId);
     }
-    const dt = e.timeStamp - st.t;
-    if (dt > 0) st.v = 0.8 * ((e.clientY - st.y) / dt) + 0.2 * st.v;
-    st.t = e.timeStamp;
-    st.y = e.clientY;
+    st.trail.push({ t: e.timeStamp, y: e.clientY });
+    while (st.trail.length > 2 && e.timeStamp - st.trail[0]!.t > VELOCITY_WINDOW_MS)
+      st.trail.shift();
     st.dy = dy;
     paint(dy, false);
   };
@@ -129,7 +144,7 @@ export function useSheetDrag(
     st.swallow = true;
     const h = panel.current?.offsetHeight ?? 0;
     // A finger that stopped before lifting has no flick left in it.
-    const v = e.timeStamp - st.t > 80 ? 0 : st.v;
+    const v = releaseVelocity(st.trail, e.timeStamp);
     if (dragCloses(st.dy, v, h)) onClose();
     else paint(0, true);
   };

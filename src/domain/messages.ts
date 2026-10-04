@@ -33,6 +33,15 @@ export const MSG = {
 } as const;
 
 /** Not in §14; needed for VR-1 length/empty checks and VR-3 max length. */
+/** ED-7 / PD-18: exercise tutorial link (not in §14). */
+export const TUTORIAL = {
+  section: 'Tutorial',
+  placeholder: 'Paste a YouTube or website link',
+  inputLabel: 'Tutorial link',
+  open: 'Watch tutorial',
+  invalid: 'Enter a web link, for example a YouTube video address.',
+} as const;
+
 /** Second lines in the template + menu (design "Add to workout"). */
 export const MENU_SUB = {
   addExercise: 'Pick from your exercise library',

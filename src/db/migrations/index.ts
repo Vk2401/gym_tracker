@@ -1,5 +1,6 @@
 import { m0001 } from './0001_init';
 import { m0002 } from './0002_session_extras';
+import { m0003 } from './0003_exercise_tutorial';
 
 export interface Migration {
   version: number;
@@ -7,4 +8,4 @@ export interface Migration {
 }
 
 /** Ordered list of all migrations. Append only. */
-export const MIGRATIONS: readonly Migration[] = [m0001, m0002];
+export const MIGRATIONS: readonly Migration[] = [m0001, m0002, m0003];

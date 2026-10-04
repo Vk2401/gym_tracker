@@ -36,7 +36,7 @@ test('WO-5 menu sheet: short drag springs back, long drag or flick closes', asyn
   await expect(panel).toHaveCount(0);
 
   await openMenu();
-  await dragMenu(page, 45, 3, 0, 10); // ~1.5 px/ms flick
+  await dragMenu(page, 65, 3, 0, 10); // quick flick, shorter than the 30 % close distance
   await expect(panel).toHaveCount(0);
 
   // A plain tap on an option still works after drags.

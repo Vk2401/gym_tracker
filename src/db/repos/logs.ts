@@ -259,6 +259,7 @@ export async function getLog(db: Db, id: string): Promise<WorkoutLog | null> {
       secondary: live ? live.secondary : e.secondary_focus_snapshot,
       equipment: live ? live.equipmentName : e.equipment_snapshot,
       exerciseNote: live ? live.note : null,
+      exerciseTutorialUrl: live?.tutorialUrl || null,
       sessionNote: e.session_note,
       categories,
       supersetGroup: e.superset_group,

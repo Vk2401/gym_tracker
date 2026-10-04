@@ -19,6 +19,8 @@ export interface Exercise {
   equipmentId: string | null;
   equipmentName: string | null;
   note: string;
+  /** ED-7: tutorial web link (YouTube or any site); '' when none. */
+  tutorialUrl: string;
   isCustom: boolean;
   /** VR-9: soft-deleted exercises stay readable for history. */
   deleted: boolean;
@@ -100,6 +102,8 @@ export interface LoggedExercise {
   equipment: string | null;
   /** Current instructions of the library exercise (ED-5); null when deleted. */
   exerciseNote: string | null;
+  /** ED-7: tutorial link of the library exercise; null when none or deleted. */
+  exerciseTutorialUrl: string | null;
   sessionNote: string;
   categories: Category[];
   supersetGroup: string | null;

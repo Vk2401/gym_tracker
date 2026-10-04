@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestDb } from './testing/sqljsDb';
 import { migrate } from './migrate';
+import { MIGRATIONS } from './migrations';
 import { seed, DEFAULT_GROUP_ID } from '@/seed/seed';
 import type { Db } from './types';
 import * as lib from './repos/library';
@@ -390,7 +391,7 @@ describe('stats, records and data (XP, ST-6, VR-17)', () => {
     await data.deleteAllData(db);
     expect(await logs.getLog(db, id)).toBeNull();
     expect((await lib.listCategories(db)).some((c) => c.id === 'cat-chest')).toBe(true); // re-seeded
-    const parsed = data.parseBackup(text, 2);
+    const parsed = data.parseBackup(text, MIGRATIONS[MIGRATIONS.length - 1]!.version);
     await data.restoreBackup(db, parsed);
     expect((await logs.getLog(db, id))!.exercises[0]!.sets).toHaveLength(1);
     expect((await lib.listCategories(db)).some((c) => c.id === 'cat-chest')).toBe(false);
@@ -398,5 +399,19 @@ describe('stats, records and data (XP, ST-6, VR-17)', () => {
     expect(() => data.parseBackup(JSON.stringify({ ...b, schemaVersion: 99 }), 2)).toThrow(/newer/);
     await data.markBackedUp(db);
     expect((await data.backupState(db)).sessionsSinceBackup).toBe(0);
+  });
+});
+
+describe('exercise tutorial link (ED-7)', () => {
+  it('saves, shows on logs that use the exercise, and clears', async () => {
+    expect((await lib.getExercise(db, 'ex-bench-press'))!.tutorialUrl).toBe('');
+    await lib.updateExercise(db, 'ex-bench-press', { tutorialUrl: 'https://youtu.be/abc' });
+    expect((await lib.getExercise(db, 'ex-bench-press'))!.tutorialUrl).toBe('https://youtu.be/abc');
+    const id = await finishedLog(null, '2026-09-10');
+    expect((await logs.getLog(db, id))!.exercises[0]!.exerciseTutorialUrl).toBe(
+      'https://youtu.be/abc',
+    );
+    await lib.updateExercise(db, 'ex-bench-press', { tutorialUrl: '' });
+    expect((await logs.getLog(db, id))!.exercises[0]!.exerciseTutorialUrl).toBeNull();
   });
 });

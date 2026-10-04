@@ -13,15 +13,16 @@
   min-width: 0;
 }
 .gt-card {
-  margin: var(--sp-3) var(--sp-4);
-  padding: var(--sp-5) var(--sp-4);
-  border-radius: var(--r-2xl);
+  /* design: 18px padding, 26px corners, on the 20px screen gutter, 14px apart */
+  margin: 14px var(--sp-5);
+  padding: 18px;
+  border-radius: 26px;
   background: var(--gt-surface);
   box-shadow: var(--gt-shadow-card);
 }
 .gt-card__head h2 {
   margin: 0;
-  font-size: var(--fs-headline);
+  font-size: 16px;
   font-weight: 600;
 }
 .gt-card__head p {
@@ -34,8 +35,13 @@
   font-size: var(--fs-footnote);
 }
 .gt-card__list {
-  margin: 0 calc(-1 * var(--sp-4));
+  /* rows bring their own 18px inset (ion-item padding), so the list spans the card */
+  margin: 0 -18px;
   background: transparent;
+}
+.gt-card__list ion-item {
+  --padding-start: 18px;
+  --inner-padding-end: 18px;
 }
 .gt-chart {
   position: relative;

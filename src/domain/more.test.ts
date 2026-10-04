@@ -284,6 +284,19 @@ describe('share (PD-13)', () => {
       '3/4 Sit-Up\nFocus: Reps, Weight\nEquipment: None\nCategories: Abdominals (Lower)\n\n1. Lie down',
     );
   });
+  it('exercise text includes the tutorial link (PD-18)', () => {
+    expect(
+      exerciseShareText({
+        name: 'Bench Press',
+        primary: 'reps',
+        secondary: 'weight',
+        equipment: 'Barbell',
+        categories: [],
+        note: '',
+        tutorialUrl: 'https://youtu.be/abc',
+      }),
+    ).toBe('Bench Press\nFocus: Reps, Weight\nEquipment: Barbell\nTutorial: https://youtu.be/abc');
+  });
 });
 
 describe('csv (ST-6)', () => {

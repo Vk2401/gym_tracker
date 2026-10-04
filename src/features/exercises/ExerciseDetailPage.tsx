@@ -18,6 +18,8 @@ import { useParams } from 'react-router-dom';
 import { CategoryDot } from '@/components/CategoryDot';
 import { EmptyState } from '@/components/EmptyState';
 import { NoteField } from '@/components/NoteField';
+import { TutorialField } from '@/components/TutorialField';
+import { TutorialLink } from '@/components/TutorialLink';
 import { OptionSheet } from '@/components/OptionSheet';
 import { PageHeader } from '@/components/PageHeader';
 import { getDb } from '@/db/client';
@@ -25,7 +27,7 @@ import { mutate } from '@/db/mutate';
 import * as lib from '@/db/repos/library';
 import { exerciseShareText, focusLabel } from '@/domain/share';
 import type { FocusMetric } from '@/domain/types';
-import { MSG_EXTRA } from '@/domain/messages';
+import { MSG_EXTRA, TUTORIAL } from '@/domain/messages';
 import { useDialogs } from '@/hooks/useDialogs';
 import { useLive } from '@/hooks/useLive';
 import { shareText } from '@/native/share';
@@ -83,6 +85,7 @@ export default function ExerciseDetailPage() {
         equipment: e.equipmentName,
         categories: e.categories.map((c) => c.name),
         note: e.note,
+        tutorialUrl: e.tutorialUrl,
       }),
     );
 
@@ -174,6 +177,19 @@ export default function ExerciseDetailPage() {
               onSave={(note) => update({ note })}
             />
           </IonItem>
+        </IonList>
+
+        {/* ED-7 */}
+        <h2 className="gt-section-title">{TUTORIAL.section}</h2>
+
+        <IonList inset>
+          <IonItem lines={e.tutorialUrl ? 'full' : 'none'}>
+            <TutorialField
+              value={e.tutorialUrl}
+              onSave={(tutorialUrl) => update({ tutorialUrl })}
+            />
+          </IonItem>
+          {e.tutorialUrl && <TutorialLink url={e.tutorialUrl} />}
         </IonList>
 
         <IonList inset>

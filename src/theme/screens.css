@@ -655,11 +655,40 @@ ion-item {
 }
 
 /* search: 50px glass field */
-.gt-screen-title ion-searchbar .searchbar-input-container {
+.gt-screen-title ion-searchbar .searchbar-input-container,
+.gt-sticky-search ion-searchbar .searchbar-input-container {
   height: 50px !important;
 }
-.gt-screen-title ion-searchbar {
+.gt-screen-title ion-searchbar,
+.gt-sticky-search ion-searchbar {
   --border-radius: 18px;
+}
+
+/* Search pinned under the header (Exercises, EX-4). Pinned, it frosts like the header so
+   the two read as one glass bar; the header's hairline moves to the bottom of the search. */
+.gt-sticky {
+  position: sticky;
+  /* fullscreen ion-content pads its scroller by the header height, and sticky offsets are
+     measured inside that padding: 0 pins it right under the header */
+  top: 0;
+  z-index: 5;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.gt-sticky-search {
+  padding: 16px var(--sp-5) 10px;
+}
+.gt-sticky-search ion-searchbar {
+  padding: 0 !important;
+}
+.gt-sticky.is-stuck {
+  background: var(--gt-glass);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: 0 1px 0 var(--gt-separator);
+}
+.ion-page:has(.gt-sticky.is-stuck) > ion-header.gt-header--scrolled {
+  box-shadow: none;
 }
 
 /* resume card inline on Workouts */
@@ -766,6 +795,16 @@ ion-item {
   font-size: 17px;
   font-weight: 600;
   text-align: left;
+  /* the unit sits right after the value ("72.5 kg", design), not at the tile's edge */
+  flex: 0 1 auto;
+  width: 5ch;
+  min-width: 2ch;
+}
+@supports (field-sizing: content) {
+  .gt-stat3__field .gt-input {
+    width: auto;
+    field-sizing: content;
+  }
 }
 .gt-stat3__field .gt-input:focus {
   box-shadow: none;
@@ -817,7 +856,7 @@ ion-item {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin: var(--sp-3) var(--sp-4);
+  margin: 14px var(--sp-5);
 }
 .gt-mini2 section.gt-card.gt-mini {
   margin: 0;
@@ -845,10 +884,30 @@ ion-item {
 .gt-records {
   padding: 0 !important;
 }
+/* XP-6 rows align with the card's content edge (design): tile, name / date, value. */
+.gt-card__list.gt-records {
+  margin: 4px 0 0;
+}
+.gt-card__list.gt-records ion-item,
 .gt-records ion-item {
   --padding-start: 0;
   --inner-padding-end: 0;
+  --min-height: 56px;
   --background: transparent;
+}
+.gt-records ion-item h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.gt-records ion-item p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+.gt-records ion-item ion-note {
+  padding-inline-start: 12px;
+  font-size: 15px;
 }
 
 /* settings: standalone appearance switcher */
@@ -870,4 +929,46 @@ ion-item {
 .gt-danger-text {
   color: var(--gt-danger) !important;
   font-weight: 600;
+}
+
+/* ---------- ED-7 tutorial link ---------- */
+.gt-tutorial-link ion-note {
+  margin-inline-end: 6px;
+}
+.gt-tutorial-input .gt-icon[slot='start'] {
+  width: 18px;
+  height: 18px;
+  margin-inline-end: 10px;
+  color: var(--gt-text-secondary);
+}
+.gt-tutorial-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin: 4px 0;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: #fdecec;
+  color: #c62f2f;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease-out);
+}
+.gt-tutorial-chip:active {
+  transform: scale(0.96);
+}
+.gt-tutorial-chip .gt-icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.gt-tutorial-chip span {
+  font-weight: 500;
+  opacity: 0.8;
+}
+:root[data-theme='dark'] .gt-tutorial-chip {
+  background: rgba(255, 107, 107, 0.16);
+  color: #ff9a9a;
 }

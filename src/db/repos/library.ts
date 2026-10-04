@@ -12,12 +12,13 @@ interface ExerciseRow {
   equipment_id: string | null;
   equipment_name: string | null;
   note: string;
+  tutorial_url: string;
   is_custom: number;
   deleted_at: string | null;
 }
 
 const EXERCISE_SELECT = `SELECT e.id, e.name, e.primary_focus, e.secondary_focus, e.equipment_id,
-  q.name AS equipment_name, e.note, e.is_custom, e.deleted_at
+  q.name AS equipment_name, e.note, e.tutorial_url, e.is_custom, e.deleted_at
   FROM exercise e LEFT JOIN equipment q ON q.id = e.equipment_id`;
 
 async function categoriesByExercise(
@@ -48,6 +49,7 @@ function toExercise(r: ExerciseRow, cats: Map<string, Category[]>): Exercise {
     equipmentId: r.equipment_id,
     equipmentName: r.equipment_name,
     note: r.note,
+    tutorialUrl: r.tutorial_url ?? '',
     isCustom: !!r.is_custom,
     deleted: r.deleted_at !== null,
     categories: cats.get(r.id) ?? [],
@@ -102,6 +104,8 @@ export type ExercisePatch = Partial<{
   secondary: FocusMetric | null;
   equipmentId: string | null;
   note: string;
+  /** ED-7: already normalised by domain/tutorial (web links only). */
+  tutorialUrl: string;
 }>;
 
 /** ED-6 / BR-13: definition changes apply everywhere; recorded log values are untouched. */
@@ -112,6 +116,7 @@ export async function updateExercise(db: Db, id: string, patch: ExercisePatch): 
   if (patch.secondary !== undefined) cols.push(['secondary_focus', patch.secondary]);
   if (patch.equipmentId !== undefined) cols.push(['equipment_id', patch.equipmentId]);
   if (patch.note !== undefined) cols.push(['note', patch.note]);
+  if (patch.tutorialUrl !== undefined) cols.push(['tutorial_url', patch.tutorialUrl]);
   if (!cols.length) return;
   await db.run(`UPDATE exercise SET ${cols.map(([c]) => `${c} = ?`).join(', ')} WHERE id = ?`, [
     ...cols.map(([, v]) => v),

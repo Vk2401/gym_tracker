@@ -250,7 +250,8 @@ ion-footer {
   min-height: calc(100% - 96px);
 }
 .gt-section-title {
-  margin: var(--sp-6) var(--sp-4) var(--sp-2) calc(var(--sp-4) + var(--sp-1));
+  /* design: 4px in from the 20px card gutter */
+  margin: var(--sp-6) var(--sp-5) var(--sp-2) calc(var(--sp-5) + var(--sp-1));
   font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: 0.08em;

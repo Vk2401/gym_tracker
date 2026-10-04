@@ -24,6 +24,7 @@ import { ExercisePicker } from '@/components/ExercisePicker';
 import { NumberField, TimeField } from '@/components/fields';
 import { OptionSheet } from '@/components/OptionSheet';
 import { PageHeader } from '@/components/PageHeader';
+import { TutorialLink } from '@/components/TutorialLink';
 import { SetTable, type SetChange, type TableSet } from '@/components/SetTable';
 import { Sheet } from '@/components/Sheet';
 import { supersetLabels } from '@/features/workouts/blocks';
@@ -385,6 +386,9 @@ export default function LogDetailPage() {
               <div className="ion-padding-horizontal gt-notes">
                 {le.kind === 'exercise' && le.exerciseNote && (
                   <ClampedText text={le.exerciseNote} />
+                )}
+                {le.kind === 'exercise' && le.exerciseTutorialUrl && (
+                  <TutorialLink url={le.exerciseTutorialUrl} compact />
                 )}
                 {le.kind === 'wod' && le.wodDescription && <ClampedText text={le.wodDescription} />}
                 {le.sessionNote && <p className="gt-session-note">{le.sessionNote}</p>}

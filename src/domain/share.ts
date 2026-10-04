@@ -132,6 +132,7 @@ export function exerciseShareText(e: {
   equipment: string | null;
   categories: readonly string[];
   note: string;
+  tutorialUrl?: string;
 }): string {
   const focus = [e.primary, e.secondary]
     .filter(Boolean)
@@ -139,6 +140,7 @@ export function exerciseShareText(e: {
     .join(', ');
   const out = [e.name, `Focus: ${focus}`, `Equipment: ${e.equipment ?? 'None'}`];
   if (e.categories.length) out.push(`Categories: ${e.categories.join(', ')}`);
+  if (e.tutorialUrl) out.push(`Tutorial: ${e.tutorialUrl}`); // PD-18
   if (e.note.trim()) out.push('', e.note.trim());
   return out.join('\n');
 }

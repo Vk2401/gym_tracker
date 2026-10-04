@@ -114,7 +114,9 @@ export default function ExercisesPage() {
     <IonPage>
       <PageHeader title="Exercises" />
       <Content>
-        <ScreenTitle title="Exercises">
+        <ScreenTitle title="Exercises" />
+        {/* EX-4: the search stays pinned under the header while the list scrolls */}
+        <div className="gt-sticky gt-sticky-search">
           <IonSearchbar
             className="gt-search"
             placeholder="Search Exercises"
@@ -122,7 +124,7 @@ export default function ExercisesPage() {
             debounce={100}
             onIonInput={(e) => setQuery(e.detail.value ?? '')}
           />
-        </ScreenTitle>
+        </div>
         {!loading && visible.length === 0 && q && (
           <EmptyState
             fill

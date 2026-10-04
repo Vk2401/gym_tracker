@@ -128,6 +128,7 @@ Requirements are grouped by screen; each ID is referenced by the acceptance crit
 | ED-4 | SETTINGS shows Equipment (e.g. None, Machine, Barbell, Foam Roll) with a chevron to change it. |
 | ED-5 | NOTE shows editable step-by-step exercise instructions. |
 | ED-6 | Changes save automatically and are reflected in the Exercises list and in every template and log that uses the exercise. |
+| ED-7 | TUTORIAL holds an optional web link (a YouTube video or any website) that teaches the exercise; when set, Watch tutorial opens it outside the app. |
 
 ### 6.5 Logs (calendar)
 
@@ -345,6 +346,7 @@ Every behaviour that the reference screens did not show directly is fixed here, 
 | PD-15 | Completion icon | Matches the reference screens: empty blue-outlined circle when open, filled blue circle with white mark when completed. |
 | PD-16 | Monetisation | Release 1.0 is a free app with no ads, accounts or in-app purchases. |
 | PD-17 | Tab bar taps | Tapping a tab always opens that tab's root screen, never the detail screen last viewed in it; tapping the active tab returns it to its root. Only the back chevron steps back through detail screens. |
+| PD-18 | Exercise tutorial link | Any http(s) address is accepted; a missing https:// is added and anything else is rejected with a message. The link opens in the phone's browser (YouTube links in the YouTube app), from the exercise detail screen and from the exercise's card in a workout log. Shared exercises include the link; backups keep it. |
 
 ## 13. Validation rules and edge cases
 
