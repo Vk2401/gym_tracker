@@ -38,7 +38,8 @@ const config: CapacitorConfig = {
     backgroundColor: '#f2f2f7',
   },
   plugins: {
-    SplashScreen: { launchAutoHide: false, backgroundColor: '#1e7bf2', showSpinner: false },
+    // Native launch screen = logo on black; the web splash (index.html) takes over and animates.
+    SplashScreen: { launchAutoHide: false, backgroundColor: '#000000', showSpinner: false },
     Keyboard: { resize: KeyboardResize.Native, resizeOnFullScreen: true },
     StatusBar: { overlaysWebView: true, style: 'LIGHT' },
     CapacitorSQLite: { iosIsEncryption: false, androidIsEncryption: false },

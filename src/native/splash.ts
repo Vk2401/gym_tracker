@@ -3,5 +3,5 @@ import { isNative } from './platform';
 
 export async function hideSplash(): Promise<void> {
   if (!isNative()) return;
-  await SplashScreen.hide({ fadeOutDuration: 150 }).catch(() => undefined);
+  await SplashScreen.hide({ fadeOutDuration: 250 }).catch(() => undefined);
 }

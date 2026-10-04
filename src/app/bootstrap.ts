@@ -12,9 +12,13 @@ import { track } from './analytics';
 import { installOverlayA11yGuard } from './overlayA11y';
 import { initAppearance } from './appearance';
 import { initTextScale } from './textScale';
+import { dismissSplash, playSplash } from './splash';
 
 /** Opens storage, migrates, seeds and applies device-independence controllers. */
 export async function bootstrap(): Promise<void> {
+  // Native launch screen fades into the animated web splash, which covers boot.
+  void hideSplash();
+  playSplash();
   installOverlayA11yGuard();
   initTextScale();
   initKeyboard();
@@ -35,6 +39,6 @@ export async function bootstrap(): Promise<void> {
     console.error(e);
     useAppStore.getState().setError(e instanceof Error ? e.message : String(e));
   } finally {
-    await hideSplash();
+    await dismissSplash();
   }
 }

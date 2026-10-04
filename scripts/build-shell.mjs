@@ -1,6 +1,6 @@
 // Generates shell/ — the small bundled web dir of the native app. The real app is loaded from
 // APP_URL (capacitor.config.ts server.url); shell/ only provides the offline / error page.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const appUrl = process.env.APP_URL || JSON.parse(readFileSync('app.config.json', 'utf8')).appUrl;
 if (!/^https:\/\//.test(appUrl)) throw new Error(`APP_URL must be https: ${appUrl}`);
@@ -8,6 +8,7 @@ if (!/^https:\/\//.test(appUrl)) throw new Error(`APP_URL must be https: ${appUr
 const offline = readFileSync('shell-src/offline.html', 'utf8').replaceAll('__APP_URL__', appUrl);
 mkdirSync('shell', { recursive: true });
 writeFileSync('shell/offline.html', offline);
+copyFileSync('public/logo.png', 'shell/logo.png');
 writeFileSync(
   'shell/index.html',
   `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=${appUrl}"><title>Gym Tracker</title>`,
