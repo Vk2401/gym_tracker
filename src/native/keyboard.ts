@@ -38,3 +38,11 @@ export function initKeyboard(): void {
     if (open) reveal();
   });
 }
+
+/**
+ * Brings up the keyboard for a field focused by script (popup autofocus). Android only
+ * shows it on request; iOS shows it for the focused field when the OS allows.
+ */
+export function showKeyboard(): void {
+  if (isNative()) void Keyboard.show().catch(() => undefined);
+}

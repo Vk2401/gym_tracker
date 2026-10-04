@@ -43,7 +43,7 @@ export async function exportBackup(db: Db): Promise<Backup> {
 
 export function parseBackup(text: string, currentSchema: number): Backup {
   const b = JSON.parse(text) as Backup;
-  if (b?.app !== 'gym-tracker' || typeof b.tables !== 'object')
+  if (b?.app !== 'gym-tracker' || !b.tables || typeof b.tables !== 'object')
     throw new Error('This file is not a Gym Tracker backup.');
   if (b.schemaVersion > currentSchema)
     throw new Error('This backup was made by a newer version of the app.');
@@ -52,6 +52,34 @@ export function parseBackup(text: string, currentSchema: number): Backup {
 
 async function clearAll(db: Db): Promise<void> {
   for (const t of [...DATA_TABLES].reverse()) await db.run(`DELETE FROM ${t}`);
+}
+
+/**
+ * PD-19: before a restore wipes anything, every row must be an object carrying each column the
+ * schema requires (NOT NULL without a default, and the id). Returns the first problem found.
+ */
+export async function checkBackup(
+  db: Db,
+  b: Backup,
+): Promise<{ table: string; row: number; column: string } | null> {
+  for (const t of DATA_TABLES) {
+    const rows: unknown = b.tables[t] ?? [];
+    if (!Array.isArray(rows)) return { table: t, row: 1, column: 'rows' };
+    const info = await db.query<{ name: string; notnull: number; dflt_value: unknown; pk: number }>(
+      `PRAGMA table_info(${t})`,
+    );
+    const required = info
+      .filter((c) => c.pk > 0 || (c.notnull === 1 && c.dflt_value === null))
+      .map((c) => c.name);
+    for (let i = 0; i < rows.length; i++) {
+      const row: unknown = rows[i];
+      if (!row || typeof row !== 'object' || Array.isArray(row))
+        return { table: t, row: i + 1, column: required[0] ?? 'id' };
+      const missing = required.find((c) => (row as Record<string, unknown>)[c] == null);
+      if (missing) return { table: t, row: i + 1, column: missing };
+    }
+  }
+  return null;
 }
 
 /**

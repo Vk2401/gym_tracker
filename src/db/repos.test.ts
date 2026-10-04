@@ -9,6 +9,8 @@ import * as wo from './repos/workouts';
 import * as logs from './repos/logs';
 import * as stats from './repos/stats';
 import * as data from './repos/data';
+import * as importer from './repos/importer';
+import type { ImportLog } from '@/domain/importData';
 import { newRecordsInLog } from '@/domain/records';
 import { formatDateShort } from '@/domain/format';
 import { localToUtc } from '@/domain/time';
@@ -413,5 +415,88 @@ describe('exercise tutorial link (ED-7)', () => {
     );
     await lib.updateExercise(db, 'ex-bench-press', { tutorialUrl: '' });
     expect((await logs.getLog(db, id))!.exercises[0]!.exerciseTutorialUrl).toBeNull();
+  });
+});
+
+describe('import (PD-19)', () => {
+  const sets = (reps: number, kg: number) => ({
+    setNumber: 1,
+    type: 'working' as const,
+    reps,
+    weightKg: kg,
+    timeS: null,
+    distanceKm: null,
+    rpe: null,
+    completed: true,
+  });
+  const log = (over: Partial<ImportLog> = {}): ImportLog => ({
+    sourceId: null,
+    name: 'Push Day',
+    date: '2026-09-20',
+    startTime: '07:00',
+    endTime: '08:00',
+    bodyWeightKg: 72.5,
+    exercises: [
+      { name: 'bench press', equipment: 'Barbell', sets: [sets(8, 60)] },
+      {
+        name: 'Sled Push',
+        equipment: 'Machine',
+        sets: [{ ...sets(0, 0), reps: null, weightKg: null, distanceKm: 0.1, timeS: 30 }],
+      },
+    ],
+    ...over,
+  });
+
+  it('adds workouts, matches library exercises by name and creates unknown ones', async () => {
+    const r = await importer.importLogs(db, [log()], () => 0);
+    expect(r).toEqual({ imported: 1, skipped: 0, newExercises: ['Sled Push'] });
+    const [card] = await logs.logsOnDate(db, '2026-09-20');
+    const l = (await logs.getLog(db, card!.id))!;
+    expect(l.bodyWeightKg).toBe(72.5);
+    expect(l.exercises.map((e) => [e.exerciseId, e.name])).toEqual([
+      ['ex-bench-press', 'Bench Press'],
+      [expect.any(String), 'Sled Push'],
+    ]);
+    expect(l.exercises[0]!.sets[0]).toMatchObject({ reps: 8, weightKg: 60, completed: true });
+    const sled = (await lib.getExercise(db, l.exercises[1]!.exerciseId!))!;
+    expect([sled.primary, sled.secondary, sled.equipmentName]).toEqual([
+      'time',
+      'distance',
+      'Machine',
+    ]);
+    // records and stats see imported history
+    expect((await stats.recordSets(db)).some((s) => s.logId === l.id)).toBe(true);
+  });
+
+  it('never duplicates a workout already in the app', async () => {
+    await importer.importLogs(db, [log()], () => 0);
+    const again = await importer.importLogs(db, [log(), log({ date: '2026-09-21' })], () => 0);
+    expect(again).toMatchObject({ imported: 1, skipped: 1 });
+    const own = await finishedLog(null, '2026-09-10');
+    const mine = await importer.importLogs(
+      db,
+      [log({ sourceId: own, date: '2026-09-11' })],
+      () => 0,
+    );
+    expect(mine.skipped).toBe(1);
+  });
+
+  it('stores a workout that ran past midnight with the next day as its end', async () => {
+    await importer.importLogs(db, [log({ startTime: '23:30', endTime: '00:20' })], () => 0);
+    const [card] = await logs.logsOnDate(db, '2026-09-20');
+    const l = (await logs.getLog(db, card!.id))!;
+    expect(l.endUtc).toBe('2026-09-21T00:20:00.000Z');
+  });
+
+  it('checks a backup for required columns before restoring', async () => {
+    const b = await data.exportBackup(db);
+    expect(await data.checkBackup(db, b)).toBeNull();
+    const broken = { ...b, tables: { ...b.tables, exercise: [{ id: 'x' }] } };
+    expect(await data.checkBackup(db, broken)).toEqual({
+      table: 'exercise',
+      row: 1,
+      column: 'name',
+    });
+    expect(() => data.parseBackup('{"app":"gym-tracker","tables":null}', 3)).toThrow();
   });
 });

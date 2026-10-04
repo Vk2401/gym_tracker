@@ -972,3 +972,83 @@ ion-item {
   background: rgba(255, 107, 107, 0.16);
   color: #ff9a9a;
 }
+
+/* ---------- PD-19 import ---------- */
+.gt-import__intro,
+.gt-import__summary {
+  margin: var(--sp-4) calc(var(--sp-5) + var(--sp-1)) 0;
+  color: var(--gt-text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.gt-import__summary {
+  color: var(--gt-text);
+  font-size: 16px;
+  font-weight: 600;
+}
+.gt-import__fields ion-label h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.gt-import__fields ion-label p {
+  font-size: 12px;
+}
+.gt-import__req {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--gt-blue-tint);
+  color: var(--gt-blue);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.gt-import__sample {
+  color: var(--gt-blue) !important;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.gt-import__fields ion-select {
+  max-width: 46%;
+  min-height: 44px;
+  color: var(--gt-blue);
+  font-size: 14px;
+  font-weight: 600;
+}
+.gt-import__seg {
+  width: auto;
+  min-width: 132px;
+  flex: none;
+}
+.gt-import__problems,
+.gt-import__errors {
+  margin: var(--sp-2) var(--sp-5) var(--sp-4);
+  padding: var(--sp-3) var(--sp-4) var(--sp-3) calc(var(--sp-4) + 14px);
+  border-radius: 18px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.gt-import__problems {
+  background: #fdecec;
+  color: #b42323;
+}
+.gt-import__errors {
+  background: var(--gt-surface);
+  box-shadow: var(--gt-shadow-card);
+  color: var(--gt-text);
+  overflow-wrap: anywhere;
+}
+.gt-import__errors li + li {
+  margin-top: 6px;
+}
+:root[data-theme='dark'] .gt-import__problems {
+  background: rgba(255, 107, 107, 0.14);
+  color: #ffb1b1;
+}
+.gt-import__back {
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--sp-6);
+}

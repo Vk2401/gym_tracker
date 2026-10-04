@@ -29,6 +29,7 @@ import {
   TimerIcon,
   Trash2Icon,
   TypeIcon,
+  UploadIcon,
   VibrateIcon,
   Volume2Icon,
 } from 'lucide-react';
@@ -39,6 +40,7 @@ import appConfig from '../../../app.config.json';
 import { setAppearance } from '@/app/appearance';
 import { track } from '@/app/analytics';
 import { OptionSheet } from '@/components/OptionSheet';
+import { ImportSheet } from './ImportSheet';
 import { PageHeader } from '@/components/PageHeader';
 import { getDb } from '@/db/client';
 import { mutate } from '@/db/mutate';
@@ -47,7 +49,8 @@ import { loadPreferences } from '@/db/repos/preferences';
 import * as data from '@/db/repos/data';
 import { csvRows } from '@/db/repos/stats';
 import { toCsv } from '@/domain/csv';
-import { MSG } from '@/domain/messages';
+import { jsonToTable, parseCsv, type Table } from '@/domain/importData';
+import { IMPORT_MSG, MSG } from '@/domain/messages';
 import { formatCountdown, REST_OPTIONS_S } from '@/domain/session';
 import { dateKeyAt, formatDateKeyLong, todayKey } from '@/domain/time';
 import type { Appearance, DistanceUnit, WeekStart, WeightUnit } from '@/domain/types';
@@ -101,6 +104,7 @@ export default function SettingsPage() {
   const textScale = useAppStore((s) => s.textScale);
   const [version, setVersion] = useState('');
   const [restSheet, setRestSheet] = useState(false);
+  const [importTable, setImportTable] = useState<Table | null>(null);
   const [canHealth, setCanHealth] = useState(false);
   const { data: backup } = useLive(data.backupState, []);
   const { alert, choose } = useDialogs();
@@ -136,13 +140,24 @@ export default function SettingsPage() {
   // VR-17: confirmation states the backup date, then replaces all data.
   const restore = async () => {
     const text = await pickTextFile('application/json,.json');
-    if (!text) return;
+    if (text) await restoreFromText(text);
+  };
+  const restoreFromText = async (text: string) => {
     let b: data.Backup;
     try {
       b = data.parseBackup(text, SCHEMA);
     } catch (e) {
-      return error(e instanceof Error ? e.message : String(e));
+      return error(
+        e instanceof SyntaxError
+          ? IMPORT_MSG.unreadable
+          : e instanceof Error
+            ? e.message
+            : String(e),
+      );
     }
+    // PD-19: a damaged or foreign file must never wipe data — check every row first
+    const problem = await data.checkBackup(getDb(), b);
+    if (problem) return error(IMPORT_MSG.badBackup(problem.table, problem.row, problem.column));
     const created = new Date(b.createdAt);
     const when = formatDateKeyLong(dateKeyAt(b.createdAt, -created.getTimezoneOffset()));
     const c = await choose(
@@ -157,6 +172,38 @@ export default function SettingsPage() {
     await mutate((db) => data.restoreBackup(db, b));
     await afterDataReplaced();
     info('Backup restored.');
+  };
+
+  // PD-19: CSV (ours or another app's) or JSON. A full backup offers the restore flow instead.
+  const importFile = async () => {
+    const text = await pickTextFile('.csv,text/csv,text/plain,application/json,.json');
+    if (!text) return;
+    let table: Table | null;
+    const trimmed = text.trim();
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      let json: unknown;
+      try {
+        json = JSON.parse(trimmed);
+      } catch {
+        return error(IMPORT_MSG.unreadable);
+      }
+      if ((json as { app?: unknown })?.app === 'gym-tracker') {
+        const c = await choose(
+          IMPORT_MSG.title,
+          [
+            { text: 'Cancel', value: 'cancel', role: 'cancel' },
+            { text: 'Restore', value: 'restore' },
+          ],
+          IMPORT_MSG.isBackup,
+        );
+        if (c === 'restore') await restoreFromText(trimmed);
+        return;
+      }
+      table = jsonToTable(json);
+      if (!table) return error(IMPORT_MSG.unreadable);
+    } else table = parseCsv(text);
+    if (!table.headers.length || !table.rows.length) return error(IMPORT_MSG.empty);
+    setImportTable(table);
   };
 
   // ST-6: delete all data after typing DELETE.
@@ -320,6 +367,13 @@ export default function SettingsPage() {
               </p>
             </IonLabel>
           </IonItem>
+          <IonItem button detail onClick={() => void importFile()}>
+            <RowIcon icon={UploadIcon} tint="amber" />
+            <IonLabel>
+              <h3>{IMPORT_MSG.rowLabel}</h3>
+              <p>{IMPORT_MSG.rowHint}</p>
+            </IonLabel>
+          </IonItem>
           <IonItem button detail onClick={() => void restore()}>
             <RowIcon icon={RotateCcwIcon} tint="purple" />
             <IonLabel>Restore from backup</IonLabel>
@@ -453,6 +507,7 @@ export default function SettingsPage() {
         <div className="gt-fab-space" />
       </Content>
 
+      <ImportSheet table={importTable} onClose={() => setImportTable(null)} />
       <OptionSheet
         isOpen={restSheet}
         title="Default rest time"

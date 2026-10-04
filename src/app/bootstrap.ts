@@ -10,6 +10,7 @@ import { useSessionStore } from '@/store/sessionStore';
 import { onResume } from '@/native/lifecycle';
 import { track } from './analytics';
 import { installOverlayA11yGuard } from './overlayA11y';
+import { installOverlayMotion } from './overlayMotion';
 import { installAppFeel } from './appFeel';
 import { initAppearance } from './appearance';
 import { initTextScale } from './textScale';
@@ -22,6 +23,7 @@ export async function bootstrap(): Promise<void> {
   playSplash();
   installAppFeel();
   installOverlayA11yGuard();
+  installOverlayMotion();
   initTextScale();
   initKeyboard();
   try {

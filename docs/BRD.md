@@ -183,7 +183,7 @@ Explore turns logged data into progress views; Settings controls units, session 
 | ST-3 | Session: default rest time (0 to 10 minutes in 15-second steps), rest-timer sound and haptics on or off, keep screen awake during a session. |
 | ST-4 | Library: manage categories (add, rename, recolour, delete) and equipment types (add, rename, delete). |
 | ST-5 | Apple Health: optional permission to write completed workouts and read and write body weight. |
-| ST-6 | Data: export all data to CSV, back up to and restore from iCloud, and delete all data after a typed confirmation. |
+| ST-6 | Data: export all data to CSV, import workouts from CSV or JSON (PD-19), back up to and restore from iCloud, and delete all data after a typed confirmation. |
 | ST-7 | Appearance: System, Light or Dark. |
 | ST-8 | About: app version and build, privacy policy, terms of use, contact support and rate the app. |
 
@@ -347,6 +347,7 @@ Every behaviour that the reference screens did not show directly is fixed here, 
 | PD-16 | Monetisation | Release 1.0 is a free app with no ads, accounts or in-app purchases. |
 | PD-17 | Tab bar taps | Tapping a tab always opens that tab's root screen, never the detail screen last viewed in it; tapping the active tab returns it to its root. Only the back chevron steps back through detail screens. |
 | PD-18 | Exercise tutorial link | Any http(s) address is accepted; a missing https:// is added and anything else is rejected with a message. The link opens in the phone's browser (YouTube links in the YouTube app), from the exercise detail screen and from the exercise's card in a workout log. Shared exercises include the link; backups keep it. |
+| PD-19 | Importing workouts | Import accepts a CSV (Gym Tracker's own export or another app's, comma, semicolon or tab separated) or a JSON list of sets. A file whose columns are not exactly Gym Tracker's opens Match Columns: each field shows its required format and is paired with a file column; Date, Exercise and one of Reps / Weight / Time / Distance are required, and the file's weight unit (kg/lb), distance unit (km/mi) and day/month order are chosen there. Every cell is then checked against the app's formats and VR-1 / VR-2 / VR-4; rows with a bad cell are listed by row and column and skipped. Import adds workouts and never replaces data: workouts already in the app (same id, or same start and name) are skipped, exercises are matched by name and unknown ones are added as custom exercises. A full backup JSON offers Restore instead, and every restore first checks that each row has the columns the app requires; a damaged file changes nothing. |
 
 ## 13. Validation rules and edge cases
 

@@ -4,7 +4,7 @@
  * aria-hidden after the last one closes; restore it whenever no overlay is presented.
  */
 export function installOverlayA11yGuard(): void {
-  document.addEventListener('ionOverlayDidDismiss', () => {
+  const restore = () =>
     requestAnimationFrame(() => {
       const open = document.querySelector(
         'ion-alert, ion-action-sheet, ion-modal.show-modal, ion-picker, ion-popover, ion-loading',
@@ -14,5 +14,7 @@ export function installOverlayA11yGuard(): void {
         .querySelectorAll('ion-router-outlet[aria-hidden="true"]')
         .forEach((el) => el.removeAttribute('aria-hidden'));
     });
-  });
+  // Ionic 9 emits per-overlay events only (there is no generic ionOverlayDidDismiss).
+  for (const kind of ['Alert', 'ActionSheet', 'Modal', 'Picker', 'Popover', 'Loading'])
+    document.addEventListener(`ion${kind}DidDismiss`, restore);
 }

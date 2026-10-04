@@ -33,6 +33,80 @@ export const MSG = {
 } as const;
 
 /** Not in §14; needed for VR-1 length/empty checks and VR-3 max length. */
+/** PD-19: importing workout history (CSV or JSON). Not in §14. */
+export const IMPORT_MSG = {
+  title: 'Import Workouts',
+  rowLabel: 'Import workouts',
+  rowHint: 'CSV or JSON from Gym Tracker or another app',
+  matchTitle: 'Match Columns',
+  matchIntro:
+    "This file's columns don't match Gym Tracker's. Choose which column holds each value; required ones are marked.",
+  reviewTitle: 'Review Import',
+  notInFile: 'Not in file',
+  required: 'Required',
+  format: (f: string) => `Format: ${f}`,
+  sample: (v: string) => `In your file: ${v}`,
+  weightUnit: 'Weights in this file',
+  distanceUnit: 'Distances in this file',
+  dateOrder: 'Dates like 03/04/2026 are',
+  dayMonth: 'Day / Month',
+  monthDay: 'Month / Day',
+  needField: (f: string) => `Choose the column for ${IMPORT_FIELD_TEXT[f]?.label ?? f}.`,
+  needMetric: 'Choose at least one of Reps, Weight, Time or Distance.',
+  columnTwice: 'Each file column can be used only once.',
+  summary: (logs: number, sets: number) =>
+    `${logs} workout${logs === 1 ? '' : 's'} · ${sets} set${sets === 1 ? '' : 's'} ready to import`,
+  skipped: (n: number) => `${n} row${n === 1 ? '' : 's'} with problems will be skipped:`,
+  moreErrors: (n: number) => `…and ${n} more`,
+  changeMatching: 'Change column matching',
+  rowError: (row: number, column: string, value: string, message: string) =>
+    `Row ${row} · ${column}${value ? ` “${value}”` : ''}: ${message}`,
+  nothingValid: 'No rows in this file can be imported.',
+  importButton: 'Import',
+  done: (imported: number, skipped: number) =>
+    `Imported ${imported} workout${imported === 1 ? '' : 's'}` +
+    (skipped ? ` · ${skipped} already in the app were skipped.` : '.'),
+  newExercises: (n: number) => ` ${n} new exercise${n === 1 ? '' : 's'} added to the library.`,
+  unreadable: "This file can't be read. Choose a CSV file or a JSON export.",
+  empty: 'This file has no rows to import.',
+  isBackup:
+    'This is a full Gym Tracker backup. Restore it instead? Restoring replaces all current data.',
+  defaultWorkoutName: 'Imported Workout',
+  missing: 'value is missing',
+  badDate: 'use a date like 2026-10-04 or 04/10/2026',
+  futureDate: "a workout can't be in the future",
+  badClock: 'use a 24-hour time like 07:30',
+  badWhole: 'use a whole number',
+  badNumber: 'use a number like 62.5',
+  badDuration: 'use seconds (90) or H:MM:SS',
+  badSetType: 'use warmup or working',
+  badBool: 'use yes or no',
+  badName: 'use 1–60 characters',
+  badBackup: (table: string, row: number, column: string) =>
+    `This backup is damaged: ${table} row ${row} has no ${column}. Nothing was changed.`,
+} as const;
+
+/** Column names and the format each must have (shown when matching columns, PD-19). */
+export const IMPORT_FIELD_TEXT: Record<string, { label: string; format: string }> = {
+  log_id: { label: 'Workout ID', format: 'groups sets into one workout' },
+  workout: { label: 'Workout name', format: 'Push Day' },
+  date: { label: 'Date', format: '2026-10-04 or 04/10/2026' },
+  start_time: { label: 'Start time', format: '07:30 (24-hour)' },
+  end_time: { label: 'End time', format: '08:45 (24-hour)' },
+  body_weight_kg: { label: 'Body weight', format: '72.5' },
+  exercise_order: { label: 'Exercise order', format: '1, 2, 3…' },
+  exercise: { label: 'Exercise', format: 'Bench Press' },
+  equipment: { label: 'Equipment', format: 'Barbell' },
+  set_number: { label: 'Set number', format: '1, 2, 3…' },
+  set_type: { label: 'Set type', format: 'warmup or working' },
+  reps: { label: 'Reps', format: 'whole number, 0–999' },
+  weight_kg: { label: 'Weight', format: '62.5' },
+  time_s: { label: 'Time', format: 'seconds or H:MM:SS' },
+  distance_km: { label: 'Distance', format: '5.2' },
+  rpe: { label: 'RPE', format: '1–10 in halves' },
+  completed: { label: 'Completed', format: 'yes or no' },
+};
+
 /** ED-7 / PD-18: exercise tutorial link (not in §14). */
 export const TUTORIAL = {
   section: 'Tutorial',
