@@ -39,6 +39,10 @@ export const MSG_EXTRA = {
   sessionTooLong: 'A workout can last at most 24 hours.',
   backupReminder: (n: number) =>
     `You've logged ${n} workouts since your last backup. Back up now so you don't lose your history.`,
+  templateMissing: 'This workout no longer exists.',
+  exerciseDeleted: 'This exercise was deleted.',
+  logMissing: 'This workout log no longer exists.',
+  noHistory: 'No previous sessions.',
   emptySession: 'Complete at least one set to save this workout.',
   noWorkoutsMatch: (q: string) => `No workouts match "${q}".`,
   workoutInProgress: 'A workout is in progress',

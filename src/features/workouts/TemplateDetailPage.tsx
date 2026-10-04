@@ -36,6 +36,7 @@ import * as wo from '@/db/repos/workouts';
 import { EMPTY } from '@/domain/messages';
 import { templateShareText } from '@/domain/share';
 import { supersetLabels, templateBlocks } from './blocks';
+import { MSG_EXTRA } from '@/domain/messages';
 import { useDialogs } from '@/hooks/useDialogs';
 import { useLive } from '@/hooks/useLive';
 import { usePrefs } from '@/hooks/usePrefs';
@@ -61,7 +62,7 @@ export default function TemplateDetailPage() {
         <PageHeader title="" back={{ href: '/workouts', text: 'Workouts' }} />
         <IonContent>
           {!loading && (
-            <EmptyState icon={barbellOutline} message="This workout no longer exists." />
+            <EmptyState icon={barbellOutline} fill message={MSG_EXTRA.templateMissing} />
           )}
         </IonContent>
       </IonPage>

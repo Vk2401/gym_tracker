@@ -26,6 +26,7 @@ import { mutate } from '@/db/mutate';
 import * as lib from '@/db/repos/library';
 import { exerciseShareText, focusLabel } from '@/domain/share';
 import type { FocusMetric } from '@/domain/types';
+import { MSG_EXTRA } from '@/domain/messages';
 import { useDialogs } from '@/hooks/useDialogs';
 import { useLive } from '@/hooks/useLive';
 import { shareText } from '@/native/share';
@@ -49,7 +50,7 @@ export default function ExerciseDetailPage() {
       <IonPage>
         <PageHeader title="" back={{ href: '/exercises', text: 'Exercises' }} />
         <IonContent>
-          {!loading && <EmptyState icon={listOutline} message="This exercise was deleted." />}
+          {!loading && <EmptyState icon={listOutline} fill message={MSG_EXTRA.exerciseDeleted} />}
         </IonContent>
       </IonPage>
     );

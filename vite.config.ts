@@ -14,8 +14,9 @@ export default defineConfig({
     // Service worker precaches the whole app so it still opens offline after the first
     // load (NFR-2) even though it is served from a URL.
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      // Registered from src/app/pwa.ts so updates apply at safe moments (never mid-set).
+      registerType: 'prompt',
+      injectRegister: false,
       manifest: {
         name: 'Gym Tracker',
         short_name: 'Gym Tracker',

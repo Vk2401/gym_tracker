@@ -100,43 +100,49 @@ export default function LogsPage() {
         }
       />
       <IonContent>
-        <MonthCalendar
-          year={ym.year}
-          month={ym.month}
-          weekStart={prefs.weekStart}
-          showDots={prefs.showDots}
-          selected={selected}
-          today={today}
-          logged={logged}
-          collapsed={collapsed}
-          onSelect={select}
-          onMonth={onMonth}
-          onToggleCollapsed={() => setCollapsed((c) => !c)}
-        />
-        <IonList inset>
-          <IonListHeader>{formatDateKeyLong(selected)}</IonListHeader>
-          {cards.map((c) => (
-            <IonItem key={c.id} button routerLink={`/logs/${c.id}`} detail>
-              <IonLabel>
-                <h2 className="truncate">{c.name}</h2>
-                <p>
-                  {c.endUtc
-                    ? `Completed in ${formatDuration(c.startUtc, c.endUtc)}`
-                    : 'In progress'}
-                </p>
-                <p>Exercises performed {c.exercises}</p>
-              </IonLabel>
-            </IonItem>
-          ))}
-        </IonList>
-        {!loading && cards.length === 0 && (
-          <EmptyState
-            icon={calendarOutline}
-            message={EMPTY.logsDay.message}
-            action={EMPTY.logsDay.action}
-            onAction={() => void newLog()}
+        <div className="gt-fill">
+          <MonthCalendar
+            year={ym.year}
+            month={ym.month}
+            weekStart={prefs.weekStart}
+            showDots={prefs.showDots}
+            selected={selected}
+            today={today}
+            logged={logged}
+            collapsed={collapsed}
+            onSelect={select}
+            onMonth={onMonth}
+            onToggleCollapsed={() => setCollapsed((c) => !c)}
           />
-        )}
+          {/* LG-7: selected date heads the day's logs */}
+          <h2 className="gt-section-title">{formatDateKeyLong(selected)}</h2>
+          {cards.length > 0 && (
+            <IonList inset className="gt-day-list">
+              {cards.map((c) => (
+                <IonItem key={c.id} button routerLink={`/logs/${c.id}`} detail>
+                  <IonLabel>
+                    <h2 className="truncate">{c.name}</h2>
+                    <p>
+                      {c.endUtc
+                        ? `Completed in ${formatDuration(c.startUtc, c.endUtc)}`
+                        : 'In progress'}
+                    </p>
+                    <p>Exercises performed {c.exercises}</p>
+                  </IonLabel>
+                </IonItem>
+              ))}
+            </IonList>
+          )}
+          {!loading && cards.length === 0 && (
+            <EmptyState
+              fill
+              icon={calendarOutline}
+              message={EMPTY.logsDay.message}
+              action={EMPTY.logsDay.action}
+              onAction={() => void newLog()}
+            />
+          )}
+        </div>
         <div className="gt-fab-space" />
         <IonFab vertical="bottom" horizontal="end" slot="fixed" className="gt-fab hide-on-keyboard">
           <IonFabButton aria-label="New log" onClick={() => void newLog()}>

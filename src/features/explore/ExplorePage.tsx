@@ -131,6 +131,7 @@ export default function ExplorePage() {
         <PageHeader title="Explore" />
         <IonContent>
           <EmptyState
+            fill
             icon={statsChartOutline}
             message={EMPTY.explore.message}
             action={EMPTY.explore.action}

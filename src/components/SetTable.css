@@ -17,6 +17,7 @@
 }
 .gt-sets__head span {
   display: flex;
+  align-items: center;
   flex-direction: column;
   min-width: 0;
   overflow: hidden;

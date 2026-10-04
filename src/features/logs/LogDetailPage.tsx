@@ -43,6 +43,7 @@ import { formatCountdown, REST_OPTIONS_S, startsRest } from '@/domain/session';
 import { logShareText, type ShareBlock } from '@/domain/share';
 import { dateKeyAt, formatDateKeyLong } from '@/domain/time';
 import { validateSessionTimes } from '@/domain/validation';
+import { MSG_EXTRA } from '@/domain/messages';
 import { useDialogs } from '@/hooks/useDialogs';
 import { useFeedback } from '@/hooks/useFeedback';
 import { useLive } from '@/hooks/useLive';
@@ -100,7 +101,7 @@ export default function LogDetailPage() {
         <PageHeader title="" back={{ href: '/logs', text: 'Logs' }} />
         <IonContent>
           {!loading && !summary && (
-            <EmptyState icon={calendarOutline} message="This workout log no longer exists." />
+            <EmptyState icon={calendarOutline} fill message={MSG_EXTRA.logMissing} />
           )}
         </IonContent>
         <SummarySheet summary={summary} onClose={closeSummary} />
@@ -527,7 +528,7 @@ function HistorySheet({ le, onClose }: { le: LoggedExercise | null; onClose: () 
       .join(' × ');
   return (
     <Sheet isOpen={!!le} title={le ? `${le.name} History` : 'History'} onDismiss={onClose} full>
-      {data.length === 0 && <p className="gt-empty__message ion-padding">No previous sessions.</p>}
+      {data.length === 0 && <p className="gt-empty__message ion-padding">{MSG_EXTRA.noHistory}</p>}
       {data.map((h) => (
         <IonList inset key={h.logId}>
           <IonListHeader className="truncate">

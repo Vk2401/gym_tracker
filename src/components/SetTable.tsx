@@ -56,7 +56,7 @@ export function SetTable(props: Props) {
       c === 'rpe' ? 'minmax(0, 0.7fr)' : c === 'time' ? 'minmax(0, 1.3fr)' : 'minmax(0, 1fr)',
     )
     .join(' ');
-  const template = `28px ${colSizes}${mode === 'log' ? ' 44px' : ''}`;
+  const template = `38px ${colSizes}${mode === 'log' ? ' 44px' : ''}`;
   return (
     <div className="gt-sets" style={{ ['--gt-set-cols' as string]: template }}>
       <div className="gt-sets__head" aria-hidden="true">

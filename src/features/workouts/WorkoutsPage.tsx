@@ -141,6 +141,7 @@ export default function WorkoutsPage() {
       <IonContent>
         {empty && (
           <EmptyState
+            fill
             icon={barbellOutline}
             message={EMPTY.workouts.message}
             action={EMPTY.workouts.action}
@@ -269,7 +270,11 @@ export default function WorkoutsPage() {
           })
         )}
         {q && data && byGroup.size === 0 && templates.length > 0 && (
-          <EmptyState icon={barbellOutline} message={MSG_EXTRA.noWorkoutsMatch(query.trim())} />
+          <EmptyState
+            fill
+            icon={barbellOutline}
+            message={MSG_EXTRA.noWorkoutsMatch(query.trim())}
+          />
         )}
         <div className="gt-fab-space" />
         {!editing && (

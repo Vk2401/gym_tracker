@@ -1,5 +1,6 @@
 .gt-range {
-  margin: 0 var(--sp-2) var(--sp-2);
+  width: calc(100% - 2 * var(--sp-4));
+  margin: 0 var(--sp-4) var(--sp-2);
   --background: rgba(255, 255, 255, 0.2);
 }
 .gt-range ion-segment-button {

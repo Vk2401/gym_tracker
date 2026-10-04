@@ -165,3 +165,18 @@ ion-footer {
   white-space: nowrap;
   border: 0;
 }
+
+/* Column that fills the visible content height (e.g. calendar + day list on Logs). */
+.gt-fill {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% - 96px);
+}
+.gt-section-title {
+  margin: var(--sp-6) var(--sp-4) var(--sp-2) calc(var(--sp-4) + var(--sp-4));
+  font-size: var(--fs-footnote);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--gt-text-secondary);
+}

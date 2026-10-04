@@ -96,6 +96,7 @@ export default function ExercisesPage() {
       <IonContent>
         {!loading && visible.length === 0 && q && (
           <EmptyState
+            fill
             icon={listOutline}
             message={EMPTY.exercisesSearch(q).message}
             action={EMPTY.exercisesSearch(q).action}

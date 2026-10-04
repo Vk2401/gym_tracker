@@ -19,3 +19,15 @@
 .gt-empty ion-button {
   min-height: var(--tap-min);
 }
+
+/* Full-page empty state: vertically centred in the space above the FAB / tab bar. */
+.gt-empty--fill {
+  flex: 1;
+  justify-content: center;
+  min-height: calc(100% - 96px);
+  padding-bottom: 8vh;
+}
+/* Inside a .gt-fill column it simply takes the remaining height. */
+.gt-fill .gt-empty--fill {
+  min-height: 12rem;
+}
