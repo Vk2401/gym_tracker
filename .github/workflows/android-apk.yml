@@ -22,23 +22,23 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     env:
-      APP_URL: ${{ inputs.app_url || vars.APP_URL || 'https://vk2401.github.io/gym_tracker/' }}
+      # Empty → app.config.json appUrl (the Vercel deployment).
+      APP_URL: ${{ inputs.app_url || vars.APP_URL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
           cache: gradle
 
-      - uses: android-actions/setup-android@v3
-
+      # ubuntu-latest ships the Android SDK (ANDROID_HOME); Gradle fetches missing platforms.
       - run: npm ci
 
       - name: Generate native shell and sync plugins
@@ -85,7 +85,7 @@ jobs:
           fi
           ls -la out
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: gym-tracker-apk-${{ steps.version.outputs.name }}-${{ github.run_number }}
           path: out/*.apk

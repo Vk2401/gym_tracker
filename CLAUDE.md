@@ -6,8 +6,8 @@ progress analytics) built as a **Capacitor** app. The source of truth for every 
 
 ## Architecture: hosted web app + native shell
 
-- The whole app is a **web app** (React + Ionic) deployed to a URL (GitHub Pages by default:
-  `https://vk2401.github.io/gym_tracker/`).
+- The whole app is a **web app** (React + Ionic) deployed to **Vercel** (`vercel.json`). Its URL lives in
+  `app.config.json` (`appUrl`); the `APP_URL` env var overrides it.
 - The iOS/Android apps are thin **Capacitor shells** whose WebView loads that URL
   (`server.url` in `capacitor.config.ts`, set from `APP_URL`). Capacitor is used **only for
   native features** (SQLite, haptics, status bar, keyboard, text size, notifications, share …),
@@ -68,9 +68,11 @@ CI (`.github/workflows/`):
 | ----------------- | ----------------------------------------------------------------------------- |
 | `ci.yml`          | lint, typecheck, unit tests + domain coverage gate, build, Playwright E2E     |
 | `android-apk.yml` | builds the Android shell → debug APK artifact (+ signed release when secrets) |
-| `deploy-web.yml`  | deploys `dist/` to GitHub Pages from the default branch                       |
 
-APK settings: repo variable `APP_URL` (URL the WebView loads); secrets
+Web deploy: Vercel Git integration (import the repo in Vercel; it reads `vercel.json`,
+builds with `npm run build`, serves `dist/`). Production URL → `app.config.json`.
+
+APK settings: optional repo variable `APP_URL` (overrides `app.config.json`); secrets
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
 `ANDROID_KEY_PASSWORD` for a signed release APK.
 

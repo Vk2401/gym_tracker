@@ -66,7 +66,7 @@
 	<false/>
 	<key>WKAppBoundDomains</key>
 	<array>
-		<string>vk2401.github.io</string>
+		<string>gym-tracker.vercel.app</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>

@@ -16,8 +16,8 @@ description: How to build, configure and extend the Gym Tracker Capacitor 8 app 
 
 ## 2. Architecture: hosted web app, Capacitor only for native features
 
-The app UI is a normal web app deployed to a URL (default GitHub Pages
-`https://vk2401.github.io/gym_tracker/`). The native app is a shell whose WebView loads that
+The app UI is a normal web app deployed to **Vercel** (`vercel.json`);
+its production URL is `appUrl` in `app.config.json` (env `APP_URL` overrides). The native app is a shell whose WebView loads that
 URL; Capacitor injects its bridge into the page, so plugins work exactly as with bundled
 assets. Rules:
 
@@ -33,7 +33,7 @@ assets. Rules:
   `ios.limitsNavigationsToAppBoundDomains: true` + host in `Info.plist` `WKAppBoundDomains`
   (patched automatically by `build:shell`). Android WebView supports them by default.
 - Routing uses `IonReactHashRouter`, so any static host works and deep links never 404.
-- Base path: `VITE_BASE` (e.g. `/gym_tracker/` on Pages); runtime asset URLs must use
+- Base path: served from `/` on Vercel (`VITE_BASE` only for a sub-path host); runtime asset URLs must use
   `import.meta.env.BASE_URL`.
 - `isNative()` (`src/native/platform.ts`) is true inside the shell even though the page is
   remote — use it to choose native plugin vs web fallback.
@@ -131,9 +131,10 @@ Tables (initial migration): `workout_group`, `workout_template`, `template_item`
   Download the APK from the run's **Artifacts**.
 - Release signing secrets: `ANDROID_KEYSTORE_BASE64` (`base64 -w0 release.jks`),
   `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. Repo variable
-  `APP_URL` overrides the default URL.
-- Web deploy: `.github/workflows/deploy-web.yml` publishes `dist/` to GitHub Pages from the
-  default branch (Settings → Pages → Source: GitHub Actions, one-time).
+  `APP_URL` (or the workflow's `app_url` input) overrides `app.config.json`.
+- Web deploy: Vercel Git integration — every push gets a preview URL, the production
+  branch updates the production URL. `vercel.json` sets `npm run build` → `dist/` and
+  no-cache headers for `sw.js` / `index.html` so app updates reach users promptly.
 - CI: `.github/workflows/ci.yml` runs lint, typecheck, unit tests with coverage gate, build
   and Playwright E2E.
 

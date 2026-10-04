@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
 
-// The web app is hosted (GitHub Pages by default) and loaded by the native shell's WebView.
-// VITE_BASE is the sub-path it is served from, e.g. /gym_tracker/ on GitHub Pages.
+// The web app is hosted on Vercel and loaded by the native shell's WebView.
+// VITE_BASE is only needed if it is ever served from a sub-path.
 const base = process.env.VITE_BASE ?? '/';
 
 export default defineConfig({

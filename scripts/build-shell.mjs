@@ -2,7 +2,7 @@
 // APP_URL (capacitor.config.ts server.url); shell/ only provides the offline / error page.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
-const appUrl = process.env.APP_URL ?? 'https://vk2401.github.io/gym_tracker/';
+const appUrl = process.env.APP_URL || JSON.parse(readFileSync('app.config.json', 'utf8')).appUrl;
 if (!/^https:\/\//.test(appUrl)) throw new Error(`APP_URL must be https: ${appUrl}`);
 
 const offline = readFileSync('shell-src/offline.html', 'utf8').replaceAll('__APP_URL__', appUrl);

@@ -6,19 +6,19 @@ checklist is green.
 
 ## 0. Key decisions
 
-| Topic           | Decision                                                                                                                                            | Why                                                                                                                  |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| App type        | Capacitor 8 + Ionic React 9 (iOS mode) + React 19 + TypeScript + Vite                                                                               | One codebase, native iOS look (large titles, swipe, reorder, sheets) out of the box; Android comes almost free later |
-| Loading         | Web app hosted (GitHub Pages) and loaded by the WebView via `server.url`; Capacitor only for native features; service worker + bundled offline page | Your decision: web updates without store releases; offline still works after first launch                            |
-| Android APK     | GitHub Actions builds debug APK on every push (signed release APK when keystore secrets are set)                                                    | Your request                                                                                                         |
-| Platform        | iOS first (BRD NFR-7); Android project generated and kept building, not released in 1.0                                                             | BRD scope                                                                                                            |
-| Storage         | SQLite (`@capacitor-community/sqlite`), versioned migrations                                                                                        | Durable on-device data (NFR-2/3); WebView storage can be evicted by iOS                                              |
-| State           | Zustand for UI/session; SQLite is the only persistent store                                                                                         | Simple, fast re-renders for set taps (NFR-1)                                                                         |
-| Business rules  | Pure functions in `src/domain/`, unit-tested (≥ 80 %)                                                                                               | BRD §16 coverage target                                                                                              |
-| Device settings | Controlled text scale (0.85–1.35), own theme control, no force-dark, portrait lock, fixed 24h + decimal formats                                     | User request + NFR-5/6                                                                                               |
-| Charts          | Chart.js, lazy-loaded                                                                                                                               | Light, works offline                                                                                                 |
-| Tests           | Vitest + Playwright (iPhone viewport), one E2E spec per acceptance criterion                                                                        | AC-1..AC-20 traceability                                                                                             |
-| Build limits    | iOS build needs macOS + Xcode (your Mac); container builds web + Android                                                                            | Linux environment                                                                                                    |
+| Topic           | Decision                                                                                                                                       | Why                                                                                                                  |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| App type        | Capacitor 8 + Ionic React 9 (iOS mode) + React 19 + TypeScript + Vite                                                                          | One codebase, native iOS look (large titles, swipe, reorder, sheets) out of the box; Android comes almost free later |
+| Loading         | Web app hosted on Vercel and loaded by the WebView via `server.url`; Capacitor only for native features; service worker + bundled offline page | Your decision: web updates without store releases; offline still works after first launch                            |
+| Android APK     | GitHub Actions builds debug APK on every push (signed release APK when keystore secrets are set)                                               | Your request                                                                                                         |
+| Platform        | iOS first (BRD NFR-7); Android project generated and kept building, not released in 1.0                                                        | BRD scope                                                                                                            |
+| Storage         | SQLite (`@capacitor-community/sqlite`), versioned migrations                                                                                   | Durable on-device data (NFR-2/3); WebView storage can be evicted by iOS                                              |
+| State           | Zustand for UI/session; SQLite is the only persistent store                                                                                    | Simple, fast re-renders for set taps (NFR-1)                                                                         |
+| Business rules  | Pure functions in `src/domain/`, unit-tested (≥ 80 %)                                                                                          | BRD §16 coverage target                                                                                              |
+| Device settings | Controlled text scale (0.85–1.35), own theme control, no force-dark, portrait lock, fixed 24h + decimal formats                                | User request + NFR-5/6                                                                                               |
+| Charts          | Chart.js, lazy-loaded                                                                                                                          | Light, works offline                                                                                                 |
+| Tests           | Vitest + Playwright (iPhone viewport), one E2E spec per acceptance criterion                                                                   | AC-1..AC-20 traceability                                                                                             |
+| Build limits    | iOS build needs macOS + Xcode (your Mac); container builds web + Android                                                                       | Linux environment                                                                                                    |
 
 ## 1. Project skills and guides (done in this commit)
 
@@ -48,7 +48,7 @@ checklist is green.
 7. `src/domain/`: formatters (BR-8/9/10), duration (BR-4), unit conversion (BR-9),
    validation (VR-1..4), Epley 1RM, totals (BR-3/12), messages (§14) — with unit tests.
 8. GitHub Actions: CI (lint, typecheck, unit + coverage, build, E2E), Android APK build,
-   GitHub Pages deploy of the web app.
+   Vercel config (`vercel.json`) for the web app.
 
 **Gate 1:** app runs in browser and on Android emulator with 5 tabs, theme switching,
 text-scale clamp verified, DB migrates and seeds, domain tests green.
@@ -155,4 +155,5 @@ See `CLAUDE.md` → Folder layout.
 2. Brand blue `#1e7bf2` is estimated from the description; share the screenshots or the
    exact hex if you have them.
 3. Android: APK is built by CI; store release still out of BRD 1.0 scope.
-4. Hosted URL: GitHub Pages of this repo; change with the `APP_URL` repo variable.
+4. Hosted URL: Vercel. Put the real production URL in `app.config.json` (`appUrl`)
+   once the Vercel project exists (placeholder: `https://gym-tracker.vercel.app/`).
