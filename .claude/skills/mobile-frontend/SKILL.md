@@ -141,6 +141,16 @@ by the OS directly — see device-independence §3). Map tokens onto Ionic varia
       (device-independence checklist).
 - [ ] No layout shift when the keyboard opens on a set row.
 
+## 5a. Lessons from building the screens
+
+- Detail screens show their name as the large title in the content; the toolbar has no
+  title (it collided with the back text and actions).
+- Solid buttons inside an `IonToolbar` are painted with the toolbar colour — the footer CTA
+  class `.gt-footer` forces brand blue.
+- Dense rows (set table, rest bar) cap their font sizes so 320 px × 1.35 text never clips.
+- React 19 sets Ionic props as properties, not attributes: select segment buttons by text,
+  not `[value=…]`; Ionic moves `aria-label` to the inner button, so use `getByRole`.
+
 ## 6. Performance rules (NFR-1)
 
 - Screens open < 1 s: load list data with one query per screen, no N+1.

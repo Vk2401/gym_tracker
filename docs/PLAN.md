@@ -55,7 +55,7 @@ text-scale clamp verified, DB migrates and seeds, domain tests green.
 Status: verified in browser (unit + E2E). Android APK is built by CI only (the dev container
 cannot download the Android SDK); install it on a phone to finish the gate.
 
-### Phase 2 — Library and templates (Exercises + Workouts)
+### Phase 2 — Library and templates (Exercises + Workouts) ✅ done
 
 - Exercises list: alphabetical with numbers first (EX-2), rows (EX-3), search (EX-4),
   virtualised, create custom exercise (EX-5), empty search state with Create "{query}".
@@ -71,7 +71,7 @@ cannot download the Android SDK); install it on a phone to finish the gate.
 
 **Gate 2:** AC-1..AC-5 pass (E2E), checklist green on these screens.
 
-### Phase 3 — Logging and calendar (core value)
+### Phase 3 — Logging and calendar (core value) ✅ done
 
 - Active session engine: start from template (PD-1), Quick Go! (WO-7, PD-2), Logs + picker
   (PD-3), one active session rule (VR-8), resume banner on all tabs (SS-3).
@@ -90,7 +90,7 @@ cannot download the Android SDK); install it on a phone to finish the gate.
 
 **Gate 3:** AC-6..AC-12, AC-16..AC-18 pass, incl. airplane-mode force-close test on device.
 
-### Phase 4 — Explore, Settings, integrations
+### Phase 4 — Explore, Settings, integrations ✅ done (see status for native limits)
 
 - Explore: range selector, Consistency, Volume, Muscle Balance, Exercise Progress, Personal
   Records, Body card, tap point → log (XP-1..8); PR engine (section 7 record types).
@@ -102,7 +102,7 @@ cannot download the Android SDK); install it on a phone to finish the gate.
 
 **Gate 4:** AC-13..AC-15, AC-19, AC-20 pass; backup → restore verified on device.
 
-### Phase 5 — Hardening and release
+### Phase 5 — Hardening and release ⏳ code-side done; device + store steps need you
 
 - Full device-independence matrix on real devices (small + large iPhone, two iOS versions).
 - VoiceOver + Dynamic Type audit (NFR-5), performance pass (NFR-1: < 1 s screens,
@@ -110,11 +110,43 @@ cannot download the Android SDK); install it on a phone to finish the gate.
 - App icon, splash, store listing assets, privacy policy, TestFlight beta, phased release
   (BRD §16 release gates).
 
+## 2a. Delivery status (code complete for phases 1–4)
+
+Verified here: 87 unit/integration tests (domain coverage ≈ 98 %), 19 Playwright specs
+covering AC-1..AC-15, AC-17, AC-19, AC-20 and VR-2 in an iPhone viewport, CI green, Android
+APK built by GitHub Actions. Layout checked at 320 px × text scale 1.35 in dark mode.
+
+How BRD items were implemented where the platform forced a choice:
+
+| BRD item                     | Implementation                                                                                                                                                                                                                                           |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ST-6 iCloud backup / restore | Full JSON backup shared through the system share sheet ("Save to Files" → iCloud Drive on iOS); restore picks the file and confirms with the backup date (VR-17). There is no automatic iCloud-container sync.                                           |
+| ST-5 Apple Health            | `@capgo/capacitor-health`: reads/writes body weight; completed sessions are written as exercise time because the plugin cannot write workout objects yet. Android uses Health Connect (weight only; other plugin permissions removed from the manifest). |
+| XP-6 Personal records        | Computed live from completed working sets (always consistent after edits/deletes); the `personal_record` table stays unused.                                                                                                                             |
+| §15 Analytics                | First-launch opt-in, events defined and filtered (no personal data); no provider connected — `setAnalyticsSink()` is the hook.                                                                                                                           |
+| §17 Backup reminder          | Prompt after every 10 sessions since the last backup.                                                                                                                                                                                                    |
+| EX virtualisation            | Not needed at the current library size (60 exercises); revisit above ~300.                                                                                                                                                                               |
+
+Still open (needs you or a real device):
+
+1. Vercel project + real production URL in `app.config.json` (`appUrl`), then rebuild the APK.
+2. `supportEmail` in `app.config.json` (the Contact Support row is hidden while empty).
+3. iOS: build on a Mac (Xcode), enable the HealthKit capability for the signing team,
+   TestFlight. App icon / splash artwork and store listing assets.
+4. Crash reporting SDK (§16) — needs a provider account (e.g. Sentry DSN).
+5. On-device checks the browser cannot do: AC-16 background notification, AC-18 via the
+   native date picker (logic is unit-tested), VoiceOver / Dynamic Type audit, the
+   device-independence matrix, airplane-mode test on a phone.
+6. Brand blue `#1e7bf2` is still an estimate.
+
 ## 3. Folder structure
 
 See `CLAUDE.md` → Folder layout.
 
-## 4. Database schema (migration 0001)
+## 4. Database schema (migrations 0001 + 0002)
+
+Migration 0002 adds `logged_exercise.kind / wod_title / wod_description / wod_result_s`
+(Workout of the Day in logs, PD-8) and `preferences.last_backup_utc / sessions_since_backup`.
 
 | Table               | Columns (main)                                                                                                                                                              |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

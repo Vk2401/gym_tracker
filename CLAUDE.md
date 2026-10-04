@@ -102,6 +102,21 @@ tests/e2e/        Playwright specs named after acceptance criteria (ac-01.spec.t
 docs/             BRD.md, PLAN.md
 ```
 
+## How the code is wired
+
+- Reads: `useLive(load, deps)` (`src/hooks/useLive.ts`) re-runs a repository query after
+  every write. Writes: **always** `mutate((db) => repo.fn(db, …))` (`src/db/mutate.ts`) — it
+  serialises writes, wraps them in a transaction, persists and bumps the data version.
+  Never call a repository write or `db.persist()` outside `mutate`: interleaved writes on the
+  single SQLite connection were losing set completions.
+- Preferences: `usePrefs()` / `setPref()`; active session + rest timer: `useSessionStore`.
+- Dialogs: `useDialogs()` (VR-1 name prompts, delete confirmation, action sheets);
+  validation toasts: `useFeedback()`.
+- E2E test hook: builds with `VITE_E2E=true` expose `window.__gt` (repos + mutate) so
+  Playwright can seed data; production builds never include it. In specs use the
+  `view(page)` helper (Ionic keeps earlier pages in the DOM) and `nav(page, hash)` for deep
+  links.
+
 ## Non-negotiable rules
 
 1. **BRD traceability.** Reference requirement IDs (WO-3, BR-4, VR-2, AC-7 …) in commit

@@ -62,6 +62,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Gym Tracker reads your body weight so it can pre-fill your workout log.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Gym Tracker saves your completed workouts and body weight to Apple Health when you turn on sync.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>WKAppBoundDomains</key>

@@ -64,9 +64,9 @@ Baseline config is in `capacitor.config.ts` (iOS: `contentInset: 'never'`,
 | Splash                                        | `@capacitor/splash-screen`                                               | `native/splash.ts`        |
 | Controlled text scale (device-independence)   | `@capacitor/text-zoom`                                                   | `native/textZoom.ts`      |
 | Device/app info for About (ST-8)              | `@capacitor/device`, `@capacitor/app`                                    | `native/device.ts`        |
-| Rate app (ST-8)                               | `@capacitor-community/in-app-review` (evaluate)                          | `native/review.ts`        |
-| Apple Health (ST-5) — phase 4                 | evaluate maintained HealthKit plugin for Cap 8, else custom Swift plugin | `native/health.ts`        |
-| iCloud backup/restore (ST-6) — phase 4        | custom Swift plugin writing to the app's iCloud ubiquity container       | `native/backup.ts`        |
+| Rate app (ST-8)                               | `@capacitor-community/in-app-review`                                     | `native/review.ts`        |
+| Apple Health / Health Connect (ST-5)          | `@capgo/capacitor-health` (weight read/write; workouts as exercise time) | `native/health.ts`        |
+| Backup / CSV files (ST-6)                     | `@capacitor/filesystem` + `@capacitor/share` (save to Files / iCloud)    | `native/share.ts`         |
 
 Wrapper rules:
 
@@ -98,6 +98,13 @@ Tables (initial migration): `workout_group`, `workout_template`, `template_item`
 `exercise_category`, `equipment`, `workout_log`, `logged_exercise`, `log_set`,
 `measurement`, `personal_record`, `preferences` (single row), `active_session` (≤ 1 row).
 
+## 4a. Writes go through the queue
+
+All writes — including rest-timer and preference updates — must go through
+`mutate()` (`src/db/mutate.ts`). The SQLite connection is shared; a write that runs while
+another `mutate` transaction is open (or a stray `db.persist()`) can be lost. This caused a
+real bug where completing a set started the rest timer and the completion vanished.
+
 ## 5. Session durability (NFR-3, VR-7, AC-12)
 
 - Every set edit / completion is written immediately (await the write after the optimistic
@@ -117,8 +124,11 @@ Tables (initial migration): `workout_group`, `workout_template`, `template_item`
   darkening / force dark); `styles.xml` sets `android:forceDarkAllowed=false`.
 - iOS `Info.plist`: portrait only, usage strings for Health (phase 4), no unused
   permission strings (App Review rejects them). `ITSAppUsesNonExemptEncryption = NO`.
-- Android `AndroidManifest.xml`: `screenOrientation="portrait"`, POST_NOTIFICATIONS,
-  SCHEDULE_EXACT_ALARM only if needed for the rest timer accuracy.
+- Android `AndroidManifest.xml`: `screenOrientation="portrait"`; notification permissions
+  come from the plugin; unused Health Connect permissions are removed with
+  `tools:node="remove"`. `minSdkVersion` is 26 (Health Connect plugin).
+- iOS: `App.entitlements` holds the HealthKit entitlement; Info.plist has the two Health
+  usage strings. Enable HealthKit for the signing team in Xcode before the first build.
 - Device-independence native settings live in the skill of that name — apply them in the
   same PR that generates the native projects.
 
