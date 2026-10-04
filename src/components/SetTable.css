@@ -38,6 +38,9 @@
   --min-height: 52px;
   --background: transparent;
 }
+.gt-set {
+  transition: background-color 0.3s ease;
+}
 .gt-set--done {
   --background: color-mix(in srgb, var(--gt-blue) 9%, transparent);
 }
@@ -58,10 +61,14 @@
 .gt-input {
   width: 100%;
   min-width: 0;
-  height: 40px;
+  height: 42px;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   background: var(--gt-surface-2);
+  font-weight: 600;
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
   color: var(--gt-text);
   text-align: center;
   padding: 0 var(--sp-1);
@@ -71,7 +78,10 @@
   color: var(--gt-text-tertiary);
 }
 .gt-input:focus {
-  box-shadow: 0 0 0 2px var(--gt-blue);
+  background: var(--gt-surface);
+  box-shadow:
+    0 0 0 2px var(--gt-blue),
+    0 0 0 5px rgba(var(--gt-blue-rgb), 0.15);
 }
 /* PD-15: empty blue-outlined circle → filled blue circle with white mark */
 .gt-check {
@@ -85,18 +95,35 @@
   color: transparent;
   cursor: pointer;
 }
-.gt-check ion-icon {
-  width: 30px;
-  height: 30px;
+.gt-check .gt-icon {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
   border-radius: 50%;
   border: 2px solid var(--gt-blue);
-  font-size: 20px;
   box-sizing: border-box;
-  transition: background 120ms ease;
+  stroke-width: 3;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.3s var(--ease-pop);
 }
-.gt-check--on ion-icon {
+.gt-check:active .gt-icon {
+  transform: scale(0.82);
+}
+.gt-check--on .gt-icon {
   background: var(--gt-blue);
   color: #fff;
+  box-shadow: 0 6px 14px rgba(var(--gt-blue-rgb), 0.35);
+  animation: gt-check-pop 0.35s var(--ease-pop);
+}
+@keyframes gt-check-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  100% {
+    transform: none;
+  }
 }
 
 /*

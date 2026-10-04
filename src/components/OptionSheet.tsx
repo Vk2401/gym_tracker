@@ -1,5 +1,6 @@
-import { IonIcon, IonItem, IonLabel, IonList } from '@ionic/react';
-import { checkmark } from 'ionicons/icons';
+import { IonItem, IonLabel, IonList } from '@ionic/react';
+import { CheckIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { CategoryDot } from './CategoryDot';
 import { Sheet } from './Sheet';
 
@@ -45,7 +46,7 @@ export function OptionSheet<T extends string>({
             )}
             <IonLabel className="truncate">{o.label}</IonLabel>
             {selected === o.value && (
-              <IonIcon slot="end" icon={checkmark} color="primary" aria-label="Selected" />
+              <Icon slot="end" icon={CheckIcon} color="primary" aria-label="Selected" />
             )}
           </IonItem>
         ))}

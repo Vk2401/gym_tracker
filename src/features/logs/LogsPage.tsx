@@ -3,7 +3,6 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -13,7 +12,8 @@ import {
   IonSegmentButton,
   IonToggle,
 } from '@ionic/react';
-import { add, calendarOutline, settingsOutline } from 'ionicons/icons';
+import { CalendarDaysIcon, PlusIcon, SettingsIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useCallback, useState } from 'react';
 import { MonthCalendar } from '@/components/MonthCalendar';
 import { EmptyState } from '@/components/EmptyState';
@@ -95,7 +95,7 @@ export default function LogsPage() {
         start={<IonButton onClick={() => select(today)}>Today</IonButton>}
         end={
           <IonButton aria-label="Calendar settings" onClick={() => setOptions(true)}>
-            <IonIcon slot="icon-only" icon={settingsOutline} />
+            <Icon slot="icon-only" icon={SettingsIcon} />
           </IonButton>
         }
       />
@@ -136,7 +136,7 @@ export default function LogsPage() {
           {!loading && cards.length === 0 && (
             <EmptyState
               fill
-              icon={calendarOutline}
+              icon={CalendarDaysIcon}
               message={EMPTY.logsDay.message}
               action={EMPTY.logsDay.action}
               onAction={() => void newLog()}
@@ -146,7 +146,7 @@ export default function LogsPage() {
         <div className="gt-fab-space" />
         <IonFab vertical="bottom" horizontal="end" slot="fixed" className="gt-fab hide-on-keyboard">
           <IonFabButton aria-label="New log" onClick={() => void newLog()}>
-            <IonIcon icon={add} />
+            <Icon icon={PlusIcon} />
           </IonFabButton>
         </IonFab>
       </IonContent>

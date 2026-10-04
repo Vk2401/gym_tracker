@@ -1,12 +1,6 @@
-import {
-  IonIcon,
-  IonItem,
-  IonItemOption,
-  IonItemOptions,
-  IonItemSliding,
-  IonList,
-} from '@ionic/react';
-import { checkmark } from 'ionicons/icons';
+import { IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonList } from '@ionic/react';
+import { CheckIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { memo, useState } from 'react';
 import { COLUMN_LABEL, setColumns, type SetColumn } from '@/domain/setColumns';
 import type { DistanceUnit, FocusMetric, SetType, WeightUnit } from '@/domain/types';
@@ -179,7 +173,7 @@ const SetRowView = memo(function SetRowView({
                 onToggle?.(set, next);
               }}
             >
-              <IonIcon icon={checkmark} aria-hidden="true" />
+              <Icon icon={CheckIcon} aria-hidden="true" />
             </button>
           )}
         </div>

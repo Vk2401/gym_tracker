@@ -1,7 +1,6 @@
 import {
   IonButton,
   IonContent,
-  IonIcon,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -13,7 +12,8 @@ import {
   IonPage,
   useIonRouter,
 } from '@ionic/react';
-import { add, listOutline, shareOutline } from 'ionicons/icons';
+import { BookOpenIcon, PlusIcon, ShareIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CategoryDot } from '@/components/CategoryDot';
@@ -50,7 +50,7 @@ export default function ExerciseDetailPage() {
       <IonPage>
         <PageHeader title="" back={{ href: '/exercises', text: 'Exercises' }} />
         <IonContent>
-          {!loading && <EmptyState icon={listOutline} fill message={MSG_EXTRA.exerciseDeleted} />}
+          {!loading && <EmptyState icon={BookOpenIcon} fill message={MSG_EXTRA.exerciseDeleted} />}
         </IonContent>
       </IonPage>
     );
@@ -96,7 +96,7 @@ export default function ExerciseDetailPage() {
         back={{ href: '/exercises', text: 'Exercises' }}
         end={
           <IonButton aria-label="Share" onClick={() => void share()}>
-            <IonIcon slot="icon-only" icon={shareOutline} />
+            <Icon slot="icon-only" icon={ShareIcon} />
           </IonButton>
         }
       />
@@ -130,7 +130,7 @@ export default function ExerciseDetailPage() {
             onClick={() => setSheet('category')}
             disabled={unassigned.length === 0}
           >
-            <IonIcon slot="start" icon={add} color="primary" aria-hidden="true" />
+            <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
             <IonLabel color="primary">Add Category</IonLabel>
           </IonItem>
         </IonList>

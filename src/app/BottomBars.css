@@ -2,79 +2,129 @@
   position: fixed;
   left: 0;
   right: 0;
-  /* tab bar (50px) + home indicator */
-  bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+  /* floating tab bar (height + its bottom margin) + home indicator */
+  bottom: calc(var(--gt-tabbar-h) + var(--sp-2) + env(safe-area-inset-bottom, 0px));
   z-index: 15;
   display: flex;
   flex-direction: column;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-4) var(--sp-2);
   pointer-events: none;
+}
+.gt-bottom-stack:empty {
+  padding: 0;
 }
 .gt-bottom-stack > * {
   pointer-events: auto;
+  animation: gt-bar-in 0.42s var(--ease-sheet) both;
+}
+@keyframes gt-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .gt-resume,
 .gt-rest {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  min-height: var(--tap-min);
-  padding: 0 var(--sp-4);
-  border-top: 0.5px solid var(--gt-separator);
+  min-height: 56px;
+  border-radius: 22px;
+  background: var(--gt-navy-grad);
+  color: #fff;
+  box-shadow: var(--gt-shadow-navy);
+  white-space: nowrap;
+  /* fixed chrome: px sizes so it never overflows at large text (device-independence §2.4) */
+  font-size: 15px;
 }
 .gt-resume {
   width: 100%;
   border: 0;
-  background: var(--gt-blue);
-  color: #fff;
-  font-size: var(--fs-subhead);
+  padding: 0 8px 0 10px;
   text-align: left;
   cursor: pointer;
+  transition: transform 0.2s var(--ease-out);
 }
-.gt-resume ion-icon {
-  font-size: 22px;
+.gt-resume:active {
+  transform: scale(0.98);
+}
+.gt-resume__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
   flex: none;
+  background: rgba(124, 192, 255, 0.16);
+  color: #7cc0ff;
 }
-.gt-resume span:first-of-type {
+.gt-resume__icon .gt-icon {
+  width: 20px;
+  height: 20px;
+}
+.gt-resume__text {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.gt-resume__text small {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gt-on-navy-secondary);
+}
+.gt-resume__text strong {
+  font-size: 15px;
+  font-weight: 600;
 }
 .gt-resume__cta {
-  font-weight: 700;
+  height: 38px;
+  padding: 0 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 19px;
+  background: #fff;
+  color: #0f1b3f;
+  font-size: 14px;
+  font-weight: 600;
+  flex: none;
 }
 .gt-rest {
-  background: var(--gt-surface);
-  color: var(--gt-text);
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+  gap: 4px;
+  padding: 0 8px 0 16px;
 }
 .gt-rest__label {
-  color: var(--gt-text-secondary);
-  font-size: var(--fs-footnote);
+  color: var(--gt-on-navy-secondary);
+  font-size: 12px;
+  font-weight: 500;
 }
 .gt-rest__time {
   flex: 1;
-  font-size: var(--fs-title);
-  font-weight: 700;
-  color: var(--gt-blue);
-}
-.gt-rest {
-  gap: var(--sp-1);
-  padding: 0 var(--sp-2) 0 var(--sp-4);
-  white-space: nowrap;
-}
-/* fixed chrome: px sizes so it never overflows at large text (device-independence §2.4) */
-.gt-rest__time {
   font-size: 22px;
-}
-.gt-rest__label {
-  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
 }
 .gt-rest ion-button {
   min-height: 40px;
-  font-size: 15px;
-  --padding-start: 8px;
-  --padding-end: 8px;
+  height: 40px;
+  font-size: 14px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --border-radius: 13px;
+  --color: #fff;
+  --background: rgba(255, 255, 255, 0.1);
+  --background-activated: rgba(255, 255, 255, 0.2);
+  --box-shadow: none;
+  margin: 0;
 }
-.gt-resume {
-  font-size: 15px;
+.gt-rest ion-button.gt-rest__skip.gt-rest__skip {
+  --background: #fff;
+  --color: #0f1b3f;
 }
 @media (max-width: 340px) {
   .gt-rest__label {

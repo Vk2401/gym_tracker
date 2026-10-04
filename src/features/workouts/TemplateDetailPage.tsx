@@ -5,7 +5,6 @@ import {
   IonFab,
   IonFabButton,
   IonFooter,
-  IonIcon,
   IonInput,
   IonItem,
   IonItemOption,
@@ -19,7 +18,8 @@ import {
   IonReorder,
   IonReorderGroup,
 } from '@ionic/react';
-import { add, barbellOutline, ellipsisHorizontal, shareOutline } from 'ionicons/icons';
+import { DumbbellIcon, EllipsisIcon, PlusIcon, ShareIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CategoryDot } from '@/components/CategoryDot';
@@ -61,9 +61,7 @@ export default function TemplateDetailPage() {
       <IonPage>
         <PageHeader title="" back={{ href: '/workouts', text: 'Workouts' }} />
         <IonContent>
-          {!loading && (
-            <EmptyState icon={barbellOutline} fill message={MSG_EXTRA.templateMissing} />
-          )}
+          {!loading && <EmptyState icon={DumbbellIcon} fill message={MSG_EXTRA.templateMissing} />}
         </IonContent>
       </IonPage>
     );
@@ -143,7 +141,7 @@ export default function TemplateDetailPage() {
                 )
               }
             >
-              <IonIcon slot="icon-only" icon={shareOutline} />
+              <Icon slot="icon-only" icon={ShareIcon} />
             </IonButton>
             <IonButton
               onClick={() => {
@@ -239,7 +237,7 @@ export default function TemplateDetailPage() {
 
             {t.items.length === 0 && (
               <EmptyState
-                icon={barbellOutline}
+                icon={DumbbellIcon}
                 message={EMPTY.templateDetail.message}
                 action={EMPTY.templateDetail.action}
                 onAction={() => setPicker('exercise')}
@@ -266,7 +264,7 @@ export default function TemplateDetailPage() {
                     aria-label="Options"
                     onClick={() => void itemMenu(i)}
                   >
-                    <IonIcon slot="icon-only" icon={ellipsisHorizontal} />
+                    <Icon slot="icon-only" icon={EllipsisIcon} />
                   </IonButton>
                 </IonItem>
                 {i.kind === 'wod' ? (
@@ -340,7 +338,7 @@ export default function TemplateDetailPage() {
             className="gt-fab hide-on-keyboard"
           >
             <IonFabButton aria-label="Add" onClick={() => void onFab()}>
-              <IonIcon icon={add} />
+              <Icon icon={PlusIcon} />
             </IonFabButton>
           </IonFab>
         )}

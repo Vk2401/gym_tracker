@@ -2,7 +2,6 @@ import {
   IonButton,
   IonContent,
   IonFooter,
-  IonIcon,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -16,7 +15,8 @@ import {
   IonReorderGroup,
   useIonRouter,
 } from '@ionic/react';
-import { calendarOutline, ellipsisHorizontal, settingsOutline, shareOutline } from 'ionicons/icons';
+import { CalendarDaysIcon, EllipsisIcon, SettingsIcon, ShareIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ClampedText } from '@/components/NoteField';
@@ -101,7 +101,7 @@ export default function LogDetailPage() {
         <PageHeader title="" back={{ href: '/logs', text: 'Logs' }} />
         <IonContent>
           {!loading && !summary && (
-            <EmptyState icon={calendarOutline} fill message={MSG_EXTRA.logMissing} />
+            <EmptyState icon={CalendarDaysIcon} fill message={MSG_EXTRA.logMissing} />
           )}
         </IonContent>
         <SummarySheet summary={summary} onClose={closeSummary} />
@@ -243,10 +243,10 @@ export default function LogDetailPage() {
                 )
               }
             >
-              <IonIcon slot="icon-only" icon={shareOutline} />
+              <Icon slot="icon-only" icon={ShareIcon} />
             </IonButton>
             <IonButton aria-label="Log settings" onClick={() => void logMenu()}>
-              <IonIcon slot="icon-only" icon={settingsOutline} />
+              <Icon slot="icon-only" icon={SettingsIcon} />
             </IonButton>
             <IonButton onClick={() => setEditing(!editing)}>{editing ? 'Done' : 'Edit'}</IonButton>
           </>
@@ -354,7 +354,7 @@ export default function LogDetailPage() {
                   aria-label={`${le.name} options`}
                   onClick={() => void exerciseMenu(le)}
                 >
-                  <IonIcon slot="icon-only" icon={ellipsisHorizontal} />
+                  <Icon slot="icon-only" icon={EllipsisIcon} />
                 </IonButton>
               </IonItem>
               <div className="ion-padding-horizontal gt-notes">

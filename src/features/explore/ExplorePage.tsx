@@ -10,7 +10,7 @@ import {
   IonSegmentButton,
   useIonRouter,
 } from '@ionic/react';
-import { statsChartOutline } from 'ionicons/icons';
+import { ChartLineIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { track } from '@/app/analytics';
 import { CategoryDot } from '@/components/CategoryDot';
@@ -132,7 +132,7 @@ export default function ExplorePage() {
         <IonContent>
           <EmptyState
             fill
-            icon={statsChartOutline}
+            icon={ChartLineIcon}
             message={EMPTY.explore.message}
             action={EMPTY.explore.action}
             onAction={() => router.push('/workouts', 'root')}

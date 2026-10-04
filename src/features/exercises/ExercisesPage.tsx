@@ -2,7 +2,6 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -10,7 +9,8 @@ import {
   IonSearchbar,
   useIonRouter,
 } from '@ionic/react';
-import { add, listOutline } from 'ionicons/icons';
+import { BookOpenIcon, PlusIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { memo, useMemo, useState } from 'react';
 import { CategoryDot } from '@/components/CategoryDot';
 import { EmptyState } from '@/components/EmptyState';
@@ -97,7 +97,7 @@ export default function ExercisesPage() {
         {!loading && visible.length === 0 && q && (
           <EmptyState
             fill
-            icon={listOutline}
+            icon={BookOpenIcon}
             message={EMPTY.exercisesSearch(q).message}
             action={EMPTY.exercisesSearch(q).action}
             onAction={() => void create(q)}
@@ -113,7 +113,7 @@ export default function ExercisesPage() {
         <div className="gt-fab-space" />
         <IonFab vertical="bottom" horizontal="end" slot="fixed" className="gt-fab hide-on-keyboard">
           <IonFabButton aria-label="New exercise" onClick={() => void create()}>
-            <IonIcon icon={add} />
+            <Icon icon={PlusIcon} />
           </IonFabButton>
         </IonFab>
       </IonContent>

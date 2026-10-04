@@ -1,7 +1,6 @@
 import {
   IonButton,
   IonContent,
-  IonIcon,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -10,7 +9,8 @@ import {
   IonList,
   IonPage,
 } from '@ionic/react';
-import { add } from 'ionicons/icons';
+import { PlusIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useState } from 'react';
 import { CategoryDot } from '@/components/CategoryDot';
 import { OptionSheet } from '@/components/OptionSheet';
@@ -67,7 +67,7 @@ export default function CategoriesPage() {
         back={{ href: '/settings', text: 'Settings' }}
         end={
           <IonButton aria-label="Add category" onClick={() => void create()}>
-            <IonIcon slot="icon-only" icon={add} />
+            <Icon slot="icon-only" icon={PlusIcon} />
           </IonButton>
         }
       />

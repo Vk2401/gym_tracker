@@ -1,12 +1,25 @@
 .gt-cal {
+  margin: var(--sp-2) var(--sp-4) 0;
+  padding: var(--sp-2) var(--sp-2) 0;
+  border-radius: var(--r-2xl);
   background: var(--gt-surface);
-  padding: 0 var(--sp-2) 0;
-  border-bottom: 0.5px solid var(--gt-separator);
+  box-shadow: var(--gt-shadow-card);
 }
 .gt-cal__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.gt-cal__bar {
+  padding: 0 var(--sp-1) 0 var(--sp-3);
+}
+.gt-cal__bar ion-button {
+  --background: var(--gt-surface-2);
+  --border-radius: 12px;
+  --box-shadow: none;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
 }
 .gt-cal__title {
   margin: 0;
@@ -42,8 +55,16 @@
   line-height: 34px;
   border-radius: 50%;
   font-size: var(--fs-subhead);
+  font-weight: 500;
   text-align: center;
   overflow: hidden;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s var(--ease-pop);
+}
+.gt-day:active .gt-day__num {
+  transform: scale(0.86);
 }
 .gt-day--today .gt-day__num {
   color: var(--gt-blue);
@@ -53,12 +74,19 @@
 .gt-day--logged .gt-day__num {
   background: var(--gt-blue);
   color: #fff;
+  font-weight: 600;
+  box-shadow: 0 6px 12px rgba(var(--gt-blue-rgb), 0.28);
 }
 /* LG-5: selected date is a darker blue circle */
 .gt-day--selected .gt-day__num {
-  background: var(--gt-blue-strong);
+  background: var(--gt-navy);
   color: #fff;
   font-weight: 700;
+  box-shadow: 0 6px 14px rgba(15, 27, 63, 0.3);
+}
+:root[data-theme='dark'] .gt-day--selected .gt-day__num {
+  background: #fff;
+  color: #0f1b3f;
 }
 .gt-day__dots {
   display: flex;

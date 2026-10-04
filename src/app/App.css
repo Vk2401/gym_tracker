@@ -8,7 +8,7 @@
   gap: var(--sp-2);
   padding: var(--sp-6);
   text-align: center;
-  background: var(--gt-bg-grouped);
+  background: var(--gt-ground);
   color: var(--gt-text);
 }
 .gt-boot__detail {

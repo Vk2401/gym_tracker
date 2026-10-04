@@ -3,7 +3,6 @@ import {
   IonContent,
   IonFab,
   IonFabButton,
-  IonIcon,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -16,7 +15,8 @@ import {
   IonSearchbar,
   useIonRouter,
 } from '@ionic/react';
-import { add, barbellOutline, chevronDown } from 'ionicons/icons';
+import { ChevronDownIcon, DumbbellIcon, PlusIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useMemo, useState } from 'react';
 import { CategoryDot } from '@/components/CategoryDot';
 import { EmptyState } from '@/components/EmptyState';
@@ -150,6 +150,7 @@ export default function WorkoutsPage() {
         title="Workouts"
         start={
           <IonButton
+            className="gt-btn-dark"
             onClick={() => void start({ kind: 'quick' }, undefined, 'quick_go')}
             disabled={editing}
           >
@@ -172,7 +173,7 @@ export default function WorkoutsPage() {
         {empty && (
           <EmptyState
             fill
-            icon={barbellOutline}
+            icon={DumbbellIcon}
             message={EMPTY.workouts.message}
             action={EMPTY.workouts.action}
             onAction={() => void addTemplate()}
@@ -212,7 +213,7 @@ export default function WorkoutsPage() {
                 ))}
               </IonReorderGroup>
               <IonItem button detail={false} lines="none" onClick={() => void addGroup()}>
-                <IonIcon slot="start" icon={add} color="primary" aria-hidden="true" />
+                <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
                 <IonLabel color="primary">Add Workout Group</IonLabel>
               </IonItem>
             </IonList>
@@ -250,7 +251,7 @@ export default function WorkoutsPage() {
                     lines="none"
                     onClick={() => void addTemplate(g.id)}
                   >
-                    <IonIcon slot="start" icon={add} color="primary" aria-hidden="true" />
+                    <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
                     <IonLabel color="primary">Add Workout Template</IonLabel>
                   </IonItem>
                 </IonList>
@@ -279,9 +280,9 @@ export default function WorkoutsPage() {
                     <CategoryDot color={g.color} size={12} />
                   </span>
                   <IonLabel className="gt-group__name truncate">{g.name}</IonLabel>
-                  <IonIcon
+                  <Icon
                     slot="end"
-                    icon={chevronDown}
+                    icon={ChevronDownIcon}
                     className={`gt-chevron ${open ? '' : 'gt-chevron--closed'}`}
                     aria-hidden="true"
                   />
@@ -289,6 +290,13 @@ export default function WorkoutsPage() {
                 {open &&
                   list.map((t) => (
                     <IonItem key={t.id} button routerLink={`/workouts/${t.id}`} detail>
+                      <span
+                        slot="start"
+                        className="gt-tile"
+                        style={{ '--gt-tile': g.color } as React.CSSProperties}
+                      >
+                        <Icon icon={DumbbellIcon} />
+                      </span>
                       <IonLabel>
                         <h2 className="truncate">{t.name}</h2>
                         {/* WO-3 / BR-10 */}
@@ -309,7 +317,7 @@ export default function WorkoutsPage() {
                     lines="none"
                     onClick={() => void addTemplate(g.id)}
                   >
-                    <IonIcon slot="start" icon={add} color="primary" aria-hidden="true" />
+                    <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
                     <IonLabel color="primary">Add Workout Template</IonLabel>
                   </IonItem>
                 )}
@@ -318,17 +326,13 @@ export default function WorkoutsPage() {
           })
         )}
         {q && data && byGroup.size === 0 && templates.length > 0 && (
-          <EmptyState
-            fill
-            icon={barbellOutline}
-            message={MSG_EXTRA.noWorkoutsMatch(query.trim())}
-          />
+          <EmptyState fill icon={DumbbellIcon} message={MSG_EXTRA.noWorkoutsMatch(query.trim())} />
         )}
         <div className="gt-fab-space" />
         {/* NAV-4: the + menu stays available in edit mode too */}
         <IonFab vertical="bottom" horizontal="end" slot="fixed" className="gt-fab hide-on-keyboard">
           <IonFabButton aria-label="Add" onClick={() => void onFab()}>
-            <IonIcon icon={add} />
+            <Icon icon={PlusIcon} />
           </IonFabButton>
         </IonFab>
       </IonContent>

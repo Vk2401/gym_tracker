@@ -10,6 +10,7 @@ import { useSessionStore } from '@/store/sessionStore';
 import { onResume } from '@/native/lifecycle';
 import { track } from './analytics';
 import { installOverlayA11yGuard } from './overlayA11y';
+import { installAppFeel } from './appFeel';
 import { initAppearance } from './appearance';
 import { initTextScale } from './textScale';
 import { dismissSplash, playSplash } from './splash';
@@ -19,6 +20,7 @@ export async function bootstrap(): Promise<void> {
   // Native launch screen fades into the animated web splash, which covers boot.
   void hideSplash();
   playSplash();
+  installAppFeel();
   installOverlayA11yGuard();
   initTextScale();
   initKeyboard();

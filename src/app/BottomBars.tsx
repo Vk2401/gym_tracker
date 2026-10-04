@@ -1,5 +1,6 @@
-import { IonButton, IonIcon, useIonRouter } from '@ionic/react';
-import { playCircle } from 'ionicons/icons';
+import { IonButton, useIonRouter } from '@ionic/react';
+import { TimerIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { formatCountdown, remainingSeconds } from '@/domain/session';
@@ -53,9 +54,12 @@ function ResumeBanner() {
       className="gt-resume"
       onClick={() => router.push(`/logs/${logId}`, 'forward')}
     >
-      <IonIcon icon={playCircle} aria-hidden="true" />
-      <span className="truncate">
-        <strong>Workout in progress</strong> · {name}
+      <span className="gt-resume__icon">
+        <Icon icon={TimerIcon} />
+      </span>
+      <span className="gt-resume__text truncate">
+        <small>Workout in progress</small>
+        <strong className="truncate">{name}</strong>
       </span>
       <span className="gt-resume__cta">Resume</span>
     </button>
@@ -111,7 +115,7 @@ function RestTimerBar() {
       >
         +15 s
       </IonButton>
-      <IonButton size="small" fill="solid" onClick={() => void s.skipRest()}>
+      <IonButton className="gt-rest__skip" size="small" onClick={() => void s.skipRest()}>
         Skip
       </IonButton>
     </div>

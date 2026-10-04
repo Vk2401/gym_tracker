@@ -1,21 +1,40 @@
-/* Design tokens (mobile-frontend skill §1). Components use tokens only. */
+/* Design tokens (mobile-frontend skill §1). Components use tokens only.
+   Modern look: brand-blue gradient from the logo, soft blue ground, floating cards. */
 :root {
-  --gt-blue: #1e7bf2;
-  --gt-blue-rgb: 30, 123, 242;
-  --gt-blue-strong: #0b5ed7;
-  --gt-blue-tint: #e6f0fe;
+  --gt-blue: #1a5fe0;
+  --gt-blue-rgb: 26, 95, 224;
+  --gt-blue-strong: #1b3fb8;
+  --gt-blue-tint: #e8efff;
   --gt-on-blue: #ffffff;
+  --gt-brand-grad: linear-gradient(135deg, #4a9cf6 0%, #1a5fe0 58%, #1e4ace 100%);
+  --gt-navy: #0f1b3f;
+  --gt-navy-grad: linear-gradient(135deg, #17306e 0%, #0f1b3f 72%);
+  --gt-on-navy-secondary: #a9c4f5;
 
-  --gt-bg-grouped: #f2f2f7;
+  /* ground: soft blue at the top fading to near-white */
+  --gt-bg-top: #dce8ff;
+  --gt-bg-grouped: #f4f7fd;
+  --gt-ground: linear-gradient(180deg, #dce8ff 0px, #ebf1fe 260px, #f4f7fd 560px);
   --gt-surface: #ffffff;
-  --gt-surface-2: #f7f7fa;
-  --gt-separator: #c6c6c8;
-  --gt-text: #111111;
-  --gt-text-secondary: #6b6b70;
-  --gt-text-tertiary: #8e8e93;
-  --gt-danger: #e5383b;
-  --gt-success: #22a06b;
-  --gt-tab-inactive: #8e8e93;
+  --gt-surface-2: #f1f4fa;
+  --gt-separator: #e3e8f2;
+  --gt-glass: rgba(255, 255, 255, 0.74);
+  --gt-glass-strong: rgba(255, 255, 255, 0.9);
+  --gt-glass-border: rgba(255, 255, 255, 0.95);
+  --gt-scrim: rgba(9, 18, 45, 0.42);
+
+  --gt-text: #0e1a3a;
+  --gt-text-secondary: #56627f;
+  --gt-text-tertiary: #8a94ad;
+  --gt-danger: #d93636;
+  --gt-danger-tint: #fdecec;
+  --gt-success: #15a06a;
+  --gt-tab-inactive: #6a7593;
+
+  --gt-shadow-card: 0 8px 24px rgba(26, 63, 160, 0.07);
+  --gt-shadow-float: 0 14px 34px rgba(26, 63, 160, 0.16);
+  --gt-shadow-brand: 0 12px 26px rgba(26, 95, 224, 0.38);
+  --gt-shadow-navy: 0 14px 30px rgba(15, 27, 63, 0.28);
 
   --sp-1: 4px;
   --sp-2: 8px;
@@ -25,42 +44,67 @@
   --sp-6: 24px;
   --sp-8: 32px;
 
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+  --r-2xl: 28px;
   --r-pill: 999px;
 
   /* rem based so the controlled text scale applies (device-independence §2) */
   --fs-caption: 0.75rem;
   --fs-footnote: 0.8125rem;
   --fs-subhead: 0.9375rem;
-  --fs-body: 1.0625rem;
+  --fs-body: 1rem;
   --fs-headline: 1.0625rem;
   --fs-title: 1.375rem;
-  --fs-large-title: 2.125rem;
+  --fs-large-title: 2rem;
+
+  /* motion (Components & motion board) */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   --tap-min: 44px;
+  --gt-tabbar-h: 64px;
   --gt-bottom-stack: 0px;
 
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
-  --gt-blue: #2f88ff;
-  --gt-blue-rgb: 47, 136, 255;
-  --gt-blue-strong: #1667d9;
-  --gt-blue-tint: #0f2440;
+  --gt-blue: #4c8dff;
+  --gt-blue-rgb: 76, 141, 255;
+  --gt-blue-strong: #2563eb;
+  --gt-blue-tint: #172650;
+  --gt-brand-grad: linear-gradient(135deg, #3d86f2 0%, #1a5fe0 58%, #1e44c2 100%);
+  --gt-navy: #16244d;
+  --gt-navy-grad: linear-gradient(135deg, #1f3a80 0%, #142148 72%);
+  --gt-on-navy-secondary: #a9c4f5;
 
-  --gt-bg-grouped: #000000;
-  --gt-surface: #1c1c1e;
-  --gt-surface-2: #2c2c2e;
-  --gt-separator: #38383a;
-  --gt-text: #f2f2f7;
-  --gt-text-secondary: #a1a1a6;
-  --gt-text-tertiary: #7c7c80;
-  --gt-danger: #ff5a5f;
+  --gt-bg-top: #0d1a3d;
+  --gt-bg-grouped: #070c1b;
+  --gt-ground: linear-gradient(180deg, #0d1a3d 0px, #0a1430 260px, #070c1b 560px);
+  --gt-surface: #121a30;
+  --gt-surface-2: #1b2542;
+  --gt-separator: #243052;
+  --gt-glass: rgba(22, 32, 60, 0.72);
+  --gt-glass-strong: rgba(22, 32, 60, 0.92);
+  --gt-glass-border: rgba(255, 255, 255, 0.08);
+  --gt-scrim: rgba(0, 0, 0, 0.55);
+
+  --gt-text: #eef2ff;
+  --gt-text-secondary: #9aa6c4;
+  --gt-text-tertiary: #6f7b9a;
+  --gt-danger: #ff6464;
+  --gt-danger-tint: #3a1620;
   --gt-success: #34c77b;
-  --gt-tab-inactive: #8e8e93;
+  --gt-tab-inactive: #8390b0;
+
+  --gt-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --gt-shadow-float: 0 14px 34px rgba(0, 0, 0, 0.45);
+  --gt-shadow-brand: 0 12px 26px rgba(26, 95, 224, 0.4);
+  --gt-shadow-navy: 0 14px 30px rgba(0, 0, 0, 0.4);
 
   color-scheme: dark;
 }

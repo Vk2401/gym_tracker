@@ -8,7 +8,11 @@
 /* Ionic's own dark palette (alerts, sheets, pickers, toasts …), switched by our appearance
    controller via .ion-palette-dark — never by the OS directly (device-independence §3). */
 @import '@ionic/react/css/palettes/dark.class.css';
-@import '@fontsource-variable/inter/index.css';
+/* Poppins, bundled (no runtime network, NFR-2); Latin only keeps the precache small. */
+@import '@fontsource/poppins/latin-400.css';
+@import '@fontsource/poppins/latin-500.css';
+@import '@fontsource/poppins/latin-600.css';
+@import '@fontsource/poppins/latin-700.css';
 @import './tokens.css';
 @import './ionic.css';
 @import './base.css';

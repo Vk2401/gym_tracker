@@ -1,7 +1,8 @@
-/* Maps design tokens onto Ionic variables (iOS mode). */
+/* Maps design tokens onto Ionic (iOS mode) and restyles its components to the modern look:
+   glass header + floating tab bar, rounded cards, gradient primary buttons, soft sheets. */
 :root,
 :root[data-theme='dark'] {
-  --ion-font-family: 'Inter Variable', -apple-system, system-ui, sans-serif;
+  --ion-font-family: 'Poppins', -apple-system, system-ui, sans-serif;
   --ion-color-primary: var(--gt-blue);
   --ion-color-primary-rgb: var(--gt-blue-rgb);
   --ion-color-primary-contrast: var(--gt-on-blue);
@@ -18,48 +19,468 @@
   --ion-text-color: var(--gt-text);
   --ion-item-background: var(--gt-surface);
   --ion-border-color: var(--gt-separator);
-  --ion-toolbar-background: var(--gt-blue);
-  --ion-toolbar-color: var(--gt-on-blue);
+  --ion-toolbar-background: transparent;
+  --ion-toolbar-color: var(--gt-text);
   --ion-toolbar-border-color: transparent;
-  --ion-tab-bar-background: var(--gt-surface);
+  --ion-tab-bar-background: var(--gt-glass-strong);
   --ion-tab-bar-color: var(--gt-tab-inactive);
   --ion-tab-bar-color-selected: var(--gt-blue);
-  --ion-tab-bar-border-color: var(--gt-separator);
+  --ion-tab-bar-border-color: transparent;
   --ion-card-background: var(--gt-surface);
+  --ion-overlay-background-color: var(--gt-surface);
+  --ion-backdrop-color: #09122d;
 }
 
+/* ---------- ground ---------- */
+ion-content {
+  --background: var(--gt-ground);
+  background-color: var(--gt-bg-grouped);
+}
+ion-tabs,
+ion-router-outlet,
+.ion-page {
+  background: var(--gt-bg-grouped);
+}
+
+/* ---------- header ---------- */
+ion-header.gt-header {
+  background: var(--gt-bg-top);
+}
+ion-header.gt-header::after {
+  display: none; /* no hairline */
+}
 ion-toolbar {
-  --color: var(--gt-on-blue);
+  --background: transparent;
+  --color: var(--gt-text);
+  --border-width: 0;
+  --padding-start: var(--sp-4);
+  --padding-end: var(--sp-4);
+  --min-height: 52px;
+}
+ion-toolbar ion-buttons {
+  gap: var(--sp-2);
 }
 ion-toolbar ion-button,
 ion-toolbar ion-back-button {
-  --color: var(--gt-on-blue);
-  min-height: var(--tap-min);
+  --color: var(--gt-blue);
+  --background: var(--gt-glass);
+  --background-activated: var(--gt-glass-strong);
+  --background-focused: var(--gt-glass-strong);
+  --border-radius: var(--r-pill);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --box-shadow: inset 0 0 0 1px var(--gt-glass-border);
+  /* iOS toolbar buttons paint their label with --ion-toolbar-color */
+  --ion-toolbar-color: var(--gt-blue);
+  height: 40px;
+  min-height: 40px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: transform 0.2s var(--ease-out);
 }
-ion-searchbar.gt-search {
-  --background: rgba(255, 255, 255, 0.92);
-  --color: #111;
-  --placeholder-color: #6b6b70;
-  --icon-color: #6b6b70;
+ion-toolbar ion-button:active,
+ion-toolbar ion-back-button:active {
+  transform: scale(0.95);
 }
-:root[data-theme='dark'] ion-searchbar.gt-search {
-  --background: rgba(0, 0, 0, 0.25);
+ion-toolbar ion-back-button {
+  --padding-start: 8px;
+  --icon-margin-end: 0;
+  --icon-font-size: 22px;
+}
+ion-toolbar ion-button.button-has-icon-only {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 40px;
+}
+ion-toolbar ion-button[disabled] {
+  opacity: 0.5;
+}
+/* Navy pill (Quick Go!) */
+ion-toolbar ion-button.gt-btn-dark {
+  --background: #0f1b3f;
+  --background-activated: #0f1b3f;
   --color: #fff;
-  --placeholder-color: rgba(255, 255, 255, 0.7);
-  --icon-color: rgba(255, 255, 255, 0.7);
+  --ion-toolbar-color: #fff;
+  --box-shadow: var(--gt-shadow-navy);
+}
+:root[data-theme='dark'] ion-toolbar ion-button.gt-btn-dark {
+  --background: #fff;
+  --background-activated: #e8efff;
+  --color: #0f1b3f;
+  --ion-toolbar-color: #0f1b3f;
+}
+/* Solid accent pill (Finish / Done) */
+ion-toolbar ion-button.gt-btn-primary {
+  --background: var(--gt-blue);
+  --background-activated: var(--gt-blue-strong);
+  --color: #fff;
+  --ion-toolbar-color: #fff;
+  --box-shadow: var(--gt-shadow-brand);
+}
+ion-toolbar ion-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* ---------- search ---------- */
+ion-searchbar.gt-search,
+ion-searchbar {
+  --background: var(--gt-glass-strong);
+  --color: var(--gt-text);
+  --placeholder-color: var(--gt-text-secondary);
+  --placeholder-opacity: 1;
+  --icon-color: var(--gt-text-secondary);
+  --clear-button-color: var(--gt-text-tertiary);
+  --border-radius: var(--r-lg);
+  --box-shadow: var(--gt-shadow-card), inset 0 0 0 1px var(--gt-glass-border);
+  padding: 2px var(--sp-4) 8px !important;
+  min-height: 0;
+}
+ion-toolbar ion-searchbar {
+  padding-inline: 0 !important;
+}
+ion-searchbar .searchbar-input-container {
+  height: 46px !important;
+}
+ion-searchbar .searchbar-input {
+  font-size: 16px !important;
+  font-weight: 500;
+}
+
+/* ---------- tab bar: floating glass pill ---------- */
+ion-tab-bar {
+  --background: var(--gt-glass-strong);
+  height: var(--gt-tabbar-h);
+  margin: 0 var(--sp-4) calc(var(--sp-2) + var(--ion-safe-area-bottom, 0px));
+  padding: 6px !important;
+  border: 1px solid var(--gt-glass-border) !important;
+  border-radius: 26px;
+  box-shadow: var(--gt-shadow-float);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  contain: none;
+  gap: 2px;
 }
 ion-tab-button {
+  --color: var(--gt-tab-inactive);
+  --color-selected: var(--gt-blue);
+  --ripple-color: transparent;
   min-height: var(--tap-min);
-  font-size: 10px; /* fixed chrome: px, never scales (device-independence §2.4) */
+  border-radius: 20px;
+  font-size: 11px; /* fixed chrome: px, never scales (device-independence §2.4) */
+  font-weight: 600;
+  transition:
+    background-color 0.3s var(--ease-out),
+    transform 0.18s var(--ease-out);
+}
+ion-tab-button.tab-selected {
+  background: var(--gt-blue-tint);
+}
+ion-tab-button:active {
+  transform: scale(0.92);
+}
+ion-tab-button .gt-icon {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 2px;
+  transition: transform 0.3s var(--ease-pop);
+}
+ion-tab-button.tab-selected .gt-icon {
+  transform: translateY(-1px) scale(1.06);
+}
+ion-tab-button ion-label {
+  margin: 0;
+}
+
+/* ---------- lists / rows: rounded cards ---------- */
+ion-list.list-inset,
+ion-list[inset] {
+  margin: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-xl);
+  box-shadow: var(--gt-shadow-card);
+  background: var(--gt-surface);
+  contain: paint;
+}
+ion-list {
+  background: transparent;
 }
 ion-list-header,
 .gt-section-header {
-  font-size: var(--fs-footnote);
+  font-size: var(--fs-caption);
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   color: var(--gt-text-secondary);
 }
 ion-item {
-  --min-height: var(--tap-min);
+  --min-height: 56px;
+  --padding-start: var(--sp-4);
+  --inner-padding-end: var(--sp-4);
+  --border-color: var(--gt-separator);
+  --background-activated: var(--gt-blue);
+  --background-activated-opacity: 0.06;
+  --background-hover: var(--gt-blue);
+  --background-hover-opacity: 0.04;
+  --detail-icon-color: var(--gt-text-tertiary);
+  --detail-icon-opacity: 1;
   font-size: var(--fs-body);
+}
+ion-item h2 {
+  font-size: var(--fs-headline) !important;
+  font-weight: 600 !important;
+  margin-bottom: 2px !important;
+}
+ion-item p {
+  font-size: var(--fs-footnote) !important;
+  font-weight: 500;
+  color: var(--gt-text-secondary) !important;
+}
+ion-item .gt-icon {
+  width: 22px;
+  height: 22px;
+}
+ion-item-option {
+  font-weight: 600;
+}
+ion-reorder {
+  color: var(--gt-text-tertiary);
+}
+
+/* ---------- buttons ---------- */
+ion-button {
+  --border-radius: var(--r-md);
+  --box-shadow: none;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  transition:
+    transform 0.2s var(--ease-out),
+    filter 0.2s;
+}
+ion-button:active {
+  transform: scale(0.97);
+}
+ion-button.button-solid:not(.ion-color) {
+  --background: var(--gt-brand-grad);
+  --background-activated: var(--gt-blue-strong);
+  --box-shadow: var(--gt-shadow-brand);
+}
+ion-button.button-solid.ion-color-danger {
+  --box-shadow: 0 10px 20px rgba(217, 54, 54, 0.28);
+}
+
+/* ---------- FAB ---------- */
+ion-fab-button {
+  --background: var(--gt-brand-grad);
+  --background-activated: var(--gt-blue-strong);
+  --background-hover: var(--gt-blue);
+  --border-radius: 22px;
+  --box-shadow: var(--gt-shadow-brand);
+  --color: #fff;
+  width: 60px;
+  height: 60px;
+  transition: transform 0.25s var(--ease-pop);
+}
+ion-fab-button:active {
+  transform: scale(0.9);
+}
+ion-fab-button .gt-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* ---------- segment / toggle ---------- */
+ion-segment {
+  --background: var(--gt-surface-2);
+  border-radius: var(--r-md);
+  padding: 3px;
+  min-height: 42px;
+}
+ion-segment-button {
+  --indicator-color: var(--gt-surface);
+  --indicator-box-shadow: 0 4px 12px rgba(26, 63, 160, 0.14);
+  --border-radius: 11px;
+  --color: var(--gt-text-secondary);
+  --color-checked: var(--gt-blue);
+  --indicator-transition: transform 0.38s var(--ease-sheet);
+  font-weight: 600;
+  min-height: 36px;
+}
+:root[data-theme='dark'] ion-segment-button {
+  --indicator-color: #2a3760;
+}
+ion-toggle {
+  --track-background-checked: var(--gt-blue);
+  --handle-spacing: 3px;
+}
+
+/* ---------- overlays: alerts, action sheets, sheets, toasts ---------- */
+ion-alert {
+  --background: var(--gt-surface);
+  --backdrop-opacity: 0.45;
+  --max-width: 320px;
+}
+ion-alert .alert-wrapper {
+  border-radius: var(--r-2xl) !important;
+  box-shadow: 0 30px 60px rgba(9, 18, 45, 0.35);
+}
+ion-alert .alert-head {
+  padding: 24px 20px 6px !important;
+}
+ion-alert .alert-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--gt-text) !important;
+}
+ion-alert .alert-message {
+  font-size: 15px !important;
+  color: var(--gt-text-secondary) !important;
+  padding-bottom: 16px !important;
+}
+ion-alert .alert-input-group {
+  padding: 0 20px 4px !important;
+}
+ion-alert .alert-input {
+  height: 48px;
+  margin-top: 6px !important;
+  padding: 0 14px !important;
+  border: 1.5px solid var(--gt-separator) !important;
+  border-radius: var(--r-md) !important;
+  background: var(--gt-surface-2) !important;
+  color: var(--gt-text) !important;
+  font-size: 16px !important;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+ion-alert .alert-input:focus {
+  border-color: var(--gt-blue) !important;
+  box-shadow: 0 0 0 4px rgba(var(--gt-blue-rgb), 0.15);
+}
+ion-alert .alert-button-group {
+  padding: 12px 16px 16px !important;
+  gap: 10px;
+  border: 0 !important;
+  flex-wrap: nowrap !important;
+}
+ion-alert .alert-button-group.alert-button-group-vertical {
+  flex-direction: column;
+  flex-wrap: nowrap !important;
+}
+ion-alert button.alert-button {
+  flex: 1 1 0 !important;
+  min-height: 48px;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: var(--r-md) !important;
+  background: var(--gt-blue) !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  transition: transform 0.2s var(--ease-out);
+}
+ion-alert button.alert-button:active {
+  transform: scale(0.96);
+}
+ion-alert button.alert-button.alert-button-role-cancel {
+  background: var(--gt-surface-2) !important;
+  color: var(--gt-text) !important;
+}
+ion-alert button.alert-button.alert-button-role-destructive {
+  background: var(--gt-danger) !important;
+  color: #fff !important;
+}
+
+ion-action-sheet {
+  --background: var(--gt-surface);
+  --backdrop-opacity: 0.45;
+  --button-color: var(--gt-text);
+  --button-background-activated: var(--gt-blue);
+  --button-background-activated-opacity: 0.06;
+  --color: var(--gt-text-secondary);
+}
+ion-action-sheet .action-sheet-container {
+  padding: 0 10px calc(2px + var(--ion-safe-area-bottom, 0px)) !important;
+}
+ion-action-sheet .action-sheet-group {
+  border-radius: var(--r-2xl) !important;
+  padding: 8px !important;
+  margin-bottom: 8px !important;
+  background: var(--gt-surface) !important;
+  box-shadow: 0 -10px 40px rgba(9, 18, 45, 0.18);
+}
+ion-action-sheet .action-sheet-title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--gt-text-secondary) !important;
+  background: transparent !important;
+  padding: 10px 12px 6px !important;
+  text-align: left !important;
+}
+ion-action-sheet .action-sheet-button {
+  min-height: 52px !important;
+  height: auto !important;
+  border-radius: var(--r-lg) !important;
+  border: 0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--gt-text) !important;
+  background: transparent !important;
+  text-align: left;
+  padding: 0 14px !important;
+}
+ion-action-sheet .action-sheet-button .action-sheet-button-inner {
+  justify-content: flex-start !important;
+}
+ion-action-sheet .action-sheet-destructive {
+  color: var(--gt-danger) !important;
+}
+ion-action-sheet .action-sheet-group-cancel .action-sheet-button {
+  justify-content: center;
+  background: var(--gt-surface-2) !important;
+}
+ion-action-sheet .action-sheet-group-cancel .action-sheet-button-inner {
+  justify-content: center !important;
+}
+
+ion-modal {
+  --border-radius: var(--r-2xl);
+  --backdrop-opacity: 0.45;
+  --background: var(--gt-bg-grouped);
+}
+ion-modal ion-content {
+  --background: var(--gt-bg-grouped);
+}
+ion-modal ion-header,
+ion-modal ion-toolbar {
+  --background: var(--gt-bg-grouped);
+  background: var(--gt-bg-grouped);
+}
+ion-modal ion-toolbar {
+  --padding-top: 6px;
+}
+ion-modal::part(handle) {
+  width: 40px;
+  height: 5px;
+  background: var(--gt-text-tertiary);
+  opacity: 0.45;
+}
+
+ion-toast {
+  --background: var(--gt-navy);
+  --color: #fff;
+  --border-radius: var(--r-lg);
+  --box-shadow: 0 12px 28px rgba(9, 18, 45, 0.3);
+  --button-color: #7cc0ff;
+  font-weight: 500;
+}
+
+ion-spinner {
+  color: var(--gt-blue);
+}
+
+/* Frosted backdrop behind alerts, sheets and modals */
+ion-backdrop {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }

@@ -2,8 +2,8 @@
   font-weight: 600;
 }
 .gt-chevron {
-  transition: transform 150ms ease;
-  color: var(--gt-text-tertiary);
+  transition: transform 0.35s var(--ease-sheet);
+  color: var(--gt-text-secondary);
 }
 .gt-chevron--closed {
   transform: rotate(-90deg);
@@ -14,4 +14,33 @@
   font-size: var(--fs-footnote);
   color: var(--gt-text-secondary);
   text-align: center;
+}
+
+.gt-tile {
+  width: 46px;
+  height: 46px;
+  margin: 10px var(--sp-3) 10px 0;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--gt-tile, var(--gt-blue)) 70%, #fff) 0%,
+    var(--gt-tile, var(--gt-blue)) 100%
+  );
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--gt-tile, var(--gt-blue)) 30%, transparent);
+}
+.gt-tile .gt-icon {
+  width: 22px;
+  height: 22px;
+}
+.gt-group .gt-chevron {
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--gt-surface-2);
+  transition: transform 0.35s var(--ease-sheet);
 }

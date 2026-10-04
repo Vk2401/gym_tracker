@@ -1,7 +1,6 @@
 import {
   IonButton,
   IonContent,
-  IonIcon,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -10,7 +9,8 @@ import {
   IonList,
   IonPage,
 } from '@ionic/react';
-import { add } from 'ionicons/icons';
+import { PlusIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { mutate } from '@/db/mutate';
 import type { Equipment } from '@/db/models';
@@ -55,7 +55,7 @@ export default function EquipmentPage() {
         back={{ href: '/settings', text: 'Settings' }}
         end={
           <IonButton aria-label="Add equipment" onClick={() => void create()}>
-            <IonIcon slot="icon-only" icon={add} />
+            <Icon slot="icon-only" icon={PlusIcon} />
           </IonButton>
         }
       />

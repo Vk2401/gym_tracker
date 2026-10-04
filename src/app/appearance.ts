@@ -14,6 +14,10 @@ function paint(): void {
   const theme = resolve(current);
   document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.classList.toggle('ion-palette-dark', theme === 'dark');
+  // Browser / PWA chrome matches the top of the ground.
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', theme === 'dark' ? '#0d1a3d' : '#dce8ff');
   void applyStatusBar();
 }
 

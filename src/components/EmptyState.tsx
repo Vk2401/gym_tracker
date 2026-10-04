@@ -1,8 +1,10 @@
-import { IonButton, IonIcon } from '@ionic/react';
+import { IonButton } from '@ionic/react';
+import type { LucideIcon } from 'lucide-react';
+import { Icon } from './Icon';
 import './EmptyState.css';
 
 interface Props {
-  icon: string;
+  icon: LucideIcon;
   message: string;
   action?: string;
   onAction?: () => void;
@@ -14,13 +16,11 @@ interface Props {
 export function EmptyState({ icon, message, action, onAction, fill }: Props) {
   return (
     <div className={`gt-empty${fill ? ' gt-empty--fill' : ''}`} role="status">
-      <IonIcon icon={icon} aria-hidden="true" className="gt-empty__icon" />
+      <span className="gt-empty__badge">
+        <Icon icon={icon} className="gt-empty__icon" />
+      </span>
       <p className="gt-empty__message">{message}</p>
-      {action && onAction && (
-        <IonButton shape="round" onClick={onAction}>
-          {action}
-        </IonButton>
-      )}
+      {action && onAction && <IonButton onClick={onAction}>{action}</IonButton>}
     </div>
   );
 }

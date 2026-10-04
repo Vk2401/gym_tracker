@@ -5,9 +5,10 @@ description: Design system and UI rules for the Gym Tracker Capacitor app (Ionic
 
 # Mobile Frontend — Gym Tracker
 
-The app must feel like a native iOS app, be usable with one sweaty hand between sets, and
-match the BRD reference screens (brand-blue header, light grey grouped backgrounds, white
-rows). Read `.claude/skills/device-independence/SKILL.md` alongside this skill.
+The app must feel like a modern native app, be usable with one sweaty hand between sets, and
+follow the "Gym Tracker Modern UI" design (soft brand-blue ground, glass header with pill
+controls and a large title, rounded white cards, floating glass tab bar, gradient primary
+buttons, navy highlight cards). The brand colours come from the app logo. Read `.claude/skills/device-independence/SKILL.md` alongside this skill.
 
 ## 1. Foundations
 
@@ -21,8 +22,10 @@ Never mix `md` mode components. Use Ionic primitives (`IonPage`, `IonHeader`, `I
 `IonContent`, `IonList`, `IonItem`, `IonItemSliding`, `IonReorderGroup`, `IonFab`,
 `IonActionSheet`, `IonModal` sheets, `IonAlert`, `IonDatetime`) before writing custom ones.
 
-**Design tokens** live in `src/theme/tokens.css`. Components use tokens only — no raw hex,
-no raw px font sizes.
+**Design tokens** live in `src/theme/tokens.css` (light + dark values for every token:
+`--gt-ground`, `--gt-surface`, `--gt-glass`, `--gt-navy`, `--gt-brand-grad`, shadows, radii,
+easings). Components use tokens only — no raw hex, no raw px font sizes. The block below
+is the original token list; `tokens.css` is the source of truth.
 
 ```css
 :root {
@@ -67,23 +70,30 @@ by the OS directly — see device-independence §3). Map tokens onto Ionic varia
 (`--ion-color-primary`, `--ion-background-color`, `--ion-item-background` …) in
 `src/theme/ionic.css`.
 
-**Typography:** bundled Inter (variable, woff2, in `src/theme/fonts/`) with
+**Typography:** bundled Poppins 400/500/600/700 (`@fontsource/poppins`, Latin only) with
 `font-variant-numeric: tabular-nums` on every numeric cell so set tables don't jitter.
 
-**Icons:** `ionicons` (bundled, iOS outline variants). Icon-only buttons always get
-`aria-label`.
+**Icons:** Lucide (`lucide-react`, bundled) through `src/components/Icon.tsx`
+(`<Icon icon={PlusIcon} slot="icon-only" />`) — never `ionicons`. Icon-only buttons always
+get `aria-label`.
+
+**Ionic restyling** lives in `src/theme/ionic.css` (toolbar pills, floating tab bar, inset
+lists as cards, alerts / action sheets / modals / toasts). Restyle Ionic there rather than
+replacing its components — E2E specs select Ionic primitives.
 
 ## 2. Screen anatomy (matches BRD §5)
 
-- **Header:** brand-blue `IonToolbar` with white text/icons, collapsible large title
-  (`<IonHeader collapse="condense">`) on root screens. Root controls exactly as BRD:
+- **Header:** `PageHeader` — glass header on the ground, pill buttons (`gt-btn-dark` for
+  Quick Go!, `gt-btn-primary` for a solid accent), then the large `h1.gt-title` on root
+  screens. Root controls exactly as BRD:
   Workouts = Quick Go! (left) + Edit (right) + search; Logs = Today (left) + gear (right).
 - **Detail screens:** back button text = parent name (`defaultHref` + `text="Workouts"`),
   share icon + Edit on the right (WT-1, ED-1, WL-1).
 - **Content:** `IonList inset` groups on `--gt-bg-grouped`, uppercase footnote section
   headers (NOTE, SETTINGS, CATEGORIES, FOCUS).
-- **Tab bar:** 5 tabs (Workouts, Exercises, Logs, Explore, Settings), icon + label, active =
-  `--gt-blue`, inactive = grey, visible on root AND detail screens (NAV-1/2).
+- **Tab bar:** 5 tabs (Workouts, Exercises, Logs, Explore, Settings), icon + label, floating
+  glass pill (`--gt-tabbar-h`), active = `--gt-blue` on a tinted pill, inactive = grey,
+  visible on root AND detail screens (NAV-1/2); hidden while the keyboard is open.
 - **FAB:** `IonFab vertical="bottom" horizontal="end"` + button opens an `IonActionSheet`
   with the BRD menu items (WO-5, WT-4, EX-5, LG-8). Content gets bottom padding so the FAB
   never hides the last row.
@@ -125,8 +135,12 @@ by the OS directly — see device-independence §3). Map tokens onto Ionic varia
 - **Auto-save** everywhere (ED-6, NFR-3) — no Save buttons on data screens; show nothing or
   a subtle "Saved" only if the user would otherwise be unsure.
 - **Validation inline** as the user types; invalid values are never written (BRD §13).
-- **Motion:** keep Ionic's native transitions; custom animations ≤ 250 ms, use
-  `transform`/`opacity` only, disable under `prefers-reduced-motion`.
+- **Motion:** keep Ionic's native page transitions. Custom motion uses `transform`/`opacity`
+  only and the token easings: press 200 ms (scale .96), segment/tab 380 ms
+  (`--ease-sheet`), sheets 450 ms, set-complete pop 250–350 ms (`--ease-pop`), content rise
+  450 ms (`gt-rise`, staggered). All of it is disabled under `prefers-reduced-motion`.
+- **No selection / drag:** nothing outside text fields is selectable, no long-press callout,
+  images and links can't be dragged (`base.css` + `src/app/appFeel.ts`).
 
 ## 5. Visual quality checklist (every screen)
 

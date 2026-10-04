@@ -16,12 +16,17 @@
   min-height: 36px;
   padding: 0 12px;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   background: var(--gt-surface-2);
   color: var(--gt-text);
   font-size: min(var(--fs-subhead), 17px);
+  font-weight: 600;
   cursor: pointer;
+  transition:
+    transform 0.2s var(--ease-out),
+    background-color 0.2s;
 }
 .gt-chip:active {
   background: var(--gt-blue-tint);
+  transform: scale(0.96);
 }

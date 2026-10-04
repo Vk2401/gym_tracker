@@ -1,6 +1,5 @@
 import {
   IonApp,
-  IonIcon,
   IonLabel,
   IonRouterOutlet,
   IonSpinner,
@@ -10,7 +9,14 @@ import {
   useIonAlert,
 } from '@ionic/react';
 import { IonReactHashRouter } from '@ionic/react-router';
-import { barbell, calendar, compass, list, settings } from 'ionicons/icons';
+import {
+  BookOpenIcon,
+  CalendarDaysIcon,
+  ChartLineIcon,
+  DumbbellIcon,
+  SettingsIcon,
+} from 'lucide-react';
+import { Icon } from '@/components/Icon';
 import { lazy, Suspense, useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ExerciseDetailPage from '@/features/exercises/ExerciseDetailPage';
@@ -32,11 +38,11 @@ import './App.css';
 const ExplorePage = lazy(() => import('@/features/explore/ExplorePage'));
 
 const TABS = [
-  { tab: 'workouts', label: 'Workouts', icon: barbell },
-  { tab: 'exercises', label: 'Exercises', icon: list },
-  { tab: 'logs', label: 'Logs', icon: calendar },
-  { tab: 'explore', label: 'Explore', icon: compass },
-  { tab: 'settings', label: 'Settings', icon: settings },
+  { tab: 'workouts', label: 'Workouts', icon: DumbbellIcon },
+  { tab: 'exercises', label: 'Exercises', icon: BookOpenIcon },
+  { tab: 'logs', label: 'Logs', icon: CalendarDaysIcon },
+  { tab: 'explore', label: 'Explore', icon: ChartLineIcon },
+  { tab: 'settings', label: 'Settings', icon: SettingsIcon },
 ] as const;
 
 /** BRD §15: anonymous analytics are opt-in at first launch. */
@@ -119,7 +125,7 @@ export default function App() {
             <IonTabBar slot="bottom">
               {TABS.map((t) => (
                 <IonTabButton key={t.tab} tab={t.tab} href={`/${t.tab}`}>
-                  <IonIcon icon={t.icon} aria-hidden="true" />
+                  <Icon icon={t.icon} aria-hidden="true" />
                   <IonLabel>{t.label}</IonLabel>
                 </IonTabButton>
               ))}

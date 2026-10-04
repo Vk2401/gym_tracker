@@ -11,27 +11,35 @@ body {
   background: var(--gt-bg-grouped);
   color: var(--gt-text);
   font-family:
-    'Inter Variable',
+    'Poppins',
     -apple-system,
     system-ui,
     sans-serif;
-  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-ion-app,
-ion-item,
-ion-button,
-ion-tab-button,
-ion-toolbar,
-.ui {
+/* App feel: nothing is selectable, long-press shows no callout, images can't be dragged.
+   Only real text fields accept selection (and the caret). */
+*,
+*::before,
+*::after {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
 input,
-textarea {
+textarea,
+[contenteditable='true'] {
   -webkit-user-select: text;
   user-select: text;
+  -webkit-touch-callout: default;
   font-size: max(16px, var(--fs-body)); /* ≥16px stops iOS focus-zoom */
+}
+img,
+svg,
+a {
+  -webkit-user-drag: none;
+  user-drag: none;
 }
 .num {
   font-variant-numeric: tabular-nums;
@@ -42,7 +50,9 @@ textarea {
   text-overflow: ellipsis;
   min-width: 0;
 }
-html.keyboard-open .hide-on-keyboard {
+/* Keyboard open: fixed chrome steps aside so the field being edited stays in view (§5). */
+html.keyboard-open .hide-on-keyboard,
+html.keyboard-open ion-tab-bar {
   display: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -50,8 +60,68 @@ html.keyboard-open .hide-on-keyboard {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ---- motion: content rises in as it loads (Components & motion board) ---- */
+@keyframes gt-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes gt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+ion-content ion-list.list-inset,
+ion-content .gt-card,
+ion-content .gt-empty,
+ion-content .gt-cal,
+ion-content .gt-large-title {
+  animation: gt-rise 0.45s var(--ease-out) both;
+}
+ion-content ion-list.list-inset:nth-of-type(2),
+ion-content .gt-card:nth-of-type(2) {
+  animation-delay: 0.04s;
+}
+ion-content ion-list.list-inset:nth-of-type(3),
+ion-content .gt-card:nth-of-type(3) {
+  animation-delay: 0.08s;
+}
+ion-content ion-list.list-inset:nth-of-type(n + 4),
+ion-content .gt-card:nth-of-type(n + 4) {
+  animation-delay: 0.12s;
+}
+
+/* ---- header titles ---- */
+ion-toolbar.gt-header__title {
+  --min-height: 0;
+  --padding-top: 4px;
+  --padding-bottom: 6px;
+}
+.gt-title {
+  margin: 0;
+  font-size: var(--fs-large-title);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--gt-text);
+}
+ion-toolbar.gt-header__extra {
+  --min-height: 0;
+  --padding-top: 2px;
+  --padding-bottom: 4px;
 }
 
 /* ---- shared UI pieces (mobile-frontend §3) ---- */
@@ -64,21 +134,39 @@ ion-footer {
 }
 .gt-fab {
   bottom: calc(var(--gt-bottom-stack, 0px) + 16px);
+  right: var(--sp-4);
+  animation: gt-fab-in 0.4s var(--ease-pop) both;
+}
+@keyframes gt-fab-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .gt-fab-space {
   height: 96px;
 }
 .gt-footer {
   background: var(--gt-bg-grouped);
-  padding: var(--sp-2) var(--sp-4) calc(var(--sp-2) + 0px);
+  padding: var(--sp-2) var(--sp-4) var(--sp-3);
+}
+.gt-footer ion-toolbar {
+  --padding-start: 0;
+  --padding-end: 0;
 }
 .gt-footer ion-button {
-  min-height: 48px;
+  min-height: 54px;
+  font-size: 16px;
   font-weight: 600;
-  --background: var(--gt-blue);
+  --background: var(--gt-brand-grad);
   --background-activated: var(--gt-blue-strong);
   --color: #fff;
-  --border-radius: var(--r-md);
+  --border-radius: var(--r-lg);
+  --box-shadow: var(--gt-shadow-brand);
 }
 .gt-dot {
   display: inline-block;
@@ -86,10 +174,11 @@ ion-footer {
   border-radius: 50%;
 }
 .gt-large-title {
-  margin: var(--sp-4) var(--sp-4) 0;
+  margin: var(--sp-2) var(--sp-5) var(--sp-1);
   font-size: var(--fs-large-title);
   font-weight: 700;
   line-height: 1.15;
+  letter-spacing: -0.02em;
   /* VR-16: long names wrap to two lines, then ellipsis */
   white-space: normal;
   display: -webkit-box;
@@ -173,10 +262,28 @@ ion-footer {
   min-height: calc(100% - 96px);
 }
 .gt-section-title {
-  margin: var(--sp-6) var(--sp-4) var(--sp-2) calc(var(--sp-4) + var(--sp-4));
-  font-size: var(--fs-footnote);
+  margin: var(--sp-6) var(--sp-4) var(--sp-2) calc(var(--sp-4) + var(--sp-1));
+  font-size: var(--fs-caption);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--gt-text-secondary);
+}
+
+/* ---- icons ---- */
+.gt-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  stroke: currentColor;
+}
+.gt-icon--primary {
+  color: var(--gt-blue);
+}
+ion-button .gt-icon[slot='icon-only'] {
+  width: 20px;
+  height: 20px;
+}
+ion-button .gt-icon[slot='start'] {
+  margin-right: 6px;
 }

@@ -7,14 +7,25 @@
   letter-spacing: 0.02em;
 }
 .gt-block--superset {
-  border-left: 4px solid var(--gt-blue);
+  box-shadow:
+    inset 4px 0 0 var(--gt-blue),
+    var(--gt-shadow-card);
 }
 .gt-block__actions {
   display: flex;
   justify-content: space-between;
   padding: 0 var(--sp-2) var(--sp-2);
 }
+.gt-block__actions {
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3) var(--sp-3);
+}
 .gt-block__actions ion-button {
+  flex: 1;
+  --background: var(--gt-blue-tint);
+  --background-activated: var(--gt-blue-tint);
+  --border-radius: var(--r-md);
+  --color: var(--gt-blue);
   min-height: var(--tap-min);
   font-size: min(var(--fs-subhead), 17px);
   white-space: nowrap;
