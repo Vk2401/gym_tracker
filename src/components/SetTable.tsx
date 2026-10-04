@@ -37,8 +37,9 @@ interface Props {
   onDelete: (setId: string) => void;
 }
 
-const unitSuffix = (c: SetColumn, wu: WeightUnit, du: DistanceUnit) =>
-  c === 'weight' ? wu : c === 'distance' ? du : c === 'time' ? 'hh:mm:ss' : '';
+/** Design header: weight and distance columns are labelled by their unit (KG, LB, KM, MI). */
+const columnHead = (c: SetColumn, wu: WeightUnit, du: DistanceUnit) =>
+  c === 'weight' ? wu.toUpperCase() : c === 'distance' ? du.toUpperCase() : COLUMN_LABEL[c];
 
 /** WL-4 / BR-7: columns follow the exercise focus. */
 export function SetTable(props: Props) {
@@ -54,14 +55,9 @@ export function SetTable(props: Props) {
   return (
     <div className="gt-sets" style={{ ['--gt-set-cols' as string]: template }}>
       <div className="gt-sets__head" aria-hidden="true">
-        <span>SET #</span>
+        <span>SET</span>
         {cols.map((c) => (
-          <span key={c}>
-            {COLUMN_LABEL[c]}
-            {unitSuffix(c, weightUnit, distanceUnit) && (
-              <small>{unitSuffix(c, weightUnit, distanceUnit)}</small>
-            )}
-          </span>
+          <span key={c}>{columnHead(c, weightUnit, distanceUnit)}</span>
         ))}
         {mode === 'log' && <span />}
       </div>

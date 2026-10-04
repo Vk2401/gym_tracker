@@ -1,17 +1,16 @@
 import {
   IonButton,
-  IonContent,
   IonItem,
   IonItemOption,
   IonItemOptions,
   IonItemSliding,
   IonLabel,
   IonList,
-  IonListHeader,
   IonNote,
   IonPage,
   useIonRouter,
 } from '@ionic/react';
+import { Content } from '@/components/Content';
 import { BookOpenIcon, PlusIcon, ShareIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { useState } from 'react';
@@ -49,9 +48,9 @@ export default function ExerciseDetailPage() {
     return (
       <IonPage>
         <PageHeader title="" back={{ href: '/exercises', text: 'Exercises' }} />
-        <IonContent>
+        <Content>
           {!loading && <EmptyState icon={BookOpenIcon} fill message={MSG_EXTRA.exerciseDeleted} />}
-        </IonContent>
+        </Content>
       </IonPage>
     );
   }
@@ -100,11 +99,12 @@ export default function ExerciseDetailPage() {
           </IonButton>
         }
       />
-      <IonContent>
+      <Content>
         <h1 className="gt-large-title">{e.name}</h1>
 
+        <h2 className="gt-section-title">Categories</h2>
+
         <IonList inset>
-          <IonListHeader>Categories</IonListHeader>
           {e.categories.map((c) => (
             <IonItemSliding key={c.id}>
               <IonItem>
@@ -135,8 +135,9 @@ export default function ExerciseDetailPage() {
           </IonItem>
         </IonList>
 
+        <h2 className="gt-section-title">Focus</h2>
+
         <IonList inset>
-          <IonListHeader>Focus</IonListHeader>
           <IonItem button detail onClick={() => setSheet('primary')}>
             <IonLabel>Primary Focus</IonLabel>
             <IonNote slot="end">{focusLabel(e.primary)}</IonNote>
@@ -147,8 +148,9 @@ export default function ExerciseDetailPage() {
           </IonItem>
         </IonList>
 
+        <h2 className="gt-section-title">Settings</h2>
+
         <IonList inset>
-          <IonListHeader>Settings</IonListHeader>
           <IonItem button detail onClick={() => void rename()}>
             <IonLabel>Name</IonLabel>
             <IonNote slot="end" className="truncate">
@@ -161,8 +163,9 @@ export default function ExerciseDetailPage() {
           </IonItem>
         </IonList>
 
+        <h2 className="gt-section-title">Note</h2>
+
         <IonList inset>
-          <IonListHeader>Note</IonListHeader>
           <IonItem lines="none">
             <NoteField
               ariaLabel="Exercise instructions"
@@ -178,7 +181,7 @@ export default function ExerciseDetailPage() {
             <IonLabel color="danger">Delete Exercise</IonLabel>
           </IonItem>
         </IonList>
-      </IonContent>
+      </Content>
 
       <OptionSheet
         isOpen={sheet === 'category'}

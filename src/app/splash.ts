@@ -16,8 +16,8 @@ export function playSplash(): void {
 export async function dismissSplash(): Promise<void> {
   const s = el();
   if (!s) return;
-  const instant =
-    import.meta.env.VITE_E2E === 'true' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The intro always plays (even with the OS Reduce Motion setting); only E2E builds skip it.
+  const instant = import.meta.env.VITE_E2E === 'true';
   const elapsed = performance.now() - Number(s.dataset.playedAt ?? 0);
   if (!instant && elapsed < INTRO_MS) {
     await new Promise((r) => setTimeout(r, INTRO_MS - elapsed));

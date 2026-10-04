@@ -1,0 +1,179 @@
+/* SS-4 finish summary: navy celebration top + white panel (design "Finish summary"). */
+ion-modal.gt-summary-modal {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
+}
+ion-content.gt-summary {
+  --background: linear-gradient(170deg, #1a3a86 0%, #0f1b3f 55%, #0a1430 100%);
+}
+.gt-summary__top {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--ion-safe-area-top, 0px) + 56px) var(--sp-6) 36px;
+  text-align: center;
+  color: #fff;
+}
+.gt-summary__top .gt-glow {
+  width: 420px;
+  height: 420px;
+  left: 50%;
+  right: auto;
+  top: -60px;
+  margin-left: -210px;
+  background: radial-gradient(closest-side, rgba(74, 156, 246, 0.45), rgba(74, 156, 246, 0));
+}
+.gt-summary__check {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border-radius: 34px;
+  background: linear-gradient(135deg, #4a9cf6, #1a5fe0);
+  box-shadow: 0 18px 40px rgba(26, 95, 224, 0.55);
+  animation: gt-pop-in 0.6s var(--ease-out) both;
+}
+.gt-summary__check svg {
+  width: 46px;
+  height: 46px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gt-summary__check path {
+  stroke-dasharray: 30;
+  animation: gt-draw 0.45s ease 0.35s both;
+}
+.gt-summary__kicker {
+  position: relative;
+  margin: 22px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a9c4f5;
+  animation: gt-rise 0.5s ease 0.25s both;
+}
+.gt-summary__name {
+  position: relative;
+  margin: 22px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+  animation: gt-rise 0.5s ease 0.3s both;
+}
+.gt-summary__when {
+  position: relative;
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #a9c4f5;
+  animation: gt-rise 0.5s ease 0.38s both;
+}
+.gt-summary__wrap {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.gt-summary__panel {
+  flex: 1;
+  padding: 22px var(--sp-5) calc(var(--ion-safe-area-bottom, 0px) + 28px);
+  border-radius: 36px 36px 0 0;
+  background: var(--gt-surface);
+  color: var(--gt-text);
+  animation: gt-sheet-up 0.55s var(--ease-sheet) 0.1s both;
+}
+.gt-summary__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.gt-summary__stats > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px 12px;
+  border-radius: 20px;
+  background: var(--gt-blue-tint);
+}
+.gt-summary__stats span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gt-text-secondary);
+}
+.gt-summary__stats strong {
+  font-size: 17px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.gt-summary__title {
+  margin: 20px 4px 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.gt-summary__records {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 !important;
+  background: transparent !important;
+}
+.gt-summary__records ion-item {
+  --background: #fff8ea;
+  --border-radius: 20px;
+  --min-height: 64px;
+  border-radius: 20px;
+}
+:root[data-theme='dark'] .gt-summary__records ion-item {
+  --background: rgba(255, 180, 94, 0.1);
+}
+.gt-summary__records ion-note {
+  color: #b06f00 !important;
+}
+:root[data-theme='dark'] .gt-summary__records ion-note {
+  color: #ffb45e !important;
+}
+ion-button.gt-summary__update {
+  margin-top: 18px;
+  height: 50px;
+  --border-radius: 18px;
+}
+ion-button.gt-summary__done {
+  margin-top: 12px;
+  height: 56px;
+  --border-radius: 20px;
+  font-size: 16px;
+}
+@keyframes gt-pop-in {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes gt-draw {
+  from {
+    stroke-dashoffset: 30;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes gt-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}

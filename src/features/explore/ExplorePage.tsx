@@ -1,19 +1,20 @@
 import {
-  IonContent,
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonNote,
   IonPage,
   IonSegment,
   IonSegmentButton,
   useIonRouter,
 } from '@ionic/react';
-import { ChartLineIcon } from 'lucide-react';
+import { Content } from '@/components/Content';
+import { ChartLineIcon, FlameIcon } from 'lucide-react';
+import { Icon } from '@/components/Icon';
+import { ScreenTitle } from '@/components/ScreenTitle';
+import { Sparkline } from '@/components/Sparkline';
 import { useEffect, useMemo, useState } from 'react';
 import { track } from '@/app/analytics';
-import { CategoryDot } from '@/components/CategoryDot';
 import { EmptyState } from '@/components/EmptyState';
 import { OptionSheet } from '@/components/OptionSheet';
 import { PageHeader } from '@/components/PageHeader';
@@ -23,7 +24,7 @@ import { listExercises } from '@/db/repos/library';
 import * as st from '@/db/repos/stats';
 import { formatDistance, formatTime, formatWeight } from '@/domain/format';
 import { MEASUREMENT_TYPES } from '@/domain/measurements';
-import { EMPTY } from '@/domain/messages';
+import { EMPTY, MSG_EXTRA } from '@/domain/messages';
 import { computeRecords } from '@/domain/records';
 import {
   RANGES_LIST,
@@ -35,7 +36,7 @@ import {
   workoutsPerWeek,
   type RangeKey,
 } from '@/domain/stats';
-import { formatDateKeyLong, MONTHS_SHORT, todayKey } from '@/domain/time';
+import { formatDateKeyLong, formatDateShortKey, MONTHS_SHORT, todayKey } from '@/domain/time';
 import { kgToLb, kmToMi } from '@/domain/units';
 import { useLive } from '@/hooks/useLive';
 import { usePrefs } from '@/hooks/usePrefs';
@@ -121,7 +122,7 @@ export default function ExplorePage() {
     return (
       <IonPage>
         <PageHeader title="Explore" />
-        <IonContent />
+        <Content />
       </IonPage>
     );
 
@@ -129,7 +130,7 @@ export default function ExplorePage() {
     return (
       <IonPage>
         <PageHeader title="Explore" />
-        <IonContent>
+        <Content>
           <EmptyState
             fill
             icon={ChartLineIcon}
@@ -137,7 +138,7 @@ export default function ExplorePage() {
             action={EMPTY.explore.action}
             onAction={() => router.push('/workouts', 'root')}
           />
-        </IonContent>
+        </Content>
       </IonPage>
     );
   }
@@ -205,6 +206,13 @@ export default function ExplorePage() {
     bodyMetric === 'weight' ? conv(b.bodyWeightKg) : b.measurements[bodyMetric]!,
   );
 
+  const latestVolume = volSeries[0]!.values.at(-1) ?? null;
+  const weightVals = data.body
+    .filter((b) => b.bodyWeightKg !== null)
+    .map((b) => conv(b.bodyWeightKg));
+  const latestWeight =
+    data.body.filter((b) => b.bodyWeightKg !== null).at(-1)?.bodyWeightKg ?? null;
+
   const recordsByExercise = new Map<string, typeof view.records>();
   for (const r of view.records)
     recordsByExercise.set(r.exerciseId, [...(recordsByExercise.get(r.exerciseId) ?? []), r]);
@@ -214,33 +222,38 @@ export default function ExplorePage() {
 
   return (
     <IonPage>
-      <PageHeader title="Explore">
-        {/* XP-1 */}
-        <IonSegment
-          value={range}
-          onIonChange={(e) => setRange(e.detail.value as RangeKey)}
-          className="gt-range"
-          aria-label="Time range"
-        >
-          {RANGES_LIST.map((r) => (
-            <IonSegmentButton key={r.key} value={r.key} aria-label={r.label}>
-              <IonLabel>{r.short}</IonLabel>
-            </IonSegmentButton>
-          ))}
-        </IonSegment>
-      </PageHeader>
-      <IonContent>
+      <PageHeader title="Explore" />
+      <Content>
+        <ScreenTitle title="Explore">
+          {/* XP-1 */}
+          <IonSegment
+            value={range}
+            onIonChange={(e) => setRange(e.detail.value as RangeKey)}
+            className="gt-range"
+            aria-label="Time range"
+          >
+            {RANGES_LIST.map((r) => (
+              <IonSegmentButton key={r.key} value={r.key} aria-label={r.label}>
+                <IonLabel>{r.short}</IonLabel>
+              </IonSegmentButton>
+            ))}
+          </IonSegment>
+        </ScreenTitle>
         {/* XP-2 */}
-        <section className="gt-card">
-          <header className="gt-card__head">
-            <h2>Consistency</h2>
-            <p>Workouts per week</p>
+        <section className="gt-card gt-card--navy">
+          <div className="gt-glow" aria-hidden="true" />
+          <header className="gt-navyhead">
+            <div>
+              <h2>Consistency</h2>
+              <p className="gt-navyhead__value num">{MSG_EXTRA.weekStreak(view.streak)}</p>
+              <p>current streak</p>
+            </div>
+            <span className="gt-flame" aria-hidden="true">
+              <Icon icon={FlameIcon} />
+            </span>
           </header>
-          <div className="gt-stat">
-            <span className="gt-stat__value num">{view.streak}</span>
-            <span className="gt-stat__label">week streak</span>
-          </div>
           <ColumnChart
+            tone="navy"
             ariaLabel="Workouts per week"
             integer
             labels={weekLabels}
@@ -256,31 +269,36 @@ export default function ExplorePage() {
           />
         </section>
 
-        {/* XP-3 */}
-        <section className="gt-card">
-          <header className="gt-card__head">
-            <h2>Volume</h2>
-            <p>Weekly reps × weight, completed working sets ({wu})</p>
-          </header>
-          <LineChart
-            ariaLabel="Weekly volume"
-            labels={weekLabels}
-            series={volSeries}
-            format={(v) => Math.round(v).toLocaleString('en-US')}
-            onPick={(i) => open(view.lastLogOfWeek(view.volume[i]!.week))}
-          />
-          <ChartTable
-            caption="Weekly volume"
-            labels={weekLabels}
-            series={volSeries}
-            format={(v) => Math.round(v).toLocaleString('en-US')}
-          />
-        </section>
+        {/* XP-3 / XP-7 at a glance */}
+        <div className="gt-mini2">
+          <section className="gt-card gt-mini">
+            <h2>Weekly volume</h2>
+            <p className="gt-mini__value num">
+              {latestVolume === null
+                ? '—'
+                : `${Math.round(latestVolume).toLocaleString('en-US')} ${wu}`}
+            </p>
+            <Sparkline values={volSeries[0]!.values} color="var(--gt-blue)" />
+            <ChartTable
+              caption="Weekly volume"
+              labels={weekLabels}
+              series={volSeries}
+              format={(v) => Math.round(v).toLocaleString('en-US')}
+            />
+          </section>
+          <section className="gt-card gt-mini">
+            <h2>Body weight</h2>
+            <p className="gt-mini__value num">
+              {latestWeight === null ? '—' : `${formatWeight(latestWeight, wu)} ${wu}`}
+            </p>
+            <Sparkline values={weightVals} color="#16b39d" />
+          </section>
+        </div>
 
         {/* XP-4 */}
         <section className="gt-card">
           <header className="gt-card__head">
-            <h2>Muscle Balance</h2>
+            <h2>Muscle balance</h2>
             <p>Completed working sets per category</p>
           </header>
           {data.cats.length === 0 && (
@@ -289,10 +307,7 @@ export default function ExplorePage() {
           <ul className="gt-hbars">
             {data.cats.map((c) => (
               <li key={c.id}>
-                <span className="gt-hbars__name truncate">
-                  <CategoryDot color={c.color} />
-                  {c.name}
-                </span>
+                <span className="gt-hbars__name">{c.name}</span>
                 <span className="gt-hbars__track">
                   <span
                     className="gt-hbars__bar"
@@ -305,10 +320,39 @@ export default function ExplorePage() {
           </ul>
         </section>
 
+        {/* XP-6 */}
+        <section className="gt-card">
+          <header className="gt-card__head">
+            <h2>Personal records</h2>
+          </header>
+          <IonList lines="none" className="gt-card__list gt-records">
+            {recordGroups.length === 0 && (
+              <IonItem lines="none">
+                <IonLabel color="medium">{EMPTY.personalRecords.message}</IonLabel>
+              </IonItem>
+            )}
+            {recordGroups.flatMap((g) =>
+              g.rs.map((r) => (
+                <RecordRow
+                  key={`${g.id}-${r.recordType}`}
+                  r={r}
+                  name={g.name}
+                  date={formatDateShortKey(
+                    view.dateOfLog.get(r.logId) ?? r.achievedUtc.slice(0, 10),
+                  )}
+                  wu={wu}
+                  du={du}
+                  href={`/logs/${r.logId}`}
+                />
+              )),
+            )}
+          </IonList>
+        </section>
+
         {/* XP-5 */}
         <section className="gt-card">
           <header className="gt-card__head">
-            <h2>Exercise Progress</h2>
+            <h2>Exercise progress</h2>
           </header>
           <IonList lines="none" className="gt-card__list">
             <IonItem
@@ -360,29 +404,6 @@ export default function ExplorePage() {
           )}
         </section>
 
-        {/* XP-6 */}
-        <IonList inset>
-          <IonListHeader>Personal Records</IonListHeader>
-          {recordGroups.length === 0 && (
-            <IonItem lines="none">
-              <IonLabel color="medium">{EMPTY.personalRecords.message}</IonLabel>
-            </IonItem>
-          )}
-          {recordGroups.flatMap((g) =>
-            g.rs.map((r) => (
-              <RecordRow
-                key={`${g.id}-${r.recordType}`}
-                r={r}
-                name={g.name}
-                date={formatDateKeyLong(view.dateOfLog.get(r.logId) ?? r.achievedUtc.slice(0, 10))}
-                wu={wu}
-                du={du}
-                href={`/logs/${r.logId}`}
-              />
-            )),
-          )}
-        </IonList>
-
         {/* XP-7 */}
         <section className="gt-card">
           <header className="gt-card__head">
@@ -429,7 +450,7 @@ export default function ExplorePage() {
           )}
         </section>
         <div className="gt-fab-space" />
-      </IonContent>
+      </Content>
       <OptionSheet
         isOpen={exSheet}
         title="Exercise"

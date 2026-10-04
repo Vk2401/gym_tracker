@@ -1,6 +1,5 @@
 import {
   IonButton,
-  IonContent,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -9,6 +8,7 @@ import {
   IonList,
   IonPage,
 } from '@ionic/react';
+import { Content } from '@/components/Content';
 import { PlusIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
@@ -59,7 +59,7 @@ export default function EquipmentPage() {
           </IonButton>
         }
       />
-      <IonContent>
+      <Content>
         <IonList inset>
           {list.map((e) => (
             <IonItemSliding key={e.id} disabled={e.id === 'eq-none'}>
@@ -74,7 +74,7 @@ export default function EquipmentPage() {
             </IonItemSliding>
           ))}
         </IonList>
-      </IonContent>
+      </Content>
     </IonPage>
   );
 }

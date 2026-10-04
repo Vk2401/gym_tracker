@@ -48,3 +48,9 @@ export function startsRest(loggedExerciseId: string, group: readonly string[]): 
   if (group.length < 2) return true;
   return group[group.length - 1] === loggedExerciseId;
 }
+
+/** SS-1 rest ring: share of the rest period still to run, 0–1. */
+export function restProgress(remainingS: number, totalS: number): number {
+  if (totalS <= 0) return 0;
+  return Math.min(1, Math.max(0, remainingS / totalS));
+}

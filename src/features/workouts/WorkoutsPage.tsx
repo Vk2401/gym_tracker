@@ -1,6 +1,5 @@
 import {
   IonButton,
-  IonContent,
   IonFab,
   IonFabButton,
   IonItem,
@@ -15,7 +14,10 @@ import {
   IonSearchbar,
   useIonRouter,
 } from '@ionic/react';
-import { ChevronDownIcon, DumbbellIcon, PlusIcon } from 'lucide-react';
+import { Content } from '@/components/Content';
+import { ChevronDownIcon, ChevronRightIcon, DumbbellIcon, PlusIcon, ZapIcon } from 'lucide-react';
+import { ScreenTitle } from '@/components/ScreenTitle';
+import { ResumeCard } from '@/app/BottomBars';
 import { Icon } from '@/components/Icon';
 import { useMemo, useState } from 'react';
 import { CategoryDot } from '@/components/CategoryDot';
@@ -28,7 +30,8 @@ import type { TemplateSummary, WorkoutGroup } from '@/db/models';
 import * as wo from '@/db/repos/workouts';
 import { formatDateShort } from '@/domain/format';
 import { EMPTY, MSG_EXTRA } from '@/domain/messages';
-import { formatTotals } from '@/domain/totals';
+import { formatTotals, totalsParts } from '@/domain/totals';
+import { formatDayHeading, todayKey } from '@/domain/time';
 import { useDialogs } from '@/hooks/useDialogs';
 import { useLive } from '@/hooks/useLive';
 import { useStartWorkout } from '@/app/useStartWorkout';
@@ -79,9 +82,9 @@ export default function WorkoutsPage() {
   };
   // WO-5 / NAV-4
   const onFab = async () => {
-    const c = await actions(undefined, [
-      { text: 'Add Workout Group', value: 'group' },
-      { text: 'Add Workout Template', value: 'template' },
+    const c = await actions('Create', [
+      { text: 'Add Workout Group', value: 'group', icon: 'folderPlus' },
+      { text: 'Add Workout Template', value: 'template', icon: 'filePlus' },
     ]);
     if (c === 'group') await addGroup();
     if (c === 'template') await addTemplate();
@@ -114,11 +117,18 @@ export default function WorkoutsPage() {
   // PD-5 edit actions. VR-11: Default can be renamed and recoloured but never deleted.
   const groupMenu = async (g: WorkoutGroup) => {
     const c = await actions(g.name, [
-      { text: 'Rename', value: 'rename' as const },
-      { text: 'Change Colour', value: 'color' as const },
+      { text: 'Rename', value: 'rename' as const, icon: 'pencil' as const },
+      { text: 'Change Colour', value: 'color' as const, icon: 'palette' as const },
       ...(g.isDefault
         ? []
-        : [{ text: 'Delete', value: 'delete' as const, role: 'destructive' as const }]),
+        : [
+            {
+              text: 'Delete',
+              value: 'delete' as const,
+              role: 'destructive' as const,
+              icon: 'trash' as const,
+            },
+          ]),
     ]);
     if (c === 'rename') await renameGroup(g);
     if (c === 'color') setRecolor(g);
@@ -126,9 +136,14 @@ export default function WorkoutsPage() {
   };
   const templateMenu = async (t: TemplateSummary) => {
     const c = await actions(t.name, [
-      { text: 'Rename', value: 'rename' as const },
-      { text: 'Open', value: 'open' as const },
-      { text: 'Delete', value: 'delete' as const, role: 'destructive' as const },
+      { text: 'Rename', value: 'rename' as const, icon: 'pencil' as const },
+      { text: 'Open', value: 'open' as const, icon: 'open' as const },
+      {
+        text: 'Delete',
+        value: 'delete' as const,
+        role: 'destructive' as const,
+        icon: 'trash' as const,
+      },
     ]);
     if (c === 'rename') await renameTemplate(t);
     if (c === 'open') {
@@ -154,22 +169,25 @@ export default function WorkoutsPage() {
             onClick={() => void start({ kind: 'quick' }, undefined, 'quick_go')}
             disabled={editing}
           >
+            <Icon slot="start" icon={ZapIcon} className="gt-zap" />
             Quick Go!
           </IonButton>
         }
         end={
           <IonButton onClick={() => setEditing(!editing)}>{editing ? 'Done' : 'Edit'}</IonButton>
         }
-      >
-        <IonSearchbar
-          className="gt-search"
-          placeholder="Search Workouts"
-          value={query}
-          debounce={100}
-          onIonInput={(e) => setQuery(e.detail.value ?? '')}
-        />
-      </PageHeader>
-      <IonContent>
+      />
+      <Content>
+        <ScreenTitle title="Workouts" eyebrow={formatDayHeading(todayKey())}>
+          <IonSearchbar
+            className="gt-search"
+            placeholder="Search Workouts"
+            value={query}
+            debounce={100}
+            onIonInput={(e) => setQuery(e.detail.value ?? '')}
+          />
+          {!editing && <ResumeCard />}
+        </ScreenTitle>
         {empty && (
           <EmptyState
             fill
@@ -213,7 +231,7 @@ export default function WorkoutsPage() {
                 ))}
               </IonReorderGroup>
               <IonItem button detail={false} lines="none" onClick={() => void addGroup()}>
-                <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
+                <Icon slot="start" icon={PlusIcon} color="primary" />
                 <IonLabel color="primary">Add Workout Group</IonLabel>
               </IonItem>
             </IonList>
@@ -251,7 +269,7 @@ export default function WorkoutsPage() {
                     lines="none"
                     onClick={() => void addTemplate(g.id)}
                   >
-                    <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
+                    <Icon slot="start" icon={PlusIcon} color="primary" />
                     <IonLabel color="primary">Add Workout Template</IonLabel>
                   </IonItem>
                 </IonList>
@@ -265,63 +283,80 @@ export default function WorkoutsPage() {
             if (q && list.length === 0) return null;
             const open = q ? true : g.expanded;
             return (
-              <IonList inset key={g.id} className="gt-group">
+              <section key={g.id} className="gt-wgroup">
                 {/* WO-2: collapsible group header */}
-                <IonItem
-                  button
-                  detail={false}
-                  lines={open && list.length ? 'full' : 'none'}
+                <button
+                  type="button"
+                  className="gt-wgroup__head"
                   aria-expanded={open}
                   onClick={() =>
                     !q && void mutate((db) => wo.updateGroup(db, g.id, { expanded: !g.expanded }))
                   }
                 >
-                  <span slot="start">
-                    <CategoryDot color={g.color} size={12} />
+                  <CategoryDot color={g.color} size={10} halo />
+                  <span className="gt-wgroup__name">{g.name}</span>
+                  <span className="gt-wgroup__count">{MSG_EXTRA.templateCount(list.length)}</span>
+                  <span className={`gt-wgroup__chev ${open ? '' : 'is-closed'}`}>
+                    <Icon icon={ChevronDownIcon} />
                   </span>
-                  <IonLabel className="gt-group__name truncate">{g.name}</IonLabel>
-                  <Icon
-                    slot="end"
-                    icon={ChevronDownIcon}
-                    className={`gt-chevron ${open ? '' : 'gt-chevron--closed'}`}
-                    aria-hidden="true"
-                  />
-                </IonItem>
-                {open &&
-                  list.map((t) => (
-                    <IonItem key={t.id} button routerLink={`/workouts/${t.id}`} detail>
-                      <span
-                        slot="start"
-                        className="gt-tile"
-                        style={{ '--gt-tile': g.color } as React.CSSProperties}
-                      >
-                        <Icon icon={DumbbellIcon} />
-                      </span>
-                      <IonLabel>
-                        <h2 className="truncate">{t.name}</h2>
-                        {/* WO-3 / BR-10 */}
-                        <p className="truncate">
-                          Last Completed:{' '}
-                          {t.lastCompletedUtc
-                            ? formatDateShort(t.lastCompletedUtc, t.lastCompletedOffsetMin ?? 0)
-                            : 'Never'}
-                        </p>
-                        <p className="truncate">Next Workout: {formatTotals(t)}</p>
-                      </IonLabel>
-                    </IonItem>
-                  ))}
-                {open && list.length === 0 && (
-                  <IonItem
-                    button
-                    detail={false}
-                    lines="none"
-                    onClick={() => void addTemplate(g.id)}
-                  >
-                    <Icon slot="start" icon={PlusIcon} color="primary" aria-hidden="true" />
-                    <IonLabel color="primary">Add Workout Template</IonLabel>
-                  </IonItem>
-                )}
-              </IonList>
+                </button>
+                <div className={`gt-collapse ${open ? 'is-open' : ''}`} inert={!open}>
+                  <div className="gt-collapse__inner">
+                    <IonList lines="none" className="gt-cards">
+                      {list.map((t) => (
+                        <IonItem
+                          key={t.id}
+                          button
+                          detail={false}
+                          routerLink={`/workouts/${t.id}`}
+                          className="gt-card-item"
+                        >
+                          <span
+                            slot="start"
+                            className="gt-tile"
+                            style={{ '--gt-tile': g.color } as React.CSSProperties}
+                          >
+                            <Icon icon={DumbbellIcon} />
+                          </span>
+                          <IonLabel>
+                            <h2>{t.name}</h2>
+                            {/* WO-3 / BR-10 */}
+                            <p>
+                              Last completed{' '}
+                              {t.lastCompletedUtc
+                                ? formatDateShort(t.lastCompletedUtc, t.lastCompletedOffsetMin ?? 0)
+                                : 'never'}
+                            </p>
+                            <div
+                              className="gt-chips"
+                              role="group"
+                              aria-label={`Next Workout: ${formatTotals(t)}`}
+                            >
+                              {totalsParts(t).map((part) => (
+                                <span key={part} className="gt-chip-sm">
+                                  {part}
+                                </span>
+                              ))}
+                            </div>
+                          </IonLabel>
+                          <Icon slot="end" icon={ChevronRightIcon} className="gt-row-chev" />
+                        </IonItem>
+                      ))}
+                      {list.length === 0 && (
+                        <IonItem
+                          button
+                          detail={false}
+                          className="gt-card-item gt-card-item--add"
+                          onClick={() => void addTemplate(g.id)}
+                        >
+                          <Icon slot="start" icon={PlusIcon} color="primary" />
+                          <IonLabel color="primary">Add Workout Template</IonLabel>
+                        </IonItem>
+                      )}
+                    </IonList>
+                  </div>
+                </div>
+              </section>
             );
           })
         )}
@@ -335,7 +370,7 @@ export default function WorkoutsPage() {
             <Icon icon={PlusIcon} />
           </IonFabButton>
         </IonFab>
-      </IonContent>
+      </Content>
       <OptionSheet
         isOpen={recolor !== null}
         title={recolor ? `Colour for ${recolor.name}` : 'Colour'}

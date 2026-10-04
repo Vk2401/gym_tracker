@@ -1,4 +1,6 @@
 import { IonItem, IonLabel, IonNote } from '@ionic/react';
+import { TrophyIcon } from 'lucide-react';
+import { Icon } from './Icon';
 import type { PersonalRecord } from '@/domain/records';
 import { RECORD_LABEL } from '@/domain/records';
 import { recordValue } from './recordText';
@@ -21,14 +23,20 @@ export function RecordRow({
   href?: string;
 }) {
   return (
-    <IonItem routerLink={href} detail={!!href}>
+    <IonItem routerLink={href} detail={false} className="gt-record">
+      <span slot="start" className="gt-trophy" aria-hidden="true">
+        <Icon icon={TrophyIcon} />
+      </span>
       <IonLabel>
-        <h3 className="truncate">{name}</h3>
-        <p>{RECORD_LABEL[r.recordType]}</p>
+        <h3>{name}</h3>
+        <p>
+          {date
+            ? `${date} · ${RECORD_LABEL[r.recordType].toLowerCase()}`
+            : RECORD_LABEL[r.recordType]}
+        </p>
       </IonLabel>
-      <IonNote slot="end" className="num gt-note-right">
+      <IonNote slot="end" className="num">
         {recordValue(r, wu, du)}
-        {date && <small>{date}</small>}
       </IonNote>
     </IonItem>
   );

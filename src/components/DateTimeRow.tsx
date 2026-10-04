@@ -1,14 +1,13 @@
-import { IonItem, IonLabel } from '@ionic/react';
 import { useState } from 'react';
-import { clockAt, dateKeyAt, formatDateKeyLong } from '@/domain/time';
+import { clockAt } from '@/domain/time';
 import { DateTimeSheet } from './DateTimeSheet';
 import './DateTimeRow.css';
 
 /**
- * WL-2: date + time chips; tapping either opens the wheel picker. Shown and edited in the
- * session's own local time (VR-15), always 24-hour (BR-10).
+ * WL-2 as a stat tile (workout log header grid): label and time; tapping the time opens the
+ * wheel picker, which edits the date too. Session local time (VR-15), 24-hour (BR-10).
  */
-export function DateTimeRow({
+export function DateTimeTile({
   label,
   utc,
   offsetMin,
@@ -23,45 +22,33 @@ export function DateTimeRow({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <IonItem className="gt-dt">
-      <IonLabel className="gt-dt__label">{label}</IonLabel>
+    <div className="gt-stat3">
+      <span className="gt-stat3__label">{label}</span>
       {utc ? (
-        <div slot="end" className="gt-dt__chips">
+        <>
           <button
             type="button"
-            className="gt-chip num"
-            aria-label={`${label} date`}
-            onClick={() => setOpen(true)}
-          >
-            {formatDateKeyLong(dateKeyAt(utc, offsetMin))}
-          </button>
-          <button
-            type="button"
-            className="gt-chip num"
+            className="gt-stat3__value num"
             aria-label={`${label} time`}
             onClick={() => setOpen(true)}
           >
             {clockAt(utc, offsetMin)}
           </button>
-        </div>
+          <DateTimeSheet
+            isOpen={open}
+            title={label}
+            utc={utc}
+            offsetMin={offsetMin}
+            onDismiss={() => setOpen(false)}
+            onDone={(next) => {
+              setOpen(false);
+              if (next !== utc) onChange(next);
+            }}
+          />
+        </>
       ) : (
-        <IonLabel slot="end" color="medium">
-          {placeholder}
-        </IonLabel>
+        <span className="gt-stat3__value gt-stat3__value--empty">{placeholder}</span>
       )}
-      {utc && (
-        <DateTimeSheet
-          isOpen={open}
-          title={label}
-          utc={utc}
-          offsetMin={offsetMin}
-          onDismiss={() => setOpen(false)}
-          onDone={(next) => {
-            setOpen(false);
-            if (next !== utc) onChange(next);
-          }}
-        />
-      )}
-    </IonItem>
+    </div>
   );
 }

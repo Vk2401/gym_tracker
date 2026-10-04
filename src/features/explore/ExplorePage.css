@@ -61,9 +61,12 @@
   display: grid;
   gap: var(--sp-2);
 }
+.gt-hbars {
+  gap: 12px;
+}
 .gt-hbars li {
   display: grid;
-  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr) 2.5rem;
+  grid-template-columns: minmax(0, 5.5rem) minmax(0, 1fr) 2rem;
   align-items: center;
   gap: var(--sp-2);
   font-size: var(--fs-footnote);

@@ -32,6 +32,7 @@ import WorkoutsPage from '@/features/workouts/WorkoutsPage';
 import { setPref } from '@/hooks/usePrefs';
 import { useAppStore } from '@/store/appStore';
 import { BottomBars } from './BottomBars';
+import { ActionMenuHost } from '@/components/ActionMenu';
 import './App.css';
 
 // Charts load lazily, on the Explore tab only (mobile-frontend §6).
@@ -133,6 +134,7 @@ export default function App() {
           </IonTabs>
           <BottomBars />
           <AnalyticsPrompt />
+          <ActionMenuHost />
         </IonReactHashRouter>
       )}
     </IonApp>

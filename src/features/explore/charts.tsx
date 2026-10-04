@@ -72,6 +72,8 @@ interface ChartProps {
   ariaLabel: string;
   /** Whole-number axis (counts). */
   integer?: boolean;
+  /** Drawn on the navy highlight card: light bars, latest one bright, no grid. */
+  tone?: 'navy';
 }
 
 function baseOptions(
@@ -81,7 +83,7 @@ function baseOptions(
   return {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: { duration: 650, easing: 'easeOutQuart' },
     interaction: { mode: 'index', intersect: false },
     onClick: (_e, els) => {
       const i = els[0]?.index;
@@ -109,9 +111,9 @@ function baseOptions(
     scales: {
       x: {
         grid: { display: false },
-        border: { color: t.grid },
+        border: { color: p.tone === 'navy' ? 'transparent' : t.grid },
         ticks: {
-          color: t.text,
+          color: p.tone === 'navy' ? '#a9c4f5' : t.text,
           maxRotation: 0,
           autoSkip: true,
           maxTicksLimit: 6,
@@ -120,6 +122,7 @@ function baseOptions(
       },
       y: {
         beginAtZero: true,
+        display: p.tone !== 'navy',
         grid: { color: t.grid, lineWidth: 1 },
         border: { display: false },
         ticks: {
@@ -146,10 +149,17 @@ export function ColumnChart(p: ChartProps) {
           datasets: p.series.map((s, i) => ({
             label: s.label,
             data: s.values,
-            backgroundColor: i === 0 ? t.s1 : t.s2,
+            backgroundColor:
+              p.tone === 'navy'
+                ? s.values.map((_, j) =>
+                    j === s.values.length - 1 ? '#5ab0ff' : 'rgba(124, 192, 255, 0.35)',
+                  )
+                : i === 0
+                  ? t.s1
+                  : t.s2,
             maxBarThickness: 24,
-            borderRadius: { topLeft: 4, topRight: 4 },
-            borderSkipped: 'start' as const,
+            borderRadius: p.tone === 'navy' ? 8 : { topLeft: 6, topRight: 6 },
+            borderSkipped: p.tone === 'navy' ? false : ('start' as const),
           })),
         }}
         options={baseOptions(t, p) as ChartOptions<'bar'>}

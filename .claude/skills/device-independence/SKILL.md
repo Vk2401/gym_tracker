@@ -131,8 +131,9 @@ Rule: **neutralise the automatic scaling, then apply our own clamped scale.**
   animation frame / 250 ms — Low Power Mode or throttled JS never makes it drift.
 - Background alerts rely on scheduled local notifications, not JS timers (SS-2).
 - Keep-awake (ST-3) only while a session is active; release on finish/background.
-- Respect _Reduce Motion_ via `prefers-reduced-motion`; respect our own haptics/sound
-  toggles (ST-3), not just the system silent switch.
+- Animations run regardless of the OS _Reduce Motion_ setting (product decision): keep them
+  transform/opacity-only so they stay smooth. Respect our own haptics/sound toggles (ST-3),
+  not just the system silent switch.
 
 ## 9. Storage and OS cleanup
 

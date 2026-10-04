@@ -121,3 +121,26 @@ export function formatPartsLong(p: LocalParts): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${wd}, ${pad(day)} ${MONTHS_SHORT[p.month - 1]} ${p.year} · ${pad(p.hour)}:${pad(p.minute)}`;
 }
+
+const WEEKDAYS_LONG = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
+
+/** Screen eyebrow for a YYYY-MM-DD key: "Sunday, 4 Oct" (fixed English names, BR-10). */
+export function formatDayHeading(key: string): string {
+  const [y, m, d] = key.split('-').map(Number) as [number, number, number];
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  return `${WEEKDAYS_LONG[wd]}, ${d} ${MONTHS_SHORT[m - 1]}`;
+}
+
+/** DD/MM/YY for a YYYY-MM-DD key (BR-10), e.g. record dates. */
+export function formatDateShortKey(key: string): string {
+  const [y, m, d] = key.split('-');
+  return `${d}/${m}/${y!.slice(2)}`;
+}

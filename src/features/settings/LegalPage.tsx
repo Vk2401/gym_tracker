@@ -1,4 +1,5 @@
-import { IonContent, IonPage } from '@ionic/react';
+import { IonPage } from '@ionic/react';
+import { Content } from '@/components/Content';
 import { useParams } from 'react-router-dom';
 import appConfig from '../../../app.config.json';
 import { PageHeader } from '@/components/PageHeader';
@@ -17,9 +18,9 @@ export default function LegalPage() {
         title={privacy ? 'Privacy Policy' : 'Terms of Use'}
         back={{ href: '/settings', text: 'Settings' }}
       />
-      <IonContent className="ion-padding">
+      <Content className="ion-padding">
         <article className="gt-legal">{privacy ? <Privacy /> : <Terms />}</article>
-      </IonContent>
+      </Content>
     </IonPage>
   );
 }

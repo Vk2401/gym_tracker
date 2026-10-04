@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { nav, openApp, seedLog, seedTemplate, tab, view } from './helpers';
+import { flushWrites, nav, openApp, openSets, seedLog, seedTemplate, tab, view } from './helpers';
 
 test.describe.configure({ mode: 'parallel' });
 
@@ -28,8 +28,10 @@ test('AC-1 (WO-3, BR-3): row shows 9 Exercises, 30 Sets, 356 Reps', async ({ pag
         : [...sets(5, 12, 10), { reps: 8, weightKg: 10 }, { reps: 15, weightKg: 5, warmup: true }],
   }));
   await seedTemplate(page, 'Monday - Chest', exercises);
-  await expect(page.getByText('Next Workout: 9 Exercises, 30 Sets, 356 Reps')).toBeVisible();
-  await expect(page.getByText('Last Completed: Never')).toBeVisible();
+  await expect(
+    page.getByRole('group', { name: 'Next Workout: 9 Exercises, 30 Sets, 356 Reps' }),
+  ).toBeVisible();
+  await expect(page.getByText('Last completed never')).toBeVisible();
 });
 
 test('AC-2 (WO-5): + shows Add Workout Group and Add Workout Template', async ({ page }) => {
@@ -68,8 +70,7 @@ test('AC-4 / AC-5 (EX-2, EX-3, ED-2, ED-3): library order and 3/4 Sit-Up detail'
   await expect(rows.nth(1)).toHaveText('90/90 Hamstring');
   await expect(rows.nth(2)).toHaveText('Ab Crunch Machine');
   const first = page.locator('ion-item').filter({ hasText: '3/4 Sit-Up' });
-  await expect(first).toContainText('Focus: Reps, Weight');
-  await expect(first).toContainText('Equipment: None');
+  await expect(first).toContainText('Reps, Weight · None'); // Focus · Equipment
   await expect(first).toContainText('Abdominals (Lower)');
   await first.click();
   const v = view(page);
@@ -142,8 +143,8 @@ test('AC-7 (LG-7, BR-4, BR-5): card shows duration and exercise count', async ({
   }
   await page.locator('[data-date="2026-09-10"]').click();
   const card = page.locator('ion-item', { hasText: 'Chest Day' });
-  await expect(card).toContainText('Completed in 3 hours 4 minutes');
-  await expect(card).toContainText('Exercises performed 8');
+  await expect(card).toContainText('3 h 04 min');
+  await expect(card).toContainText('8 exercises');
 });
 
 test('AC-8 / AC-9 / AC-10 (WL-4, WL-6, WL-7): columns, completion toggle, add set', async ({
@@ -160,10 +161,10 @@ test('AC-8 / AC-9 / AC-10 (WL-4, WL-6, WL-7): columns, completion toggle, add se
   const rope = view(page).locator('ion-list.gt-block', { hasText: 'ROPE JUMPING' });
   const crunch = view(page).locator('ion-list.gt-block', { hasText: 'CABLE CRUNCH' });
   await expect(rope.locator('.gt-sets__head')).toContainText('TIME');
-  await expect(rope.locator('.gt-sets__head')).toContainText('DISTANCE');
+  await expect(rope.locator('.gt-sets__head')).toContainText('KM'); // distance column, labelled by unit
   await expect(rope.locator('.gt-sets__head')).toContainText('RPE');
   await expect(crunch.locator('.gt-sets__head')).toContainText('REPS');
-  await expect(crunch.locator('.gt-sets__head')).toContainText('WEIGHT');
+  await expect(crunch.locator('.gt-sets__head')).toContainText('KG'); // weight column, labelled by unit
   await expect(crunch.getByLabel('Cable Crunch set 1 RPE')).toHaveAttribute('placeholder', 'RPE');
 
   const check = crunch.getByRole('checkbox', { name: 'Complete Cable Crunch set 1' });
@@ -200,7 +201,7 @@ test('AC-11 (BR-2): Last Completed 13/09/26', async ({ page }) => {
   });
   await nav(page, '#/workouts');
   await expect(page.locator('ion-item', { hasText: 'Thursday - Shoulder Lead' })).toContainText(
-    'Last Completed: 13/09/26',
+    'Last completed 13/09/26',
   );
 });
 
@@ -230,6 +231,7 @@ test('AC-12 (NFR-2, NFR-3): completed sets survive closing the app offline', asy
       }),
     )
     .toEqual([{ completed: 1, reps: 5, weight_kg: 100 }]);
+  await flushWrites(page);
   await context.setOffline(false);
   await page.reload();
   await page.waitForFunction(() => (window as any).__gt);
@@ -278,8 +280,8 @@ test('AC-14 (XP-6, SS-4): new personal record in summary and records list', asyn
   await page.getByLabel('Bench Press set 1 weight').press('Enter');
   await page.getByRole('checkbox', { name: 'Complete Bench Press set 1' }).click();
   await page.getByRole('button', { name: 'Finish Workout' }).click();
-  const sheet = page.locator('ion-modal', { hasText: 'Workout Complete' });
-  await expect(sheet).toContainText('New Personal Records');
+  const sheet = page.locator('ion-modal.gt-summary-modal');
+  await expect(sheet).toContainText('New personal records');
   await expect(sheet.locator('ion-item', { hasText: 'Heaviest weight' })).toContainText('102.5 kg');
   await sheet.getByRole('button', { name: 'Done' }).click();
   await tab(page, 'Explore').click();
@@ -292,6 +294,7 @@ test('AC-15 (ST-1): 65.0 kg ↔ 143.3 lb', async ({ page }) => {
     { id: 'ex-cable-crunch', sets: [{ reps: 15, weightKg: 65 }] },
   ]);
   await nav(page, `#/workouts/${t}`);
+  await openSets(page, 'Cable Crunch');
   await expect(page.getByLabel('Cable Crunch set 1 weight')).toHaveValue('65.0');
   await nav(page, '#/settings');
   await view(page).locator('ion-segment-button', { hasText: /^lb$/ }).click();
@@ -305,6 +308,7 @@ test('AC-15 (ST-1): 65.0 kg ↔ 143.3 lb', async ({ page }) => {
     )
     .toBe('lb');
   await nav(page, `#/workouts/${t}`);
+  await openSets(page, 'Cable Crunch');
   await expect(page.getByLabel('Cable Crunch set 1 weight')).toHaveValue('143.3');
   await nav(page, '#/settings');
   await view(page).locator('ion-segment-button', { hasText: /^kg$/ }).click();
@@ -318,6 +322,7 @@ test('AC-15 (ST-1): 65.0 kg ↔ 143.3 lb', async ({ page }) => {
     )
     .toBe('kg');
   await nav(page, `#/workouts/${t}`);
+  await openSets(page, 'Cable Crunch');
   await expect(page.getByLabel('Cable Crunch set 1 weight')).toHaveValue('65.0');
 });
 
@@ -326,8 +331,8 @@ test('AC-17 (SS-3): resume banner on other tabs', async ({ page }) => {
   await page.getByRole('button', { name: 'Quick Go!' }).click();
   await expect(page.locator('h1.gt-large-title', { hasText: 'Quick Workout' })).toBeVisible();
   await tab(page, 'Exercises').click();
-  const banner = page.locator('.gt-resume');
-  await expect(banner).toContainText('Workout in progress');
+  const banner = page.locator('.gt-bottom-stack .gt-resume');
+  await expect(banner).toContainText('A workout is in progress');
   await banner.click();
   await expect(page.getByRole('button', { name: 'Finish Workout' })).toBeVisible();
 });
@@ -338,6 +343,7 @@ test('VR-2: out-of-range input is rejected with the BRD message', async ({ page 
     { id: 'ex-cable-crunch', sets: [{ reps: 15, weightKg: 65 }] },
   ]);
   await nav(page, `#/workouts/${t}`);
+  await openSets(page, 'Cable Crunch');
   const reps = page.getByLabel('Cable Crunch set 1 reps');
   await reps.fill('1000');
   await reps.press('Enter');
@@ -371,7 +377,7 @@ test('AC-19 (ST-6): CSV export contains every set of every log', async ({ page }
   });
   await nav(page, '#/settings');
   const download = page.waitForEvent('download');
-  await page.getByText('Export All Data (CSV)').click();
+  await page.getByText('Export to CSV').click();
   const file = await download;
   const text = await (
     await file.createReadStream()
@@ -441,7 +447,7 @@ test('WO-6 / PD-5 / VR-11: edit mode can rename and recolour Default and add tem
 
   // Default: rename + recolour, no delete (VR-11)
   await v.locator('ion-item', { hasText: 'Default' }).first().click();
-  const sheet = page.locator('ion-action-sheet');
+  const sheet = page.locator('ion-modal.gt-menu');
   await expect(sheet.getByRole('button', { name: 'Rename' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Change Colour' })).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Delete' })).toHaveCount(0);
@@ -451,7 +457,7 @@ test('WO-6 / PD-5 / VR-11: edit mode can rename and recolour Default and add tem
   await expect(v.locator('ion-item', { hasText: 'My Split' }).first()).toBeVisible();
 
   await v.locator('ion-item', { hasText: 'My Split' }).first().click();
-  await page.locator('ion-action-sheet').getByRole('button', { name: 'Change Colour' }).click();
+  await page.locator('ion-modal.gt-menu').getByRole('button', { name: 'Change Colour' }).click();
   await page.locator('ion-modal ion-item', { hasText: 'Green' }).click();
   await expect(v.locator('ion-item', { hasText: 'My Split' }).first().locator('.gt-dot')).toHaveCSS(
     'background-color',

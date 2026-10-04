@@ -33,7 +33,18 @@ export const MSG = {
 } as const;
 
 /** Not in §14; needed for VR-1 length/empty checks and VR-3 max length. */
+/** Second lines in the template + menu (design "Add to workout"). */
+export const MENU_SUB = {
+  addExercise: 'Pick from your exercise library',
+  addSuperset: 'Exercises done back to back',
+  addWod: 'A timed WOD block',
+} as const;
+
 export const MSG_EXTRA = {
+  exerciseCount: (n: number) => `${n} exercise${n === 1 ? '' : 's'}`,
+  setCount: (n: number) => `${n} set${n === 1 ? '' : 's'}`,
+  weekStreak: (n: number) => `${n} week${n === 1 ? '' : 's'}`,
+  templateCount: (n: number) => `${n} template${n === 1 ? '' : 's'}`,
   nameLength: 'Enter a name between 1 and 60 characters.',
   duplicateCategory: (name: string) => `A category called "${name}" already exists.`,
   sessionTooLong: 'A workout can last at most 24 hours.',

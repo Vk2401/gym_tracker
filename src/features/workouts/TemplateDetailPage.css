@@ -4,7 +4,7 @@
 .gt-block__title {
   font-weight: 700 !important;
   font-size: var(--fs-subhead) !important;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 .gt-block--superset {
   box-shadow:
@@ -37,4 +37,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.gt-block__actions ion-button:first-child {
+  --background: var(--gt-surface-2);
+  --color: var(--gt-text-secondary);
+}
+.gt-block__head {
+  --padding-start: 16px;
+  --inner-padding-end: 12px;
+}
+.gt-block__head h2 {
+  margin: 0 !important;
 }

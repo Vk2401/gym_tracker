@@ -1,6 +1,9 @@
-import { useIonActionSheet, useIonAlert } from '@ionic/react';
+import { useIonAlert } from '@ionic/react';
 import { useCallback } from 'react';
 import { MSG } from '@/domain/messages';
+import type { MenuIcon } from '@/components/menuIcons';
+import type { Tint } from '@/components/RowIcon';
+import { useMenuStore } from '@/store/menuStore';
 import { validateName } from '@/domain/validation';
 import { useFeedback } from './useFeedback';
 
@@ -8,12 +11,16 @@ export interface ChoiceButton<T extends string> {
   text: string;
   value: T;
   role?: 'destructive' | 'cancel';
+  /** Icon shown in a tinted tile in bottom menus. */
+  icon?: MenuIcon;
+  tint?: Tint;
+  /** Second line under the option (bottom menus). */
+  subtitle?: string;
 }
 
 /** Promise-based alerts / action sheets used across screens. */
 export function useDialogs() {
   const [alert] = useIonAlert();
-  const [sheet] = useIonActionSheet();
   const { error } = useFeedback();
 
   /** VR-1 name prompt: 1–60 chars, optional case-insensitive uniqueness. */
@@ -67,6 +74,7 @@ export function useDialogs() {
         void alert({
           header: message ? `Delete "${name}"?` : MSG.deleteConfirm(name),
           message,
+          cssClass: 'gt-alert-danger',
           buttons: [
             { text: 'Cancel', role: 'cancel' },
             { text: 'Delete', role: 'destructive', handler: () => void (ok = true) },
@@ -97,24 +105,19 @@ export function useDialogs() {
     [alert],
   );
 
+  // Bottom menu (ActionMenuHost). Resolves after the menu has finished closing.
   const actions = useCallback(
     <T extends string>(header: string | undefined, buttons: ChoiceButton<T>[]) =>
       new Promise<T | null>((resolve) => {
-        let picked: T | null = null;
-        void sheet({
-          header,
-          buttons: [
-            ...buttons.map((b) => ({
-              text: b.text,
-              role: b.role,
-              handler: () => void (picked = b.value),
-            })),
-            { text: 'Cancel', role: 'cancel' },
-          ],
-          onDidDismiss: () => resolve(picked),
+        useMenuStore.setState({
+          menu: {
+            header,
+            options: buttons.filter((b) => b.role !== 'cancel'),
+            resolve: (v) => resolve(v as T | null),
+          },
         });
       }),
-    [sheet],
+    [],
   );
 
   return { promptName, confirmDelete, choose, actions, alert };

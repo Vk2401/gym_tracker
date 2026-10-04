@@ -18,3 +18,18 @@ export function formatDuration(startUtc: string, endUtc: string): string {
   const { hours, minutes } = durationParts(startUtc, endUtc);
   return `${plural(hours, 'hour')} ${plural(minutes, 'minute')}`;
 }
+
+/** Compact duration for log cards: "58 min", "1 h 05 min" (BR-4 whole minutes). */
+export function formatDurationShort(startUtc: string, endUtc: string): string {
+  const { hours, minutes } = durationParts(startUtc, endUtc);
+  return hours > 0 ? `${hours} h ${String(minutes).padStart(2, '0')} min` : `${minutes} min`;
+}
+
+/** Running session clock for the resume card: "24:18", "1:02:05". */
+export function formatElapsed(startUtc: string, now: number = Date.now()): string {
+  const s = Math.max(0, Math.floor((now - Date.parse(startUtc)) / 1000));
+  const h = Math.floor(s / 3600);
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(h ? 2 : 1, '0');
+  const ss = String(s % 60).padStart(2, '0');
+  return h ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}

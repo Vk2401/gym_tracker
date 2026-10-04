@@ -36,7 +36,7 @@ for (const scheme of ['dark', 'light'] as const) {
   test.describe(`${scheme} system theme`, () => {
     test.use({ colorScheme: scheme });
 
-    test(`alerts, action sheets and footer CTA are readable (${scheme})`, async ({ page }) => {
+    test(`alerts, menus and Start Workout CTA are readable (${scheme})`, async ({ page }) => {
       await openApp(page);
       await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
       await expect(page.locator('html')).toHaveClass(
@@ -52,17 +52,13 @@ for (const scheme of ['dark', 'light'] as const) {
       await page.locator('ion-alert').getByRole('button', { name: 'Cancel' }).click();
       await expect(page.locator('ion-alert')).toHaveCount(0);
 
-      // action sheet
+      // bottom menu (design "Create" sheet)
       await view(page).getByRole('button', { name: 'Add', exact: true }).click();
-      await expect(page.locator('ion-action-sheet .action-sheet-button').first()).toBeVisible();
-      const s = await colors(
-        page,
-        'ion-action-sheet .action-sheet-button',
-        'ion-action-sheet .action-sheet-group',
-      );
-      expect(contrast(s.text, s.bg), `sheet ${JSON.stringify(s)}`).toBeGreaterThanOrEqual(3);
-      await page.locator('ion-action-sheet').getByRole('button', { name: 'Cancel' }).click();
-      await expect(page.locator('ion-action-sheet')).toHaveCount(0);
+      await expect(page.locator('.gt-menu__opt').first()).toBeVisible();
+      const s = await colors(page, '.gt-menu__opt .gt-menu__text', '.gt-menu__panel');
+      expect(contrast(s.text, s.bg), `menu ${JSON.stringify(s)}`).toBeGreaterThanOrEqual(4.5);
+      await page.locator('.gt-menu__panel').getByRole('button', { name: 'Close' }).click();
+      await expect(page.locator('.gt-menu__panel')).toHaveCount(0);
 
       // page text and the Start Workout CTA
       const t = await seedTemplate(page, 'Push', [
@@ -75,8 +71,9 @@ for (const scheme of ['dark', 'light'] as const) {
       expect(contrast(title.text, title.bg)).toBeGreaterThanOrEqual(4.5);
       const cta = view(page).getByRole('button', { name: 'Start Workout' });
       await expect(cta).toBeVisible();
+      // PD-1: Start Workout sits in the template hero card (white button on brand blue).
       const ctaColors = await view(page)
-        .locator('.gt-footer ion-button')
+        .locator('.gt-hero ion-button')
         .evaluate((el) => {
           const inner = el.shadowRoot!.querySelector('.button-native')!;
           const cs = getComputedStyle(inner);
@@ -86,7 +83,6 @@ for (const scheme of ['dark', 'light'] as const) {
         contrast(ctaColors.text, ctaColors.bg),
         `cta ${JSON.stringify(ctaColors)}`,
       ).toBeGreaterThanOrEqual(3);
-      expect(luminance(ctaColors.bg)).toBeLessThan(0.5); // brand blue, never white
     });
   });
 }

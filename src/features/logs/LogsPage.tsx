@@ -1,18 +1,25 @@
 import {
   IonButton,
-  IonContent,
   IonFab,
   IonFabButton,
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonPage,
   IonSegment,
   IonSegmentButton,
   IonToggle,
 } from '@ionic/react';
-import { CalendarDaysIcon, PlusIcon, SettingsIcon } from 'lucide-react';
+import { Content } from '@/components/Content';
+import {
+  CalendarDaysIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  DumbbellIcon,
+  PlusIcon,
+  SettingsIcon,
+} from 'lucide-react';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { Icon } from '@/components/Icon';
 import { useCallback, useState } from 'react';
 import { MonthCalendar } from '@/components/MonthCalendar';
@@ -23,8 +30,8 @@ import { useStartWorkout } from '@/app/useStartWorkout';
 import { calendarMonth, logsOnDate } from '@/db/repos/logs';
 import { templateNames } from '@/db/repos/workouts';
 import { monthRange, shiftMonth } from '@/domain/calendar';
-import { formatDuration } from '@/domain/duration';
-import { EMPTY, MSG } from '@/domain/messages';
+import { formatDurationShort } from '@/domain/duration';
+import { EMPTY, MSG, MSG_EXTRA } from '@/domain/messages';
 import { formatDateKeyLong, localToUtc, stampOf, todayKey } from '@/domain/time';
 import type { WeekStart } from '@/domain/types';
 import { useDialogs } from '@/hooks/useDialogs';
@@ -70,8 +77,8 @@ export default function LogsPage() {
     if (selected > today) return error(MSG.futureStart); // VR-4
     const templates = await templateNames(getDb());
     const c = await actions('Log a Workout', [
-      { text: 'Empty Workout', value: '__empty' },
-      ...templates.map((t) => ({ text: t.name, value: t.id })),
+      { text: 'Empty Workout', value: '__empty', icon: 'filePlus' as const },
+      ...templates.map((t) => ({ text: t.name, value: t.id, icon: 'dumbbell' as const })),
     ]);
     if (!c) return;
     const now = new Date();
@@ -99,7 +106,8 @@ export default function LogsPage() {
           </IonButton>
         }
       />
-      <IonContent>
+      <Content>
+        <ScreenTitle title="Logs" />
         <div className="gt-fill">
           <MonthCalendar
             year={ym.year}
@@ -115,27 +123,39 @@ export default function LogsPage() {
             onToggleCollapsed={() => setCollapsed((c) => !c)}
           />
           {/* LG-7: selected date heads the day's logs */}
-          <h2 className="gt-section-title">{formatDateKeyLong(selected)}</h2>
+          <h2 className="gt-day-title">{formatDateKeyLong(selected)}</h2>
           {cards.length > 0 && (
-            <IonList inset className="gt-day-list">
+            <IonList lines="none" className="gt-cards gt-day-list">
               {cards.map((c) => (
-                <IonItem key={c.id} button routerLink={`/logs/${c.id}`} detail>
+                <IonItem
+                  key={c.id}
+                  button
+                  detail={false}
+                  routerLink={`/logs/${c.id}`}
+                  className="gt-card-item"
+                >
+                  <span slot="start" className="gt-logbar" aria-hidden="true" />
                   <IonLabel>
-                    <h2 className="truncate">{c.name}</h2>
-                    <p>
-                      {c.endUtc
-                        ? `Completed in ${formatDuration(c.startUtc, c.endUtc)}`
-                        : 'In progress'}
-                    </p>
-                    <p>Exercises performed {c.exercises}</p>
+                    <h2>{c.name}</h2>
+                    <div className="gt-meta">
+                      <span>
+                        <Icon icon={ClockIcon} />
+                        {c.endUtc ? formatDurationShort(c.startUtc, c.endUtc) : 'In progress'}
+                      </span>
+                      <span>
+                        <Icon icon={DumbbellIcon} />
+                        {MSG_EXTRA.exerciseCount(c.exercises)}
+                      </span>
+                    </div>
                   </IonLabel>
+                  <Icon slot="end" icon={ChevronRightIcon} className="gt-row-chev" />
                 </IonItem>
               ))}
             </IonList>
           )}
           {!loading && cards.length === 0 && (
             <EmptyState
-              fill
+              card
               icon={CalendarDaysIcon}
               message={EMPTY.logsDay.message}
               action={EMPTY.logsDay.action}
@@ -149,12 +169,12 @@ export default function LogsPage() {
             <Icon icon={PlusIcon} />
           </IonFabButton>
         </IonFab>
-      </IonContent>
+      </Content>
 
       {/* PD-12 → ST-2 calendar options */}
       <Sheet isOpen={options} title="Calendar" onDismiss={() => setOptions(false)}>
+        <h2 className="gt-section-title">First day of the week</h2>
         <IonList inset>
-          <IonListHeader>First day of the week</IonListHeader>
           <IonItem lines="none">
             <IonSegment
               value={prefs.weekStart}

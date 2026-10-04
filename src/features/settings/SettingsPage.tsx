@@ -1,16 +1,40 @@
 import {
-  IonContent,
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonNote,
   IonPage,
   IonSegment,
   IonSegmentButton,
   IonToggle,
 } from '@ionic/react';
+import { Content } from '@/components/Content';
+import {
+  CalendarDaysIcon,
+  CircleDotIcon,
+  CloudIcon,
+  DownloadIcon,
+  DumbbellIcon,
+  FileTextIcon,
+  HeartPulseIcon,
+  InfoIcon,
+  MailIcon,
+  RotateCcwIcon,
+  RulerIcon,
+  ScaleIcon,
+  ShieldCheckIcon,
+  StarIcon,
+  SunIcon,
+  TagsIcon,
+  TimerIcon,
+  Trash2Icon,
+  TypeIcon,
+  VibrateIcon,
+  Volume2Icon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { RowIcon } from '@/components/RowIcon';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import appConfig from '../../../app.config.json';
 import { setAppearance } from '@/app/appearance';
 import { track } from '@/app/analytics';
@@ -179,10 +203,75 @@ export default function SettingsPage() {
   return (
     <IonPage>
       <PageHeader title="Settings" />
-      <IonContent>
+      <Content>
+        <ScreenTitle title="Settings" />
+        <div className="gt-profile">
+          <div className="gt-glow" aria-hidden="true" />
+          <span className="gt-profile__logo">
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="" draggable={false} />
+          </span>
+          <div className="gt-profile__text">
+            <strong>Gym Tracker</strong>
+            <span className="num">Version {version || '—'} · data stays on this device</span>
+          </div>
+        </div>
+        <h2 className="gt-section-title">Appearance</h2>
+        <div className="gt-seg-glass">
+          <Segment<Appearance>
+            label="Appearance"
+            value={prefs.appearance}
+            options={[
+              ['system', 'System'],
+              ['light', 'Light'],
+              ['dark', 'Dark'],
+            ]}
+            onChange={(v) => {
+              setAppearance(v);
+              change('appearance', v);
+            }}
+          />
+        </div>
+
+        <h2 className="gt-section-title">Session</h2>
+
         <IonList inset>
-          <IonListHeader>Units</IonListHeader>
+          <IonItem button detail onClick={() => setRestSheet(true)}>
+            <RowIcon icon={TimerIcon} tint="blue" />
+            <IonLabel>Default rest</IonLabel>
+            <IonNote slot="end" className="num">
+              {prefs.restS === 0 ? 'Off' : formatCountdown(prefs.restS)}
+            </IonNote>
+          </IonItem>
           <IonItem>
+            <RowIcon icon={Volume2Icon} tint="amber" />
+            <IonToggle checked={prefs.sound} onIonChange={(e) => change('sound', e.detail.checked)}>
+              Rest-timer sound
+            </IonToggle>
+          </IonItem>
+          <IonItem>
+            <RowIcon icon={VibrateIcon} tint="purple" />
+            <IonToggle
+              checked={prefs.haptics}
+              onIonChange={(e) => change('haptics', e.detail.checked)}
+            >
+              Haptics
+            </IonToggle>
+          </IonItem>
+          <IonItem lines="none">
+            <RowIcon icon={SunIcon} tint="amber" />
+            <IonToggle
+              checked={prefs.keepAwake}
+              onIonChange={(e) => change('keepAwake', e.detail.checked)}
+            >
+              Keep screen awake
+            </IonToggle>
+          </IonItem>
+        </IonList>
+
+        <h2 className="gt-section-title">Units</h2>
+        <IonList inset>
+          <IonItem>
+            <RowIcon icon={ScaleIcon} tint="blue" />
             <IonLabel>Weight</IonLabel>
             <div slot="end" className="gt-seg">
               <Segment<WeightUnit>
@@ -197,6 +286,7 @@ export default function SettingsPage() {
             </div>
           </IonItem>
           <IonItem lines="none">
+            <RowIcon icon={RulerIcon} tint="teal" />
             <IonLabel>Distance</IonLabel>
             <div slot="end" className="gt-seg">
               <Segment<DistanceUnit>
@@ -212,9 +302,39 @@ export default function SettingsPage() {
           </IonItem>
         </IonList>
 
+        <h2 className="gt-section-title">Data</h2>
+
         <IonList inset>
-          <IonListHeader>Calendar</IonListHeader>
+          <IonItem button detail onClick={() => void exportCsv()}>
+            <RowIcon icon={DownloadIcon} tint="teal" />
+            <IonLabel>Export to CSV</IonLabel>
+          </IonItem>
+          <IonItem button detail onClick={() => void backupNow()}>
+            <RowIcon icon={CloudIcon} tint="blue" />
+            <IonLabel>
+              <h3>{platform() === 'ios' ? 'Back up to iCloud' : 'Back up now'}</h3>
+              <p>
+                {backup?.lastBackupUtc
+                  ? `Last backup ${formatDateKeyLong(dateKeyAt(backup.lastBackupUtc, -new Date().getTimezoneOffset()))}`
+                  : 'Save a backup file to iCloud Drive or Files'}
+              </p>
+            </IonLabel>
+          </IonItem>
+          <IonItem button detail onClick={() => void restore()}>
+            <RowIcon icon={RotateCcwIcon} tint="purple" />
+            <IonLabel>Restore from backup</IonLabel>
+          </IonItem>
+          <IonItem button detail={false} lines="none" onClick={() => void deleteAll()}>
+            <RowIcon icon={Trash2Icon} tint="red" />
+            <IonLabel className="gt-danger-text">Delete all data</IonLabel>
+          </IonItem>
+        </IonList>
+
+        <h2 className="gt-section-title">Calendar</h2>
+
+        <IonList inset>
           <IonItem>
+            <RowIcon icon={CalendarDaysIcon} tint="purple" />
             <IonLabel>First day of week</IonLabel>
             <div slot="end" className="gt-seg">
               <Segment<WeekStart>
@@ -229,6 +349,7 @@ export default function SettingsPage() {
             </div>
           </IonItem>
           <IonItem lines="none">
+            <RowIcon icon={CircleDotIcon} tint="pink" />
             <IonToggle
               checked={prefs.showDots}
               onIonChange={(e) => change('showDots', e.detail.checked)}
@@ -238,50 +359,24 @@ export default function SettingsPage() {
           </IonItem>
         </IonList>
 
-        <IonList inset>
-          <IonListHeader>Session</IonListHeader>
-          <IonItem button detail onClick={() => setRestSheet(true)}>
-            <IonLabel>Default rest time</IonLabel>
-            <IonNote slot="end" className="num">
-              {prefs.restS === 0 ? 'Off' : formatCountdown(prefs.restS)}
-            </IonNote>
-          </IonItem>
-          <IonItem>
-            <IonToggle checked={prefs.sound} onIonChange={(e) => change('sound', e.detail.checked)}>
-              Rest timer sound
-            </IonToggle>
-          </IonItem>
-          <IonItem>
-            <IonToggle
-              checked={prefs.haptics}
-              onIonChange={(e) => change('haptics', e.detail.checked)}
-            >
-              Haptics
-            </IonToggle>
-          </IonItem>
-          <IonItem lines="none">
-            <IonToggle
-              checked={prefs.keepAwake}
-              onIonChange={(e) => change('keepAwake', e.detail.checked)}
-            >
-              Keep screen awake during a session
-            </IonToggle>
-          </IonItem>
-        </IonList>
+        <h2 className="gt-section-title">Library</h2>
 
         <IonList inset>
-          <IonListHeader>Library</IonListHeader>
           <IonItem button detail routerLink="/settings/categories">
+            <RowIcon icon={TagsIcon} tint="pink" />
             <IonLabel>Categories</IonLabel>
           </IonItem>
           <IonItem button detail routerLink="/settings/equipment" lines="none">
+            <RowIcon icon={DumbbellIcon} tint="teal" />
             <IonLabel>Equipment</IonLabel>
           </IonItem>
         </IonList>
 
+        <h2 className="gt-section-title">{healthPlatformName()}</h2>
+
         <IonList inset>
-          <IonListHeader>{healthPlatformName()}</IonListHeader>
           <IonItem lines="none" disabled={!canHealth}>
+            <RowIcon icon={HeartPulseIcon} tint="red" />
             <IonToggle
               checked={prefs.healthEnabled && canHealth}
               onIonChange={(e) => void toggleHealth(e.detail.checked)}
@@ -298,51 +393,11 @@ export default function SettingsPage() {
           </IonItem>
         </IonList>
 
-        <IonList inset>
-          <IonListHeader>Data</IonListHeader>
-          <IonItem button detail={false} onClick={() => void exportCsv()}>
-            <IonLabel color="primary">Export All Data (CSV)</IonLabel>
-          </IonItem>
-          <IonItem button detail={false} onClick={() => void backupNow()}>
-            <IonLabel>
-              <h3 className="gt-primary">Back Up Now</h3>
-              <p>
-                {backup?.lastBackupUtc
-                  ? `Last backup ${formatDateKeyLong(dateKeyAt(backup.lastBackupUtc, -new Date().getTimezoneOffset()))}`
-                  : 'Save a backup file to iCloud Drive or Files'}
-              </p>
-            </IonLabel>
-          </IonItem>
-          <IonItem button detail={false} onClick={() => void restore()}>
-            <IonLabel color="primary">Restore from Backup</IonLabel>
-          </IonItem>
-          <IonItem button detail={false} lines="none" onClick={() => void deleteAll()}>
-            <IonLabel color="danger">Delete All Data</IonLabel>
-          </IonItem>
-        </IonList>
+        <h2 className="gt-section-title">Privacy</h2>
 
         <IonList inset>
-          <IonListHeader>Appearance</IonListHeader>
           <IonItem lines="none">
-            <Segment<Appearance>
-              label="Appearance"
-              value={prefs.appearance}
-              options={[
-                ['system', 'System'],
-                ['light', 'Light'],
-                ['dark', 'Dark'],
-              ]}
-              onChange={(v) => {
-                setAppearance(v);
-                change('appearance', v);
-              }}
-            />
-          </IonItem>
-        </IonList>
-
-        <IonList inset>
-          <IonListHeader>Privacy</IonListHeader>
-          <IonItem lines="none">
+            <RowIcon icon={ShieldCheckIcon} tint="green" />
             <IonToggle
               checked={prefs.analyticsOptIn === true}
               onIonChange={(e) => void setPref('analyticsOptIn', e.detail.checked)}
@@ -355,18 +410,22 @@ export default function SettingsPage() {
           </IonItem>
         </IonList>
 
+        <h2 className="gt-section-title">About</h2>
+
         <IonList inset>
-          <IonListHeader>About</IonListHeader>
           <IonItem>
+            <RowIcon icon={InfoIcon} tint="blue" />
             <IonLabel>Version</IonLabel>
             <IonNote slot="end" className="num">
               {version}
             </IonNote>
           </IonItem>
           <IonItem button detail routerLink="/settings/legal/privacy">
+            <RowIcon icon={FileTextIcon} tint="gray" />
             <IonLabel>Privacy Policy</IonLabel>
           </IonItem>
           <IonItem button detail routerLink="/settings/legal/terms">
+            <RowIcon icon={FileTextIcon} tint="gray" />
             <IonLabel>Terms of Use</IonLabel>
           </IonItem>
           {appConfig.supportEmail && (
@@ -375,13 +434,16 @@ export default function SettingsPage() {
               detail
               href={`mailto:${appConfig.supportEmail}?subject=Gym%20Tracker%20${encodeURIComponent(version)}`}
             >
+              <RowIcon icon={MailIcon} tint="blue" />
               <IonLabel>Contact Support</IonLabel>
             </IonItem>
           )}
           <IonItem button detail onClick={() => void rate()}>
+            <RowIcon icon={StarIcon} tint="amber" />
             <IonLabel>Rate the App</IonLabel>
           </IonItem>
           <IonItem lines="none">
+            <RowIcon icon={TypeIcon} tint="gray" />
             <IonLabel>Text size</IonLabel>
             <IonNote slot="end" className="num">
               {Math.round(textScale * 100)}%
@@ -389,7 +451,7 @@ export default function SettingsPage() {
           </IonItem>
         </IonList>
         <div className="gt-fab-space" />
-      </IonContent>
+      </Content>
 
       <OptionSheet
         isOpen={restSheet}

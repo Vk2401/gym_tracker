@@ -1,6 +1,5 @@
 import {
   IonButton,
-  IonContent,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -9,6 +8,7 @@ import {
   IonList,
   IonPage,
 } from '@ionic/react';
+import { Content } from '@/components/Content';
 import { PlusIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { useState } from 'react';
@@ -71,7 +71,7 @@ export default function CategoriesPage() {
           </IonButton>
         }
       />
-      <IonContent>
+      <Content>
         <IonList inset>
           {cats.map((c) => (
             <IonItemSliding key={c.id}>
@@ -89,7 +89,7 @@ export default function CategoriesPage() {
             </IonItemSliding>
           ))}
         </IonList>
-      </IonContent>
+      </Content>
       <OptionSheet
         isOpen={!!recolor || newName !== null}
         title={newName ? `Colour for ${newName}` : 'Colour'}

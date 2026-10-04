@@ -3,7 +3,11 @@ import { TimerIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { formatCountdown, remainingSeconds } from '@/domain/session';
+import { formatCountdown, remainingSeconds, restProgress } from '@/domain/session';
+import { formatElapsed } from '@/domain/duration';
+import { MSG_EXTRA } from '@/domain/messages';
+
+const RING = 2 * Math.PI * 18; // rest ring circumference (r = 18)
 import { successHaptic } from '@/native/haptics';
 import { beep } from '@/native/sound';
 import { useAppStore } from '@/store/appStore';
@@ -37,37 +41,90 @@ export function BottomBars() {
   );
 }
 
-function ResumeBanner() {
+/** The session in progress (SS-3): id, name and start time, refreshed after every write. */
+function useActiveSession() {
   const logId = useSessionStore((s) => s.logId);
   const version = useDataStore((s) => s.version);
-  const { pathname } = useLocation();
-  const router = useIonRouter();
-  const [name, setName] = useState('');
+  const [info, setInfo] = useState<{ name: string; startUtc: string } | null>(null);
   useEffect(() => {
     if (!logId) return;
-    void getLog(getDb(), logId).then((l) => setName(l?.name ?? ''));
+    void getLog(getDb(), logId).then((l) =>
+      setInfo(l ? { name: l.name, startUtc: l.startUtc } : null),
+    );
   }, [logId, version]);
-  if (!logId || pathname === `/logs/${logId}`) return null;
+  return logId ? { logId, info } : null;
+}
+
+/** Ticking session clock in its own component, so only this text re-renders each second. */
+function Elapsed({ startUtc }: { startUtc: string }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <span className="num">{formatElapsed(startUtc, now)}</span>;
+}
+
+function ResumeContent({ name, startUtc }: { name: string; startUtc?: string }) {
+  return (
+    <>
+      <span className="gt-resume__icon">
+        <Icon icon={TimerIcon} />
+      </span>
+      <span className="gt-resume__text">
+        <small>{MSG_EXTRA.workoutInProgress}</small>
+        <strong>
+          {name}
+          {startUtc && (
+            <>
+              {' · '}
+              <Elapsed startUtc={startUtc} />
+            </>
+          )}
+        </strong>
+      </span>
+      <span className="gt-resume__cta">Resume</span>
+    </>
+  );
+}
+
+/** SS-3 on the Workouts screen: inline navy card under the search (design "Workouts"). */
+export function ResumeCard() {
+  const s = useActiveSession();
+  const router = useIonRouter();
+  if (!s) return null;
+  return (
+    <button
+      type="button"
+      className="gt-resume gt-resume--card"
+      onClick={() => router.push(`/logs/${s.logId}`, 'forward')}
+    >
+      <span className="gt-glow" aria-hidden="true" />
+      <ResumeContent name={s.info?.name ?? ''} startUtc={s.info?.startUtc} />
+    </button>
+  );
+}
+
+/** SS-3 on the other tabs: the same card floating above the tab bar. */
+function ResumeBanner() {
+  const s = useActiveSession();
+  const { pathname } = useLocation();
+  const router = useIonRouter();
+  if (!s || pathname === `/logs/${s.logId}` || pathname === '/workouts') return null;
   return (
     <button
       type="button"
       className="gt-resume"
-      onClick={() => router.push(`/logs/${logId}`, 'forward')}
+      onClick={() => router.push(`/logs/${s.logId}`, 'forward')}
     >
-      <span className="gt-resume__icon">
-        <Icon icon={TimerIcon} />
-      </span>
-      <span className="gt-resume__text truncate">
-        <small>Workout in progress</small>
-        <strong className="truncate">{name}</strong>
-      </span>
-      <span className="gt-resume__cta">Resume</span>
+      <ResumeContent name={s.info?.name ?? ''} startUtc={s.info?.startUtc} />
     </button>
   );
 }
 
 function RestTimerBar() {
   const end = useSessionStore((s) => s.restEndUtc);
+  const total = useSessionStore((s) => s.restTotalS);
   const [left, setLeft] = useState(() => (end ? remainingSeconds(end) : 0));
   useEffect(() => {
     if (!end) return;
@@ -97,8 +154,20 @@ function RestTimerBar() {
       aria-live="off"
       aria-label={`Rest ${formatCountdown(left)}`}
     >
-      <span className="gt-rest__label">Rest</span>
-      <span className="gt-rest__time num">{formatCountdown(left)}</span>
+      <svg className="gt-rest__ring" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="18" className="gt-rest__track" />
+        <circle
+          cx="22"
+          cy="22"
+          r="18"
+          className="gt-rest__progress"
+          style={{ strokeDashoffset: RING * (1 - restProgress(left, total)) }}
+        />
+      </svg>
+      <span className="gt-rest__text">
+        <span className="gt-rest__label">Rest</span>
+        <span className="gt-rest__time num">{formatCountdown(left)}</span>
+      </span>
       <IonButton
         size="small"
         fill="clear"

@@ -1,4 +1,3 @@
-import { IonButton } from '@ionic/react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { memo } from 'react';
@@ -32,13 +31,23 @@ export const MonthCalendar = memo(function MonthCalendar(p: Props) {
   return (
     <section className="gt-cal" aria-label="Calendar">
       <div className="gt-cal__bar">
-        <IonButton fill="clear" aria-label="Previous month" onClick={() => p.onMonth(-1)}>
-          <Icon slot="icon-only" icon={ChevronLeftIcon} />
-        </IonButton>
         <h2 className="gt-cal__title">{monthTitle(p.year, p.month)}</h2>
-        <IonButton fill="clear" aria-label="Next month" onClick={() => p.onMonth(1)}>
-          <Icon slot="icon-only" icon={ChevronRightIcon} />
-        </IonButton>
+        <button
+          type="button"
+          className="gt-cal__nav"
+          aria-label="Previous month"
+          onClick={() => p.onMonth(-1)}
+        >
+          <Icon icon={ChevronLeftIcon} />
+        </button>
+        <button
+          type="button"
+          className="gt-cal__nav"
+          aria-label="Next month"
+          onClick={() => p.onMonth(1)}
+        >
+          <Icon icon={ChevronRightIcon} />
+        </button>
       </div>
       <div className="gt-cal__grid gt-cal__head" aria-hidden="true">
         {weekdayHeaders(p.weekStart).map((d) => (

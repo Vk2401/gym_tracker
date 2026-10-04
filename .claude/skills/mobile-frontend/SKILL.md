@@ -83,9 +83,19 @@ replacing its components — E2E specs select Ionic primitives.
 
 ## 2. Screen anatomy (matches BRD §5)
 
-- **Header:** `PageHeader` — glass header on the ground, pill buttons (`gt-btn-dark` for
-  Quick Go!, `gt-btn-primary` for a solid accent), then the large `h1.gt-title` on root
-  screens. Root controls exactly as BRD:
+- **Header:** `PageHeader` holds only the pill buttons (`gt-btn-dark` for Quick Go!,
+  `gt-btn-primary` for a solid accent such as Finish) over the ground. Screens use
+  `<Content>` (fullscreen, scrolls behind the header; once scrolled the header frosts and a
+  compact title fades in). Root screens start with `<ScreenTitle>` (date chip, large title,
+  search / range); detail screens with `h1.gt-large-title`.
+- **Design authority:** for anything visual (layout, copy on screens, icons, sizes, motion)
+  the artifact canvas wins over the BRD's design notes; the BRD still defines behaviour and
+  data rules. Text is never cut off with an ellipsis — it wraps.
+- **Design source:** the "Gym Tracker Modern UI" artifact canvas — template cards with
+  gradient tiles and total chips, the template hero card with Start Workout (PD-1), log stat
+  tiles + Finish pill, rounded-square set check, navy highlight cards (resume, rest timer
+  with ring, Explore consistency, Settings profile), icon tiles in action sheets
+  (`ChoiceButton.icon`), danger badge on delete alerts, navy finish summary. Root controls exactly as BRD:
   Workouts = Quick Go! (left) + Edit (right) + search; Logs = Today (left) + gear (right).
 - **Detail screens:** back button text = parent name (`defaultHref` + `text="Workouts"`),
   share icon + Edit on the right (WT-1, ED-1, WL-1).
@@ -138,7 +148,8 @@ replacing its components — E2E specs select Ionic primitives.
 - **Motion:** keep Ionic's native page transitions. Custom motion uses `transform`/`opacity`
   only and the token easings: press 200 ms (scale .96), segment/tab 380 ms
   (`--ease-sheet`), sheets 450 ms, set-complete pop 250–350 ms (`--ease-pop`), content rise
-  450 ms (`gt-rise`, staggered). All of it is disabled under `prefers-reduced-motion`.
+  450 ms (`gt-rise`, staggered). Product decision: motion runs even when the OS asks to
+  reduce it, so never gate animations on `prefers-reduced-motion`.
 - **No selection / drag:** nothing outside text fields is selectable, no long-press callout,
   images and links can't be dragged (`base.css` + `src/app/appFeel.ts`).
 

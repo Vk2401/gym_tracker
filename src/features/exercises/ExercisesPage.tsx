@@ -1,5 +1,4 @@
 import {
-  IonContent,
   IonFab,
   IonFabButton,
   IonItem,
@@ -9,10 +8,11 @@ import {
   IonSearchbar,
   useIonRouter,
 } from '@ionic/react';
+import { Content } from '@/components/Content';
 import { BookOpenIcon, PlusIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { memo, useMemo, useState } from 'react';
-import { CategoryDot } from '@/components/CategoryDot';
+import { ScreenTitle } from '@/components/ScreenTitle';
 import { EmptyState } from '@/components/EmptyState';
 import { PageHeader } from '@/components/PageHeader';
 import { mutate } from '@/db/mutate';
@@ -32,26 +32,45 @@ const ExerciseRow = memo(function ExerciseRow({ e }: { e: Exercise }) {
     .filter(Boolean)
     .map((m) => focusLabel(m!))
     .join(', ');
+  const tint = e.categories[0]?.color ?? 'var(--gt-blue)';
   return (
-    <IonItem button routerLink={`/exercises/${e.id}`} detail>
+    <IonItem button detail={false} routerLink={`/exercises/${e.id}`} className="gt-xrow">
+      <span
+        slot="start"
+        className="gt-initial"
+        style={{ '--gt-tint': tint } as React.CSSProperties}
+        aria-hidden="true"
+      >
+        {e.name.charAt(0).toUpperCase()}
+      </span>
       <IonLabel>
         <h2 className="truncate">{e.name}</h2>
-        <p className="truncate">Focus: {focus}</p>
-        <p className="truncate">Equipment: {e.equipmentName ?? 'None'}</p>
-        {e.categories.length > 0 && (
-          <p className="gt-cats truncate">
-            {e.categories.map((c) => (
-              <span key={c.id} className="gt-cat">
-                <CategoryDot color={c.color} />
-                {c.name}
-              </span>
-            ))}
-          </p>
-        )}
+        <p className="truncate">
+          {focus} · {e.equipmentName ?? 'None'}
+        </p>
       </IonLabel>
+      {e.categories.length > 0 && (
+        <span slot="end" className="gt-catchips">
+          {e.categories.map((c) => (
+            <span
+              key={c.id}
+              className="gt-catchip"
+              style={{ '--gt-tint': c.color } as React.CSSProperties}
+            >
+              {c.name}
+            </span>
+          ))}
+        </span>
+      )}
     </IonItem>
   );
 });
+
+/** EX-2: sections by first character; names starting with a number sort under "#". */
+function sectionKey(name: string): string {
+  const c = name.charAt(0).toUpperCase();
+  return /[A-Z]/.test(c) ? c : '#';
+}
 
 /** EX-1..5: exercise library. */
 export default function ExercisesPage() {
@@ -65,6 +84,15 @@ export default function ExercisesPage() {
     const q = query.trim().toLocaleLowerCase('en');
     return q ? rows.filter((r) => r.name.toLocaleLowerCase('en').includes(q)) : rows; // EX-4
   }, [rows, query]);
+
+  const sections = useMemo(() => {
+    const m = new Map<string, Exercise[]>();
+    for (const e of visible) {
+      const k = sectionKey(e.name);
+      m.set(k, [...(m.get(k) ?? []), e]);
+    }
+    return [...m.entries()];
+  }, [visible]);
 
   const create = async (initial?: string) => {
     const existing = rows.map((r) => r.name);
@@ -84,16 +112,17 @@ export default function ExercisesPage() {
   const q = query.trim();
   return (
     <IonPage>
-      <PageHeader title="Exercises">
-        <IonSearchbar
-          className="gt-search"
-          placeholder="Search Exercises"
-          value={query}
-          debounce={100}
-          onIonInput={(e) => setQuery(e.detail.value ?? '')}
-        />
-      </PageHeader>
-      <IonContent>
+      <PageHeader title="Exercises" />
+      <Content>
+        <ScreenTitle title="Exercises">
+          <IonSearchbar
+            className="gt-search"
+            placeholder="Search Exercises"
+            value={query}
+            debounce={100}
+            onIonInput={(e) => setQuery(e.detail.value ?? '')}
+          />
+        </ScreenTitle>
         {!loading && visible.length === 0 && q && (
           <EmptyState
             fill
@@ -103,20 +132,23 @@ export default function ExercisesPage() {
             onAction={() => void create(q)}
           />
         )}
-        {visible.length > 0 && (
-          <IonList inset>
-            {visible.map((e) => (
-              <ExerciseRow key={e.id} e={e} />
-            ))}
-          </IonList>
-        )}
+        {sections.map(([key, list]) => (
+          <section key={key} className="gt-xsection">
+            <h2 className="gt-xsection__letter">{key}</h2>
+            <IonList inset lines="full">
+              {list.map((e) => (
+                <ExerciseRow key={e.id} e={e} />
+              ))}
+            </IonList>
+          </section>
+        ))}
         <div className="gt-fab-space" />
         <IonFab vertical="bottom" horizontal="end" slot="fixed" className="gt-fab hide-on-keyboard">
           <IonFabButton aria-label="New exercise" onClick={() => void create()}>
             <Icon icon={PlusIcon} />
           </IonFabButton>
         </IonFab>
-      </IonContent>
+      </Content>
     </IonPage>
   );
 }

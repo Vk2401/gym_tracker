@@ -69,9 +69,12 @@
 }
 .gt-resume__text {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .gt-resume__text small {
   font-size: 11px;
@@ -95,27 +98,54 @@
   flex: none;
 }
 .gt-rest {
-  gap: 4px;
-  padding: 0 8px 0 16px;
+  gap: 6px;
+  min-height: 64px;
+  border-radius: 24px;
+  padding: 0 8px 0 10px;
+}
+.gt-rest__ring {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  transform: rotate(-90deg);
+}
+.gt-rest__ring circle {
+  fill: none;
+  stroke-width: 4;
+}
+.gt-rest__track {
+  stroke: rgba(255, 255, 255, 0.15);
+}
+.gt-rest__progress {
+  stroke: #5ab0ff;
+  stroke-linecap: round;
+  stroke-dasharray: 113.1;
+  transition: stroke-dashoffset 0.3s linear;
+}
+.gt-rest__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
 }
 .gt-rest__label {
   color: var(--gt-on-navy-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
 }
 .gt-rest__time {
-  flex: 1;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #fff;
 }
 .gt-rest ion-button {
-  min-height: 40px;
-  height: 40px;
-  font-size: 14px;
+  min-height: 44px;
+  height: 44px;
+  font-size: 13px;
   --padding-start: 10px;
   --padding-end: 10px;
-  --border-radius: 13px;
+  --border-radius: 14px;
   --color: #fff;
   --background: rgba(255, 255, 255, 0.1);
   --background-activated: rgba(255, 255, 255, 0.2);

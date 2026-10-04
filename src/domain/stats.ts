@@ -5,10 +5,10 @@ export type RangeKey = '4w' | '3m' | '6m' | '1y' | 'all';
 
 /** XP-1 ranges; `short` fits the segmented control on narrow phones. */
 export const RANGES_LIST: { key: RangeKey; label: string; short: string }[] = [
-  { key: '4w', label: '4 weeks', short: '4 wk' },
-  { key: '3m', label: '3 months', short: '3 mo' },
-  { key: '6m', label: '6 months', short: '6 mo' },
-  { key: '1y', label: '1 year', short: '1 yr' },
+  { key: '4w', label: '4 weeks', short: '4W' },
+  { key: '3m', label: '3 months', short: '3M' },
+  { key: '6m', label: '6 months', short: '6M' },
+  { key: '1y', label: '1 year', short: '1Y' },
   { key: 'all', label: 'All', short: 'All' },
 ];
 

@@ -1,7 +1,5 @@
 import {
   IonButton,
-  IonContent,
-  IonFooter,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -9,18 +7,18 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonNote,
   IonPage,
   IonReorder,
   IonReorderGroup,
   useIonRouter,
 } from '@ionic/react';
-import { CalendarDaysIcon, EllipsisIcon, SettingsIcon, ShareIcon } from 'lucide-react';
+import { Content } from '@/components/Content';
+import { CalendarDaysIcon, EllipsisIcon, ShareIcon } from 'lucide-react';
 import { Icon } from '@/components/Icon';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ClampedText } from '@/components/NoteField';
-import { DateTimeRow } from '@/components/DateTimeRow';
+import { DateTimeTile } from '@/components/DateTimeRow';
 import { EmptyState } from '@/components/EmptyState';
 import { ExercisePicker } from '@/components/ExercisePicker';
 import { NumberField, TimeField } from '@/components/fields';
@@ -99,11 +97,11 @@ export default function LogDetailPage() {
     return (
       <IonPage>
         <PageHeader title="" back={{ href: '/logs', text: 'Logs' }} />
-        <IonContent>
+        <Content>
           {!loading && !summary && (
             <EmptyState icon={CalendarDaysIcon} fill message={MSG_EXTRA.logMissing} />
           )}
-        </IonContent>
+        </Content>
         <SummarySheet summary={summary} onClose={closeSummary} />
       </IonPage>
     );
@@ -152,12 +150,19 @@ export default function LogDetailPage() {
   const exerciseMenu = async (le: LoggedExercise) => {
     const c = await actions(le.name, [
       ...(le.kind === 'exercise' && le.exerciseId
-        ? [{ text: 'View History', value: 'history' as const }]
+        ? [{ text: 'View History', value: 'history' as const, icon: 'history' as const }]
         : []),
-      ...(le.kind === 'exercise' ? [{ text: 'Replace Exercise', value: 'replace' as const }] : []),
-      { text: 'Reorder', value: 'reorder' as const },
-      { text: 'Add Note for this session', value: 'note' as const },
-      { text: 'Remove', value: 'remove' as const, role: 'destructive' as const },
+      ...(le.kind === 'exercise'
+        ? [{ text: 'Replace Exercise', value: 'replace' as const, icon: 'replace' as const }]
+        : []),
+      { text: 'Reorder', value: 'reorder' as const, icon: 'reorder' as const },
+      { text: 'Add Note for this session', value: 'note' as const, icon: 'note' as const },
+      {
+        text: 'Remove',
+        value: 'remove' as const,
+        role: 'destructive' as const,
+        icon: 'trash' as const,
+      },
     ]);
     if (c === 'history') setHistory(le);
     if (c === 'replace') setPicker({ mode: 'replace', id: le.id });
@@ -182,17 +187,21 @@ export default function LogDetailPage() {
 
   // PD-11
   const logMenu = async () => {
-    const c = await actions(undefined, [
-      { text: 'Rename session', value: 'rename' },
-      { text: 'Rest time for this session', value: 'rest' },
-      { text: 'Save as Template', value: 'template' },
-      { text: 'Delete Log', value: 'delete', role: 'destructive' },
+    const c = await actions(log.name, [
+      { text: 'Measurements', value: 'measure', icon: 'ruler' },
+      { text: 'Reorder exercises', value: 'reorder', icon: 'reorder' },
+      { text: 'Rename session', value: 'rename', icon: 'pencil' },
+      { text: 'Rest time for this session', value: 'rest', icon: 'timer' },
+      { text: 'Save as Template', value: 'template', icon: 'save' },
+      { text: 'Delete Log', value: 'delete', role: 'destructive', icon: 'trash' },
     ]);
     if (c === 'rename') {
       const name = await promptName({ header: 'Rename Session', value: log.name });
       if (name) await mutate((db) => logs.updateLog(db, log.id, { name }));
     }
     if (c === 'rest') setRestSheet(true);
+    if (c === 'measure') setMeasureOpen(true);
+    if (c === 'reorder') setEditing(true);
     if (c === 'template') {
       const name = await promptName({ header: 'Save as Template', value: log.name });
       if (name) {
@@ -221,7 +230,7 @@ export default function LogDetailPage() {
     <IonPage>
       <PageHeader
         title={log.name}
-        back={{ href: '/logs', text: 'Logs' }}
+        back={{ href: '/logs', text: '' }}
         end={
           <>
             <IonButton
@@ -245,34 +254,53 @@ export default function LogDetailPage() {
             >
               <Icon slot="icon-only" icon={ShareIcon} />
             </IonButton>
-            <IonButton aria-label="Log settings" onClick={() => void logMenu()}>
-              <Icon slot="icon-only" icon={SettingsIcon} />
-            </IonButton>
-            <IonButton onClick={() => setEditing(!editing)}>{editing ? 'Done' : 'Edit'}</IonButton>
+            {editing ? (
+              <IonButton onClick={() => setEditing(false)}>Done</IonButton>
+            ) : (
+              active && (
+                <IonButton
+                  className="gt-btn-primary"
+                  aria-label="Finish Workout"
+                  onClick={() => void onFinish()}
+                >
+                  Finish
+                </IonButton>
+              )
+            )}
           </>
         }
       />
-      <IonContent>
-        <h1 className="gt-large-title">{log.name}</h1>
+      <Content>
+        <div className="gt-title-row">
+          <h1 className="gt-large-title">{log.name}</h1>
+          <IonButton
+            fill="clear"
+            className="gt-more"
+            aria-label="Log settings"
+            onClick={() => void logMenu()}
+          >
+            <Icon slot="icon-only" icon={EllipsisIcon} />
+          </IonButton>
+        </div>
 
         {/* WL-2 */}
-        <IonList inset>
-          <DateTimeRow
+        <div className="gt-stats3">
+          <DateTimeTile
             label="Start Time"
             utc={log.startUtc}
             offsetMin={log.startOffsetMin}
             onChange={setStart}
           />
-          <DateTimeRow
+          <DateTimeTile
             label="End Time"
             utc={log.endUtc}
             offsetMin={log.endOffsetMin ?? log.startOffsetMin}
             placeholder={active ? 'In progress' : '—'}
             onChange={setEnd}
           />
-          <IonItem>
-            <IonLabel>Weight</IonLabel>
-            <div slot="end" className="gt-inline-field">
+          <div className="gt-stat3">
+            <span className="gt-stat3__label">Weight</span>
+            <div className="gt-stat3__field">
               <NumberField
                 kind="bodyWeight"
                 value={log.bodyWeightKg}
@@ -285,12 +313,8 @@ export default function LogDetailPage() {
               />
               <span className="gt-unit">{prefs.weightUnit}</span>
             </div>
-          </IonItem>
-          <IonItem button detail lines="none" onClick={() => setMeasureOpen(true)}>
-            <IonLabel>Measurements</IonLabel>
-            <IonNote slot="end">{Object.keys(log.measurements).length || ''}</IonNote>
-          </IonItem>
-        </IonList>
+          </div>
+        </div>
 
         {active && log.restTimeS !== null && (
           <p className="gt-hint ion-padding-horizontal">
@@ -351,6 +375,7 @@ export default function LogDetailPage() {
                 <IonButton
                   slot="end"
                   fill="clear"
+                  className="gt-more"
                   aria-label={`${le.name} options`}
                   onClick={() => void exerciseMenu(le)}
                 >
@@ -418,23 +443,18 @@ export default function LogDetailPage() {
         {/* WL-8 */}
         {!editing && (
           <div className="ion-padding">
-            <IonButton expand="block" fill="outline" onClick={() => setPicker({ mode: 'add' })}>
+            <IonButton
+              expand="block"
+              fill="outline"
+              className="gt-dashed"
+              onClick={() => setPicker({ mode: 'add' })}
+            >
               + Add Exercise
             </IonButton>
           </div>
         )}
         <div className="gt-fab-space" />
-      </IonContent>
-
-      {active && (
-        <IonFooter className="ion-no-border hide-on-keyboard">
-          <div className="gt-footer">
-            <IonButton expand="block" fill="solid" onClick={() => void onFinish()}>
-              Finish Workout
-            </IonButton>
-          </div>
-        </IonFooter>
-      )}
+      </Content>
 
       <ExercisePicker
         isOpen={picker !== null}

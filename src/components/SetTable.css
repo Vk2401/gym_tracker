@@ -1,5 +1,5 @@
 .gt-sets {
-  padding: 0 var(--sp-2);
+  padding: 0 var(--sp-3);
 }
 .gt-sets__head,
 .gt-set__grid {
@@ -12,6 +12,7 @@
   padding: var(--sp-2) var(--sp-2) var(--sp-1);
   font-size: var(--fs-caption);
   font-weight: 600;
+  letter-spacing: 0.06em;
   color: var(--gt-text-secondary);
   text-align: center;
 }
@@ -20,8 +21,6 @@
   align-items: center;
   flex-direction: column;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .gt-sets__head small {
@@ -33,16 +32,22 @@
   background: transparent;
 }
 .gt-set {
-  --padding-start: var(--sp-2);
-  --inner-padding-end: var(--sp-2);
+  --padding-start: 4px;
+  --inner-padding-end: 4px;
   --min-height: 52px;
   --background: transparent;
+  --border-radius: 16px;
+  border-radius: 16px;
+  margin-top: 6px;
 }
 .gt-set {
   transition: background-color 0.3s ease;
 }
 .gt-set--done {
   --background: color-mix(in srgb, var(--gt-blue) 9%, transparent);
+}
+.gt-set--done .gt-set__num {
+  color: var(--gt-blue);
 }
 .gt-set__grid {
   width: 100%;
@@ -96,11 +101,12 @@
   cursor: pointer;
 }
 .gt-check .gt-icon {
-  width: 32px;
-  height: 32px;
-  padding: 6px;
-  border-radius: 50%;
-  border: 2px solid var(--gt-blue);
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border-radius: 15px;
+  border: 2px solid color-mix(in srgb, var(--gt-text-tertiary) 55%, var(--gt-surface));
+  background: var(--gt-surface);
   box-sizing: border-box;
   stroke-width: 3;
   transition:
@@ -112,6 +118,7 @@
   transform: scale(0.82);
 }
 .gt-check--on .gt-icon {
+  border-color: var(--gt-blue);
   background: var(--gt-blue);
   color: #fff;
   box-shadow: 0 6px 14px rgba(var(--gt-blue-rgb), 0.35);

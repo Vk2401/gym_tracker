@@ -33,7 +33,13 @@
 
 /* ---------- ground ---------- */
 ion-content {
-  --background: var(--gt-ground);
+  --background:
+    radial-gradient(
+      320px 320px at calc(100% + 40px) -50px,
+      rgba(74, 156, 246, 0.32),
+      rgba(74, 156, 246, 0) 70%
+    ),
+    var(--gt-ground);
   background-color: var(--gt-bg-grouped);
 }
 ion-tabs,
@@ -44,7 +50,39 @@ ion-router-outlet,
 
 /* ---------- header ---------- */
 ion-header.gt-header {
-  background: var(--gt-bg-top);
+  background: transparent;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    backdrop-filter 0.3s ease;
+}
+/* Content has scrolled under the header: frost it and show the compact title. */
+ion-header.gt-header.gt-header--scrolled {
+  background: var(--gt-glass);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: 0 1px 0 var(--gt-separator);
+}
+ion-title.gt-header__mini {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s var(--ease-out);
+  pointer-events: none;
+}
+.gt-header--scrolled ion-title.gt-header__mini {
+  opacity: 1;
+  transform: none;
+}
+/* Narrow phones: a back pill with text leaves no room for a centred title. */
+@media (max-width: 400px) {
+  ion-header.gt-header--back ion-title.gt-header__mini {
+    display: none;
+  }
+}
+ion-header.gt-header--bare ion-toolbar {
+  --min-height: 40px;
 }
 ion-header.gt-header::after {
   display: none; /* no hairline */
@@ -55,7 +93,7 @@ ion-toolbar {
   --border-width: 0;
   --padding-start: var(--sp-4);
   --padding-end: var(--sp-4);
-  --min-height: 52px;
+  --min-height: 56px;
 }
 ion-toolbar ion-buttons {
   gap: var(--sp-2);
@@ -67,14 +105,14 @@ ion-toolbar ion-back-button {
   --background-activated: var(--gt-glass-strong);
   --background-focused: var(--gt-glass-strong);
   --border-radius: var(--r-pill);
-  --padding-start: 16px;
-  --padding-end: 16px;
+  --padding-start: 18px;
+  --padding-end: 18px;
   --box-shadow: inset 0 0 0 1px var(--gt-glass-border);
   /* iOS toolbar buttons paint their label with --ion-toolbar-color */
   --ion-toolbar-color: var(--gt-blue);
-  height: 40px;
-  min-height: 40px;
-  font-size: 15px;
+  height: 44px;
+  min-height: 44px;
+  font-size: 14px;
   font-weight: 600;
   transition: transform 0.2s var(--ease-out);
 }
@@ -90,7 +128,15 @@ ion-toolbar ion-back-button {
 ion-toolbar ion-button.button-has-icon-only {
   --padding-start: 0;
   --padding-end: 0;
-  width: 40px;
+  width: 44px;
+}
+ion-toolbar ion-back-button.gt-back--icon {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 44px;
+}
+ion-toolbar ion-back-button.gt-back--icon .button-text {
+  display: none;
 }
 ion-toolbar ion-button[disabled] {
   opacity: 0.5;
@@ -151,10 +197,10 @@ ion-searchbar .searchbar-input {
 ion-tab-bar {
   --background: var(--gt-glass-strong);
   height: var(--gt-tabbar-h);
-  margin: 0 var(--sp-4) calc(var(--sp-2) + var(--ion-safe-area-bottom, 0px));
-  padding: 6px !important;
+  margin: 0 var(--sp-5) max(var(--sp-3), var(--ion-safe-area-bottom, 0px));
+  padding: 8px !important;
   border: 1px solid var(--gt-glass-border) !important;
-  border-radius: 26px;
+  border-radius: 28px;
   box-shadow: var(--gt-shadow-float);
   backdrop-filter: blur(24px) saturate(1.6);
   -webkit-backdrop-filter: blur(24px) saturate(1.6);
@@ -175,6 +221,9 @@ ion-tab-button {
 }
 ion-tab-button.tab-selected {
   background: var(--gt-blue-tint);
+}
+:root:not([data-theme='dark']) ion-tab-button.tab-selected {
+  background: #e3ecff;
 }
 ion-tab-button:active {
   transform: scale(0.92);
@@ -321,11 +370,28 @@ ion-alert {
   --max-width: 320px;
 }
 ion-alert .alert-wrapper {
-  border-radius: var(--r-2xl) !important;
+  border-radius: 32px !important;
   box-shadow: 0 30px 60px rgba(9, 18, 45, 0.35);
 }
 ion-alert .alert-head {
   padding: 24px 20px 6px !important;
+  text-align: center;
+}
+/* Delete confirmation: red trash badge above the title (design "Delete confirmation"). */
+ion-alert.gt-alert-danger .alert-head::before {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  background: var(--gt-danger-tint) var(--gt-trash-icon) center / 28px no-repeat;
+}
+:root {
+  --gt-trash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c62f2f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/%3E%3Cpath d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3Cpath d='M10 11v6'/%3E%3Cpath d='M14 11v6'/%3E%3C/svg%3E");
+}
+:root[data-theme='dark'] {
+  --gt-trash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/%3E%3Cpath d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3Cpath d='M10 11v6'/%3E%3Cpath d='M14 11v6'/%3E%3C/svg%3E");
 }
 ion-alert .alert-title {
   font-size: 18px !important;
@@ -369,10 +435,10 @@ ion-alert .alert-button-group.alert-button-group-vertical {
 }
 ion-alert button.alert-button {
   flex: 1 1 0 !important;
-  min-height: 48px;
+  min-height: 52px;
   margin: 0 !important;
   border: 0 !important;
-  border-radius: var(--r-md) !important;
+  border-radius: 18px !important;
   background: var(--gt-blue) !important;
   color: #fff !important;
   font-size: 16px !important;
@@ -435,6 +501,38 @@ ion-action-sheet .action-sheet-button .action-sheet-button-inner {
 ion-action-sheet .action-sheet-destructive {
   color: var(--gt-danger) !important;
 }
+/* Menus with icons: each option gets a tinted icon tile (design "Create" sheet). */
+ion-action-sheet.gt-sheet-icons .action-sheet-button {
+  min-height: 70px !important;
+  padding: 0 12px !important;
+}
+ion-action-sheet.gt-sheet-icons .action-sheet-icon {
+  box-sizing: border-box;
+  /* ion-icon forces content-box sizing: 22px glyph + 13px padding = 48px tile */
+  width: 22px !important;
+  height: 22px !important;
+  align-self: center;
+  margin-inline-end: 14px !important;
+  padding: 13px;
+  border-radius: 17px;
+  background: var(--gt-blue-tint);
+  color: var(--gt-blue);
+  font-size: 22px;
+  flex: none;
+}
+ion-action-sheet.gt-sheet-icons .action-sheet-destructive .action-sheet-icon {
+  background: var(--gt-danger-tint);
+  color: var(--gt-danger);
+}
+ion-action-sheet .action-sheet-group:not(.action-sheet-group-cancel)::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 5px;
+  margin: 4px auto 6px;
+  border-radius: 3px;
+  background: var(--gt-separator);
+}
 ion-action-sheet .action-sheet-group-cancel .action-sheet-button {
   justify-content: center;
   background: var(--gt-surface-2) !important;
@@ -466,10 +564,14 @@ ion-modal::part(handle) {
   opacity: 0.45;
 }
 
+ion-toast.gt-toast::part(icon) {
+  color: #ffb45e;
+  font-size: 22px;
+}
 ion-toast {
-  --background: var(--gt-navy);
+  --background: #0f1b3f;
   --color: #fff;
-  --border-radius: var(--r-lg);
+  --border-radius: 18px;
   --box-shadow: 0 12px 28px rgba(9, 18, 45, 0.3);
   --button-color: #7cc0ff;
   font-weight: 500;

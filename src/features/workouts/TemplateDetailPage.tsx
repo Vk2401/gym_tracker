@@ -1,7 +1,6 @@
 import {
   IonButton,
   IonCheckbox,
-  IonContent,
   IonFab,
   IonFabButton,
   IonFooter,
@@ -12,13 +11,14 @@ import {
   IonItemSliding,
   IonLabel,
   IonList,
-  IonListHeader,
   IonNote,
   IonPage,
   IonReorder,
   IonReorderGroup,
 } from '@ionic/react';
-import { DumbbellIcon, EllipsisIcon, PlusIcon, ShareIcon } from 'lucide-react';
+import { Content } from '@/components/Content';
+import { DumbbellIcon, EllipsisIcon, PlayIcon, PlusIcon, ShareIcon, TimerIcon } from 'lucide-react';
+import { templateTotals } from '@/domain/totals';
 import { Icon } from '@/components/Icon';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -31,9 +31,12 @@ import { PageHeader } from '@/components/PageHeader';
 import { SetTable } from '@/components/SetTable';
 import { useStartWorkout } from '@/app/useStartWorkout';
 import { mutate } from '@/db/mutate';
-import type { TemplateItem } from '@/db/models';
+import type { TemplateExerciseItem, TemplateItem } from '@/db/models';
+import { setChipText } from '@/domain/setText';
+import type { DistanceUnit, WeightUnit } from '@/domain/types';
+import { Sheet } from '@/components/Sheet';
 import * as wo from '@/db/repos/workouts';
-import { EMPTY } from '@/domain/messages';
+import { EMPTY, MENU_SUB } from '@/domain/messages';
 import { templateShareText } from '@/domain/share';
 import { supersetLabels, templateBlocks } from './blocks';
 import { MSG_EXTRA } from '@/domain/messages';
@@ -53,6 +56,7 @@ export default function TemplateDetailPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [picker, setPicker] = useState<null | 'exercise' | 'superset'>(null);
   const [groupSheet, setGroupSheet] = useState(false);
+  const [setsFor, setSetsFor] = useState<string | null>(null);
   const start = useStartWorkout();
   const { promptName, actions, alert, confirmDelete } = useDialogs();
 
@@ -60,14 +64,18 @@ export default function TemplateDetailPage() {
     return (
       <IonPage>
         <PageHeader title="" back={{ href: '/workouts', text: 'Workouts' }} />
-        <IonContent>
+        <Content>
           {!loading && <EmptyState icon={DumbbellIcon} fill message={MSG_EXTRA.templateMissing} />}
-        </IonContent>
+        </Content>
       </IonPage>
     );
   }
 
   const labels = supersetLabels(t.items);
+  const setsItem = t.items.find(
+    (i): i is TemplateExerciseItem => i.kind === 'exercise' && i.id === setsFor,
+  );
+  const totals = templateTotals(t.items.flatMap((i) => (i.kind === 'exercise' ? [i] : [])));
   const units = { weight: prefs.weightUnit, distance: prefs.distanceUnit };
 
   const addWod = () =>
@@ -92,10 +100,10 @@ export default function TemplateDetailPage() {
 
   // WT-4
   const onFab = async () => {
-    const c = await actions(undefined, [
-      { text: 'Add Workout of the Day', value: 'wod' },
-      { text: 'Add SuperSet', value: 'superset' },
-      { text: 'Add Exercise', value: 'exercise' },
+    const c = await actions('Add to workout', [
+      { text: 'Add Exercise', value: 'exercise', icon: 'dumbbell', subtitle: MENU_SUB.addExercise },
+      { text: 'Add SuperSet', value: 'superset', icon: 'layers', subtitle: MENU_SUB.addSuperset },
+      { text: 'Add Workout of the Day', value: 'wod', icon: 'timer', subtitle: MENU_SUB.addWod },
     ]);
     if (c === 'wod') void addWod();
     if (c === 'superset' || c === 'exercise') setPicker(c);
@@ -104,8 +112,15 @@ export default function TemplateDetailPage() {
   const itemMenu = async (i: TemplateItem) => {
     const name = i.kind === 'wod' ? i.title : i.exercise.name;
     const c = await actions(name, [
-      ...(i.supersetGroup ? [{ text: 'Remove from Superset', value: 'ungroup' as const }] : []),
-      { text: 'Remove', value: 'remove' as const, role: 'destructive' as const },
+      ...(i.supersetGroup
+        ? [{ text: 'Remove from Superset', value: 'ungroup' as const, icon: 'ungroup' as const }]
+        : []),
+      {
+        text: 'Remove',
+        value: 'remove' as const,
+        role: 'destructive' as const,
+        icon: 'trash' as const,
+      },
     ]);
     if (c === 'ungroup') await mutate((db) => wo.ungroupTemplateItem(db, i.id));
     if (c === 'remove' && (await confirmDelete(name)))
@@ -154,8 +169,37 @@ export default function TemplateDetailPage() {
           </>
         }
       />
-      <IonContent>
+      <Content>
         <h1 className="gt-large-title">{t.name}</h1>
+        {!editing && (
+          <section className="gt-hero">
+            <div className="gt-glow gt-glow--light" aria-hidden="true" />
+            <div className="gt-hero__stats">
+              <div>
+                <strong className="num">{totals.exercises}</strong>
+                <span>Exercises</span>
+              </div>
+              <div>
+                <strong className="num">{totals.sets}</strong>
+                <span>Sets</span>
+              </div>
+              <div>
+                <strong className="num">{totals.reps}</strong>
+                <span>Reps</span>
+              </div>
+            </div>
+            {/* PD-1 */}
+            <IonButton
+              expand="block"
+              className="gt-hero__cta"
+              disabled={t.items.length === 0}
+              onClick={() => void start({ kind: 'template', templateId: t.id })}
+            >
+              <Icon slot="start" icon={PlayIcon} className="gt-play" />
+              Start Workout
+            </IonButton>
+          </section>
+        )}
 
         {editing ? (
           <>
@@ -167,8 +211,8 @@ export default function TemplateDetailPage() {
                 </IonNote>
               </IonItem>
             </IonList>
+            <h2 className="gt-section-title">Exercises</h2>
             <IonList inset>
-              <IonListHeader>Exercises</IonListHeader>
               <IonReorderGroup
                 disabled={false}
                 onIonItemReorder={(e) => {
@@ -213,8 +257,8 @@ export default function TemplateDetailPage() {
           </>
         ) : (
           <>
+            <h2 className="gt-section-title">Note</h2>
             <IonList inset>
-              <IonListHeader>Note</IonListHeader>
               <IonItem lines="none">
                 <NoteField
                   ariaLabel="Template note"
@@ -224,8 +268,8 @@ export default function TemplateDetailPage() {
                 />
               </IonItem>
             </IonList>
+            <h2 className="gt-section-title">Settings</h2>
             <IonList inset>
-              <IonListHeader>Settings</IonListHeader>
               <IonItem button detail onClick={() => setGroupSheet(true)}>
                 <IonLabel>Group</IonLabel>
                 <span slot="end" className="gt-inline">
@@ -244,6 +288,7 @@ export default function TemplateDetailPage() {
               />
             )}
 
+            {t.items.length > 0 && <h2 className="gt-section-title">Exercises</h2>}
             {t.items.map((i) => (
               <IonList
                 inset
@@ -251,16 +296,34 @@ export default function TemplateDetailPage() {
                 className={`gt-block ${i.supersetGroup ? 'gt-block--superset' : ''}`}
               >
                 <IonItem lines="none" className="gt-block__head">
+                  <span
+                    slot="start"
+                    className="gt-xtile"
+                    aria-hidden="true"
+                    style={
+                      i.kind === 'exercise' && i.exercise.categories[0]
+                        ? ({ '--gt-tint': i.exercise.categories[0].color } as React.CSSProperties)
+                        : undefined
+                    }
+                  >
+                    <Icon icon={i.kind === 'wod' ? TimerIcon : DumbbellIcon} />
+                  </span>
                   <IonLabel>
                     {i.supersetGroup && <p className="gt-badge">{labels.get(i.supersetGroup)}</p>}
-                    <h2 className="gt-block__title truncate">
-                      {i.kind === 'wod' ? 'Workout of the Day' : i.exercise.name.toUpperCase()}
+                    <h2 className="gt-block__title">
+                      {i.kind === 'wod' ? 'Workout of the Day' : i.exercise.name}
                     </h2>
-                    {i.kind === 'exercise' && <p>{i.exercise.equipmentName ?? 'None'}</p>}
+                    {i.kind === 'exercise' && (
+                      <p>
+                        {i.exercise.equipmentName ?? 'None'} ·{' '}
+                        {MSG_EXTRA.setCount(i.sets.filter((x) => x.type === 'working').length)}
+                      </p>
+                    )}
                   </IonLabel>
                   <IonButton
                     slot="end"
                     fill="clear"
+                    className="gt-more"
                     aria-label="Options"
                     onClick={() => void itemMenu(i)}
                   >
@@ -293,37 +356,23 @@ export default function TemplateDetailPage() {
                     </IonItem>
                   </>
                 ) : (
-                  <>
-                    <SetTable
-                      mode="template"
-                      primary={i.exercise.primary}
-                      secondary={i.exercise.secondary}
-                      sets={i.sets}
-                      weightUnit={prefs.weightUnit}
-                      distanceUnit={prefs.distanceUnit}
-                      exerciseName={i.exercise.name}
-                      onChange={(id, patch) =>
-                        void mutate((db) => wo.updateTemplateSet(db, id, patch))
-                      }
-                      onDelete={(id) => void mutate((db) => wo.deleteTemplateSet(db, id))}
-                    />
-                    <div className="gt-block__actions">
-                      <IonButton
-                        fill="clear"
-                        size="small"
-                        onClick={() => void mutate((db) => wo.addTemplateSet(db, i.id, 'warmup'))}
+                  // Design: prescribed sets as chips; tapping them opens the editable table.
+                  <button
+                    type="button"
+                    className="gt-setchips"
+                    aria-label={`Edit ${i.exercise.name} sets`}
+                    onClick={() => setSetsFor(i.id)}
+                  >
+                    {i.sets.length === 0 && <span className="gt-setchip">+ Add Set</span>}
+                    {i.sets.map((x) => (
+                      <span
+                        key={x.id}
+                        className={`gt-setchip num${x.type === 'warmup' ? ' gt-setchip--warmup' : ''}`}
                       >
-                        + Add Warmup
-                      </IonButton>
-                      <IonButton
-                        fill="clear"
-                        size="small"
-                        onClick={() => void mutate((db) => wo.addTemplateSet(db, i.id, 'working'))}
-                      >
-                        + Add Set
-                      </IonButton>
-                    </div>
-                  </>
+                        {setChipText(x, i.exercise.primary, i.exercise.secondary, units)}
+                      </span>
+                    ))}
+                  </button>
                 )}
               </IonList>
             ))}
@@ -342,11 +391,11 @@ export default function TemplateDetailPage() {
             </IonFabButton>
           </IonFab>
         )}
-      </IonContent>
+      </Content>
 
-      <IonFooter className="ion-no-border hide-on-keyboard">
-        <div className="gt-footer">
-          {editing ? (
+      {editing && (
+        <IonFooter className="ion-no-border hide-on-keyboard">
+          <div className="gt-footer">
             <IonButton
               expand="block"
               fill="solid"
@@ -355,19 +404,9 @@ export default function TemplateDetailPage() {
             >
               Group{selected.length >= 2 ? ` ${selected.length} as Superset` : ''}
             </IonButton>
-          ) : (
-            // PD-1: Start Workout pinned above the tab bar
-            <IonButton
-              expand="block"
-              fill="solid"
-              disabled={t.items.length === 0}
-              onClick={() => void start({ kind: 'template', templateId: t.id })}
-            >
-              Start Workout
-            </IonButton>
-          )}
-        </div>
-      </IonFooter>
+          </div>
+        </IonFooter>
+      )}
 
       <ExercisePicker
         isOpen={picker !== null}
@@ -383,6 +422,7 @@ export default function TemplateDetailPage() {
           )
         }
       />
+      <SetsSheet item={setsItem} units={units} onClose={() => setSetsFor(null)} />
       <OptionSheet
         isOpen={groupSheet}
         title="Group"
@@ -392,5 +432,57 @@ export default function TemplateDetailPage() {
         onSelect={(groupId) => void mutate((db) => wo.updateTemplate(db, t.id, { groupId }))}
       />
     </IonPage>
+  );
+}
+
+/** WT-5: the editable prescribed sets of one exercise (opened from its set chips). */
+function SetsSheet({
+  item,
+  units,
+  onClose,
+}: {
+  item: TemplateExerciseItem | undefined;
+  units: { weight: WeightUnit; distance: DistanceUnit };
+  onClose: () => void;
+}) {
+  return (
+    <Sheet
+      isOpen={!!item}
+      title={item?.exercise.name ?? 'Sets'}
+      onDismiss={onClose}
+      onDone={onClose}
+    >
+      {item && (
+        <IonList inset className="gt-block">
+          <SetTable
+            mode="template"
+            primary={item.exercise.primary}
+            secondary={item.exercise.secondary}
+            sets={item.sets}
+            weightUnit={units.weight}
+            distanceUnit={units.distance}
+            exerciseName={item.exercise.name}
+            onChange={(id, patch) => void mutate((db) => wo.updateTemplateSet(db, id, patch))}
+            onDelete={(id) => void mutate((db) => wo.deleteTemplateSet(db, id))}
+          />
+          <div className="gt-block__actions">
+            <IonButton
+              fill="clear"
+              size="small"
+              onClick={() => void mutate((db) => wo.addTemplateSet(db, item.id, 'warmup'))}
+            >
+              + Add Warmup
+            </IonButton>
+            <IonButton
+              fill="clear"
+              size="small"
+              onClick={() => void mutate((db) => wo.addTemplateSet(db, item.id, 'working'))}
+            >
+              + Add Set
+            </IonButton>
+          </div>
+        </IonList>
+      )}
+    </Sheet>
   );
 }

@@ -36,3 +36,8 @@ export function volumeKg(sets: readonly SetValues[]): number {
     0,
   );
 }
+
+/** WO-3 totals as separate chips: ["9 Exercises", "30 Sets", "356 Reps"]. */
+export function totalsParts(t: { exercises: number; sets: number; reps: number }): string[] {
+  return formatTotals(t).split(', ');
+}

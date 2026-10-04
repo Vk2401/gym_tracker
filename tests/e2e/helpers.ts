@@ -114,7 +114,26 @@ export const view = (page: Page) =>
 
 /** Deep-link to a route: loads it fresh (data persists), like opening the app at that screen. */
 export async function nav(page: Page, hash: string) {
+  await flushWrites(page);
   await page.goto(`/${hash}`);
   await page.reload();
   await page.waitForFunction(() => (window as unknown as { __gt?: unknown }).__gt !== undefined);
+}
+
+/** WT-5: a template shows set chips; tapping them opens the editable set table. */
+export async function openSets(page: Page, exercise: string) {
+  await view(page)
+    .getByRole('button', { name: `Edit ${exercise} sets` })
+    .click();
+  await page.locator('ion-modal').getByLabel(`${exercise} set 1 reps`).waitFor();
+}
+
+/**
+ * Waits until every queued write has been committed and persisted (mutate() serialises them),
+ * so a reload never races the web build's async IndexedDB save.
+ */
+export async function flushWrites(page: Page) {
+  await page
+    .evaluate(() => (window as any).__gt?.mutate(async () => undefined))
+    .catch(() => undefined);
 }
