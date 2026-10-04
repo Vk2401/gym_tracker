@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PD-20: theme-aware launch screen (Android 11 and older, and the splash plugin's view):
+     the app's ground colour for the phone's light/dark mode with the logo centred. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/gt_splash_bg" />
+    <item
+        android:width="168dp"
+        android:height="144dp"
+        android:gravity="center"
+        android:drawable="@drawable/gt_splash_logo" />
+</layer-list>

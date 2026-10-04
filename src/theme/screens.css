@@ -1052,3 +1052,18 @@ ion-item {
   justify-content: center;
   padding-bottom: var(--sp-6);
 }
+
+/* ---------- PD-20 permissions ---------- */
+ion-note.gt-perm {
+  font-size: 14px;
+  font-weight: 600;
+}
+ion-note.gt-perm--granted {
+  color: var(--gt-success);
+}
+ion-note.gt-perm--prompt {
+  color: var(--gt-blue);
+}
+ion-note.gt-perm--blocked {
+  color: var(--gt-danger);
+}

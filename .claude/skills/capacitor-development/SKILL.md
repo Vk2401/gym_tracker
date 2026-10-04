@@ -72,8 +72,10 @@ Wrapper rules:
 
 - Export plain async functions with typed results; check `Capacitor.isNativePlatform()` and
   provide a web fallback (e.g. `navigator.share` / download, `setTimeout` for notifications).
-- Request permissions **only when first needed** (BRD §16 permission prompts): notification
-  permission on the first rest timer, Health on enabling ST-5.
+- Permissions (BRD PD-20): the native app explains and requests notifications, then Android's
+  exact-alarm switch, once on first launch (`app/PermissionsPrompt.tsx`); Health on enabling
+  ST-5. All checks/requests go through `native/permissions.ts`; Settings → Permissions shows
+  their status. Keep-awake and haptics need no prompt.
 - Never import `@capacitor/*` outside `src/native/`.
 
 ## 4. Data layer (SQLite)

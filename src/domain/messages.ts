@@ -33,6 +33,32 @@ export const MSG = {
 } as const;
 
 /** Not in §14; needed for VR-1 length/empty checks and VR-3 max length. */
+/** PD-20: device permissions for native features. Not in §14. */
+export const PERMISSIONS = {
+  section: 'Permissions',
+  notifications: 'Notifications',
+  notificationsWhy: 'Rest-timer alerts when the app is in the background',
+  alarms: 'Alarms & reminders',
+  alarmsWhy: 'Lets the rest-timer alert arrive exactly on time',
+  keepAwake: 'Keep screen on',
+  keepAwakeWhy: 'Screen stays on during a workout — no permission needed',
+  granted: 'Allowed',
+  prompt: 'Allow',
+  blocked: 'Off',
+  unavailable: 'Not on this device',
+  blockedHelp:
+    'Notifications are turned off for Gym Tracker. Turn them on in your phone’s Settings → Apps → Gym Tracker → Notifications.',
+  askNotificationsTitle: 'Allow notifications?',
+  askNotifications:
+    'Gym Tracker alerts you when your rest is over, even when the app is in the background. Nothing else is ever sent.',
+  askAlarmsTitle: 'Allow exact alarms?',
+  askAlarms:
+    'So the rest-timer alert arrives on the second, turn on “Allow setting alarms and reminders” for Gym Tracker on the next screen.',
+  notNow: 'Not Now',
+  allow: 'Allow',
+  openSettings: 'Open Settings',
+} as const;
+
 /** PD-19: importing workout history (CSV or JSON). Not in §14. */
 export const IMPORT_MSG = {
   title: 'Import Workouts',

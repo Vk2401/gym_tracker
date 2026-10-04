@@ -26,6 +26,9 @@ test('popups with a text field focus it on open; the keyboard resize glides them
 test('sheets with a search field focus it on open (Add Exercise)', async ({ page }) => {
   await openApp(page);
   await page.locator('ion-toolbar ion-button.gt-btn-dark').click(); // Quick Go!
-  await view(page).getByRole('button', { name: /Add Exercise/ }).first().click();
+  await view(page)
+    .getByRole('button', { name: /Add Exercise/ })
+    .first()
+    .click();
   await expect(page.locator('ion-modal.show-modal ion-searchbar input')).toBeFocused();
 });

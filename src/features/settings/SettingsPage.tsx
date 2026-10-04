@@ -41,6 +41,7 @@ import { setAppearance } from '@/app/appearance';
 import { track } from '@/app/analytics';
 import { OptionSheet } from '@/components/OptionSheet';
 import { ImportSheet } from './ImportSheet';
+import { PermissionsSection } from './PermissionsSection';
 import { PageHeader } from '@/components/PageHeader';
 import { getDb } from '@/db/client';
 import { mutate } from '@/db/mutate';
@@ -348,6 +349,8 @@ export default function SettingsPage() {
             </div>
           </IonItem>
         </IonList>
+
+        <PermissionsSection />
 
         <h2 className="gt-section-title">Data</h2>
 

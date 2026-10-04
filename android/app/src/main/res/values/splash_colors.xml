@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- PD-20: launch screen = the app's light ground (index.html .splash uses the same). -->
+    <color name="gt_splash_bg">#EBF1FE</color>
+</resources>

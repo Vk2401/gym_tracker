@@ -31,6 +31,7 @@ import WorkoutsPage from '@/features/workouts/WorkoutsPage';
 import { setPref } from '@/hooks/usePrefs';
 import { useAppStore } from '@/store/appStore';
 import { BottomBars } from './BottomBars';
+import { PermissionsPrompt } from './PermissionsPrompt';
 import { RootTabButton } from './RootTabButton';
 import { ActionMenuHost } from '@/components/ActionMenu';
 import './App.css';
@@ -134,6 +135,7 @@ export default function App() {
           </IonTabs>
           <BottomBars />
           <AnalyticsPrompt />
+          <PermissionsPrompt />
           <ActionMenuHost />
         </IonReactHashRouter>
       )}

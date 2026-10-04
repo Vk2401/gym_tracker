@@ -2,7 +2,7 @@
 black). Run after changing the logo:  python3 scripts/generate-brand-assets.py  (needs Pillow).
 
 Outputs: public/ (favicon, apple-touch, PWA + maskable icons, transparent logo for the web
-splash), Android launcher + splash drawables, iOS AppIcon + launch image.
+splash), Android launcher icons + splash logo, iOS AppIcon + light/dark launch images.
 """
 from pathlib import Path
 
@@ -10,6 +10,10 @@ from PIL import Image, ImageChops, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 BG = (0, 0, 0, 255)  # the logo is drawn for a black background
+# PD-20 launch screens use the app's ground: light / dark (Android values[-night]/splash_colors.xml,
+# index.html .splash).
+SPLASH_LIGHT = (0xEB, 0xF1, 0xFE, 255)
+SPLASH_DARK = (0x0A, 0x14, 0x30, 255)
 # App icon background: diagonal brand-blue gradient (light top-left → deep bottom-right).
 ICON_TOP_LEFT = (74, 156, 246)
 ICON_BOTTOM_RIGHT = (30, 74, 206)
@@ -97,21 +101,16 @@ def main() -> None:
         fg = round(px * 108 / 48)
         save(place(logo, fg, fg, 0.52, bg=(0, 0, 0, 0)), d / 'ic_launcher_foreground.png')
 
-    # Android launch image (pre-Android 12; 12+ uses the adaptive icon on black, styles.xml)
-    save(place(logo, 480, 480, 0.4), RES / 'drawable/splash.png', opaque=True)
-    for density, (w, h) in {
-        'mdpi': (320, 480), 'hdpi': (480, 800), 'xhdpi': (720, 1280),
-        'xxhdpi': (960, 1600), 'xxxhdpi': (1280, 1920),
-    }.items():
-        save(place(logo, w, h, 0.42), RES / f'drawable-port-{density}/splash.png', opaque=True)
-        save(place(logo, h, w, 0.42), RES / f'drawable-land-{density}/splash.png', opaque=True)
+    # Android launch screen: drawable/splash.xml layers this logo on @color/gt_splash_bg, which
+    # follows the phone's light/dark mode (12+ uses the adaptive icon on the same colour).
+    save(web_logo, RES / 'drawable-nodpi/gt_splash_logo.png')
 
     # iOS: App Store icon must be opaque; launch image is aspect-filled so the logo sits in
     # the middle 22 % (≈ 40 % of a phone's width).
     save(icon(logo, 1024, 0.76), IOS / 'AppIcon.appiconset/AppIcon-512@2x.png', opaque=True)
-    splash = place(logo, 2732, 2732, 0.22)
-    for name in ('splash-2732x2732.png', 'splash-2732x2732-1.png', 'splash-2732x2732-2.png'):
-        save(splash, IOS / 'Splash.imageset' / name, opaque=True)
+    # Light and dark variants; Splash.imageset/Contents.json picks by the phone's appearance.
+    save(place(logo, 2732, 2732, 0.22, bg=SPLASH_LIGHT), IOS / 'Splash.imageset/splash-light.png', opaque=True)
+    save(place(logo, 2732, 2732, 0.22, bg=SPLASH_DARK), IOS / 'Splash.imageset/splash-dark.png', opaque=True)
 
 
 if __name__ == '__main__':
