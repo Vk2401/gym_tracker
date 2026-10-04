@@ -42,6 +42,11 @@
   height: 200px;
   margin-top: var(--sp-2);
 }
+/* XP-2 consistency card: 96px of columns plus week labels (design). */
+.gt-card--navy .gt-chart {
+  height: 120px;
+  margin-top: var(--sp-4);
+}
 .gt-stat {
   display: flex;
   align-items: baseline;

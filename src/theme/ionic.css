@@ -28,7 +28,9 @@
   --ion-tab-bar-border-color: transparent;
   --ion-card-background: var(--gt-surface);
   --ion-overlay-background-color: var(--gt-surface);
-  --ion-backdrop-color: #09122d;
+  /* Design scrim: navy at 45 % with a blur. The tint lives in the colour, not in the backdrop's
+     opacity — an opacity < 1 also fades the blur, leaving a flat grey wash. */
+  --ion-backdrop-color: rgba(9, 18, 45, 0.45);
 }
 
 /* ---------- ground ---------- */
@@ -60,7 +62,6 @@ ion-header.gt-header {
 ion-header.gt-header.gt-header--scrolled {
   background: var(--gt-glass);
   backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
   box-shadow: 0 1px 0 var(--gt-separator);
 }
 ion-title.gt-header__mini {
@@ -94,9 +95,15 @@ ion-toolbar {
   --padding-start: var(--sp-4);
   --padding-end: var(--sp-4);
   --min-height: 56px;
+  /* Ionic's paint containment cut the pills' drop shadows (Finish) into a hard line. */
+  contain: none;
+}
+ion-toolbar::part(container) {
+  contain: none;
+  overflow: visible;
 }
 ion-toolbar ion-buttons {
-  gap: var(--sp-3);
+  gap: var(--sp-2);
 }
 ion-toolbar ion-button,
 ion-toolbar ion-back-button {
@@ -105,14 +112,14 @@ ion-toolbar ion-back-button {
   --background-activated: var(--gt-glass-strong);
   --background-focused: var(--gt-glass-strong);
   --border-radius: var(--r-pill);
-  --padding-start: 20px;
-  --padding-end: 20px;
+  --padding-start: 18px;
+  --padding-end: 18px;
   --box-shadow: inset 0 0 0 1px var(--gt-glass-border);
   /* iOS toolbar buttons paint their label with --ion-toolbar-color */
   --ion-toolbar-color: var(--gt-blue);
-  height: 48px;
-  min-height: 48px;
-  font-size: 15px;
+  height: 44px;
+  min-height: 44px;
+  font-size: 14px;
   font-weight: 600;
   transition: transform 0.2s var(--ease-out);
 }
@@ -121,15 +128,15 @@ ion-toolbar ion-back-button {
    padding — re-assert the design's pill shape and spacing with a stronger selector. */
 ion-toolbar ion-button.in-buttons:not(.button-round) {
   --border-radius: var(--r-pill);
-  --padding-start: 20px;
-  --padding-end: 20px;
+  --padding-start: 18px;
+  --padding-end: 18px;
   --padding-top: 0;
   --padding-bottom: 0;
-  min-height: 48px;
+  min-height: 44px;
   margin: 0;
 }
 ion-toolbar ion-button .gt-icon[slot='start'] {
-  margin-inline-end: var(--sp-2);
+  margin-inline-end: 6px;
 }
 ion-toolbar ion-button:active,
 ion-toolbar ion-back-button:active {
@@ -143,12 +150,12 @@ ion-toolbar ion-back-button {
 ion-toolbar ion-button.in-buttons.button-has-icon-only:not(.button-round) {
   --padding-start: 0;
   --padding-end: 0;
-  width: 48px;
+  width: 44px;
 }
 ion-toolbar ion-back-button.gt-back--icon {
   --padding-start: 0;
   --padding-end: 0;
-  width: 48px;
+  width: 44px;
 }
 ion-toolbar ion-back-button.gt-back--icon .button-text {
   display: none;
@@ -156,13 +163,15 @@ ion-toolbar ion-back-button.gt-back--icon .button-text {
 ion-toolbar ion-button[disabled] {
   opacity: 0.5;
 }
-/* Navy pill (Quick Go!) */
-ion-toolbar ion-button.gt-btn-dark {
+/* Navy pill (Quick Go!): no drop shadow, as in the design. */
+ion-toolbar ion-button.gt-btn-dark.in-buttons:not(.button-round) {
   --background: #0f1b3f;
   --background-activated: #0f1b3f;
   --color: #fff;
   --ion-toolbar-color: #fff;
-  --box-shadow: var(--gt-shadow-navy);
+  --box-shadow: none;
+  --padding-start: 12px;
+  --padding-end: 16px;
 }
 :root[data-theme='dark'] ion-toolbar ion-button.gt-btn-dark {
   --background: #fff;
@@ -202,6 +211,10 @@ ion-toolbar ion-searchbar {
 }
 ion-searchbar .searchbar-input-container {
   height: 46px !important;
+  contain: none; /* Ionic's paint containment clips the field's shadow into a square */
+}
+ion-searchbar.gt-search {
+  contain: none;
 }
 ion-searchbar .searchbar-input {
   font-size: 16px !important;
@@ -218,17 +231,16 @@ ion-tab-bar {
   border-radius: 28px;
   box-shadow: var(--gt-shadow-float);
   backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
   contain: none;
   gap: 2px;
 }
 ion-tab-button {
+  --background: transparent; /* else each tab repaints the bar's glass as a faint box */
   --color: var(--gt-tab-inactive);
   --color-selected: var(--gt-blue);
   --ripple-color: transparent;
   min-height: var(--tap-min);
   border-radius: 20px;
-  font-size: 11px; /* fixed chrome: px, never scales (device-independence §2.4) */
   font-weight: 600;
   transition:
     background-color 0.3s var(--ease-out),
@@ -252,14 +264,23 @@ ion-tab-button .gt-icon {
 ion-tab-button.tab-selected .gt-icon {
   transform: translateY(-1px) scale(1.06);
 }
+/* Design: 11px/600 labels. Set on the label itself — Ionic's label styles otherwise win
+   (it rendered at 14px, crowding the bar) — with a full line box so descenders such as
+   the "g" in Logs are not clipped. Fixed chrome: px, never scales (device-independence §2.4). */
 ion-tab-button ion-label {
   margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow: visible;
 }
 
 /* ---------- lists / rows: rounded cards ---------- */
-ion-list.list-inset,
+/* `.list-ios` is in the selector to out-rank Ionic's own `.list-ios.list-inset` (10px radius,
+   16px margins), which otherwise wins and undoes the design's 24px cards on a 20px gutter. */
+ion-list.list-ios.list-inset,
 ion-list[inset] {
-  margin: var(--sp-3) var(--sp-4);
+  margin: var(--sp-3) var(--sp-5);
   border-radius: var(--r-xl);
   box-shadow: var(--gt-shadow-card);
   background: var(--gt-surface);
@@ -361,6 +382,8 @@ ion-segment {
   min-height: 42px;
 }
 ion-segment-button {
+  --border-width: 0; /* design: no dividers between the range options */
+  --border-color: transparent;
   --indicator-color: var(--gt-surface);
   --indicator-box-shadow: 0 4px 12px rgba(26, 63, 160, 0.14);
   --border-radius: 11px;
@@ -381,7 +404,7 @@ ion-toggle {
 /* ---------- overlays: alerts, action sheets, sheets, toasts ---------- */
 ion-alert {
   --background: var(--gt-surface);
-  --backdrop-opacity: 0.45;
+  --backdrop-opacity: 1;
   --max-width: 320px;
 }
 ion-alert .alert-wrapper {
@@ -474,7 +497,7 @@ ion-alert button.alert-button.alert-button-role-destructive {
 
 ion-action-sheet {
   --background: var(--gt-surface);
-  --backdrop-opacity: 0.45;
+  --backdrop-opacity: 1;
   --button-color: var(--gt-text);
   --button-background-activated: var(--gt-blue);
   --button-background-activated-opacity: 0.06;
@@ -558,7 +581,7 @@ ion-action-sheet .action-sheet-group-cancel .action-sheet-button-inner {
 
 ion-modal {
   --border-radius: var(--r-2xl);
-  --backdrop-opacity: 0.45;
+  --backdrop-opacity: 1;
   --background: var(--gt-bg-grouped);
 }
 ion-modal ion-content {
@@ -596,8 +619,12 @@ ion-spinner {
   color: var(--gt-blue);
 }
 
-/* Frosted backdrop behind alerts, sheets and modals */
-ion-backdrop {
+/* Frosted backdrop behind alerts, sheets and modals (design: 6px; alerts 8px). ion-modal
+   renders its backdrop in shadow DOM, so it is reached through ::part. */
+ion-backdrop,
+ion-modal::part(backdrop) {
   backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+}
+ion-alert ion-backdrop {
+  backdrop-filter: blur(8px);
 }

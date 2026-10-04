@@ -20,6 +20,10 @@
   padding: 2px var(--sp-5) 0;
   animation: gt-rise 0.5s var(--ease-out) both;
 }
+/* Design: 20px between the header pills and the date chip / title (Workouts, Logs). */
+.ion-page:has(> ion-header:not(.gt-header--bare)) .gt-screen-title {
+  padding-top: 14px;
+}
 .gt-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -108,6 +112,15 @@
   min-height: 0;
   overflow: hidden;
 }
+/* Once expanded, stop clipping so the cards' soft shadows are not cut into hard edges. */
+.gt-collapse.is-open .gt-collapse__inner {
+  animation: gt-unclip 0s 0.42s forwards;
+}
+@keyframes gt-unclip {
+  to {
+    overflow: visible;
+  }
+}
 
 .gt-cards {
   display: flex;
@@ -185,7 +198,7 @@
   font-weight: 700;
   color: var(--gt-blue);
 }
-.gt-xsection ion-list.list-inset {
+.gt-xsection ion-list.list-ios.list-inset {
   margin-top: 0;
 }
 .gt-xrow {
