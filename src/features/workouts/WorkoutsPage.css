@@ -8,3 +8,10 @@
 .gt-chevron--closed {
   transform: rotate(-90deg);
 }
+
+.gt-edit-hint {
+  margin: var(--sp-4) var(--sp-8) 0;
+  font-size: var(--fs-footnote);
+  color: var(--gt-text-secondary);
+  text-align: center;
+}

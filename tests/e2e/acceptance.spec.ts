@@ -430,3 +430,39 @@ test('AC-18 (VR-3): End Time earlier than Start Time is blocked via the wheel pi
   await sheet.getByRole('button', { name: 'Done' }).click();
   await expect(v.getByRole('button', { name: 'End Time time' })).toHaveText('12:45');
 });
+
+test('WO-6 / PD-5 / VR-11: edit mode can rename and recolour Default and add templates', async ({
+  page,
+}) => {
+  await openApp(page);
+  const v = view(page);
+  await v.getByRole('button', { name: 'Edit' }).click();
+  await expect(v.getByRole('button', { name: 'Add', exact: true })).toBeVisible(); // FAB stays
+
+  // Default: rename + recolour, no delete (VR-11)
+  await v.locator('ion-item', { hasText: 'Default' }).first().click();
+  const sheet = page.locator('ion-action-sheet');
+  await expect(sheet.getByRole('button', { name: 'Rename' })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Change Colour' })).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Delete' })).toHaveCount(0);
+  await sheet.getByRole('button', { name: 'Rename' }).click();
+  await page.locator('ion-alert input').fill('My Split');
+  await page.locator('ion-alert').getByRole('button', { name: 'Save' }).click();
+  await expect(v.locator('ion-item', { hasText: 'My Split' }).first()).toBeVisible();
+
+  await v.locator('ion-item', { hasText: 'My Split' }).first().click();
+  await page.locator('ion-action-sheet').getByRole('button', { name: 'Change Colour' }).click();
+  await page.locator('ion-modal ion-item', { hasText: 'Green' }).click();
+  await expect(v.locator('ion-item', { hasText: 'My Split' }).first().locator('.gt-dot')).toHaveCSS(
+    'background-color',
+    'rgb(34, 197, 94)',
+  );
+
+  // add a template straight into the group from edit mode
+  await v.getByText('Add Workout Template').click();
+  await page.locator('ion-alert input').fill('Monday - Chest');
+  await page.locator('ion-alert').getByRole('button', { name: 'Save' }).click();
+  await expect(
+    view(page).locator('h1.gt-large-title', { hasText: 'Monday - Chest' }),
+  ).toBeVisible();
+});
