@@ -2,11 +2,14 @@ name: Android APK
 
 # Builds the native Android shell. The shell loads the hosted web app from APP_URL in its
 # WebView; Capacitor provides only the native features.
+#
+# Runs ONLY on request — never on ordinary pushes (web changes ship via Vercel, no APK needed):
+#   git tag apk-v1.2.0 && git push origin apk-v1.2.0   → APK + GitHub Release "apk-v1.2.0"
+#   or Actions → Android APK → Run workflow             → APK as a run artifact only
 on:
   push:
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
+    tags:
+      - 'apk-v*'
   workflow_dispatch:
     inputs:
       app_url:
@@ -17,6 +20,9 @@ on:
 concurrency:
   group: apk-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: write # attach the APK to the tag's GitHub Release
 
 jobs:
   apk:
@@ -46,9 +52,15 @@ jobs:
           npm run build:shell
           npx cap sync android
 
+      # Tag apk-v1.2.0 → versionName 1.2.0; a manual run uses package.json's version.
       - name: Read version
         id: version
-        run: echo "name=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "name=${GITHUB_REF_NAME#apk-v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Restore release keystore
         id: keystore
@@ -90,3 +102,12 @@ jobs:
           name: gym-tracker-apk-${{ steps.version.outputs.name }}-${{ github.run_number }}
           path: out/*.apk
           retention-days: 30
+
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" out/*.apk \
+            --title "Gym Tracker APK ${{ steps.version.outputs.name }}" \
+            --generate-notes

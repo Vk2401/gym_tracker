@@ -134,11 +134,12 @@ real bug where completing a set started the rest timer and the completion vanish
 
 ## 7. Builds and testing
 
-- **APK via GitHub Actions** (`.github/workflows/android-apk.yml`): on every push and on
-  manual dispatch (optional `app_url` input). Steps: `npm ci` → `build:shell` →
+- **APK via GitHub Actions** (`.github/workflows/android-apk.yml`): **only** when a tag
+  `apk-v<version>` is pushed (APK attached to a GitHub Release of that tag) or on manual
+  dispatch (optional `app_url` input; artifact only) — never on ordinary pushes. Steps: `npm ci` → `build:shell` →
   `cap sync android` → `./gradlew assembleDebug` (+ `assembleRelease` when the keystore
-  secrets exist) with `-PversionCode=<run number> -PversionName=<package.json version>`.
-  Download the APK from the run's **Artifacts**.
+  secrets exist) with `-PversionCode=<run number> -PversionName=<tag version, else
+package.json version>`. Download the APK from the tag's **Release** or the run's **Artifacts**.
 - Release signing secrets: `ANDROID_KEYSTORE_BASE64` (`base64 -w0 release.jks`),
   `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. Repo variable
   `APP_URL` (or the workflow's `app_url` input) overrides `app.config.json`.

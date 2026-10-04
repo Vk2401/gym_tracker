@@ -64,13 +64,18 @@ APP_URL=http://<lan-ip>:5173/ npm run cap:sync   # point a dev build at your dev
 
 CI (`.github/workflows/`):
 
-| Workflow          | Does                                                                          |
-| ----------------- | ----------------------------------------------------------------------------- |
-| `ci.yml`          | lint, typecheck, unit tests + domain coverage gate, build, Playwright E2E     |
-| `android-apk.yml` | builds the Android shell → debug APK artifact (+ signed release when secrets) |
+| Workflow          | Does                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `ci.yml`          | lint, typecheck, unit tests + domain coverage gate, build, Playwright E2E           |
+| `android-apk.yml` | **only on an `apk-v*` tag or manual run** → APK (+ signed release) + GitHub Release |
 
 Web deploy: Vercel Git integration (import the repo in Vercel; it reads `vercel.json`,
 builds with `npm run build`, serves `dist/`). Production URL → `app.config.json`.
+
+APK builds are **on request only** — never on ordinary pushes. Build one only when the user
+asks: bump `version` in `package.json` if needed, then tag `Main` and push the tag
+(`git tag apk-v1.2.0 && git push origin apk-v1.2.0`). The tag's GitHub Release holds the APK;
+tags are the APK version history. Web-only changes never need an APK (Vercel deploys them).
 
 APK settings: optional repo variable `APP_URL` (overrides `app.config.json`); secrets
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
@@ -145,7 +150,10 @@ docs/             BRD.md, PLAN.md
 
 ## Git
 
-- Work on the assigned feature branch; small commits, message format:
-  `feat(logs): calendar category dots (LG-4, BR-6)`.
+- **Always push this project to the `Main` branch — in every Claude session**, even when the
+  session assigns a feature branch (the owner's standing instruction). Commit on `Main`
+  (or fast-forward it), run the checks below, then `git push origin Main`. Never force-push
+  `Main`; if it moved, merge `origin/Main` first. Don't create extra branches.
+- Small commits, message format: `feat(logs): calendar category dots (LG-4, BR-6)`.
 - Never commit `dist/`, `node_modules/`, `ios/App/Pods`, `android/.gradle`, signing files
   or `.env*`.
