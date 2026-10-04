@@ -1,0 +1,10 @@
+.gt-group__name {
+  font-weight: 600;
+}
+.gt-chevron {
+  transition: transform 150ms ease;
+  color: var(--gt-text-tertiary);
+}
+.gt-chevron--closed {
+  transform: rotate(-90deg);
+}

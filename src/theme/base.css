@@ -53,3 +53,116 @@ html.keyboard-open .hide-on-keyboard {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---- shared UI pieces (mobile-frontend §3) ---- */
+ion-content {
+  --padding-bottom: var(--gt-bottom-stack, 0px);
+}
+/* Footers (Start Workout, Finish Workout) sit above the rest-timer / resume bars. */
+ion-footer {
+  margin-bottom: var(--gt-bottom-stack, 0px);
+}
+.gt-fab {
+  bottom: calc(var(--gt-bottom-stack, 0px) + 16px);
+}
+.gt-fab-space {
+  height: 96px;
+}
+.gt-footer {
+  --background: var(--gt-bg-grouped);
+  padding: var(--sp-2) var(--sp-4);
+}
+.gt-footer ion-button {
+  min-height: 48px;
+  font-weight: 600;
+  /* Ionic paints solid toolbar buttons with the (white) toolbar colour; keep the CTA blue. */
+  --background: var(--gt-blue) !important;
+  --background-activated: var(--gt-blue-strong) !important;
+  --color: #fff !important;
+  --border-radius: var(--r-md);
+}
+.gt-dot {
+  display: inline-block;
+  flex: none;
+  border-radius: 50%;
+}
+.gt-large-title {
+  margin: var(--sp-4) var(--sp-4) 0;
+  font-size: var(--fs-large-title);
+  font-weight: 700;
+  line-height: 1.15;
+  /* VR-16: long names wrap to two lines, then ellipsis */
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.gt-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  max-width: 60%;
+}
+.gt-link {
+  background: none;
+  border: 0;
+  padding: var(--sp-1) 0;
+  min-height: 32px;
+  color: var(--gt-blue);
+  font-size: var(--fs-footnote);
+  font-weight: 600;
+  cursor: pointer;
+}
+.gt-clamp p {
+  margin: 0;
+  white-space: pre-line;
+}
+.gt-clamp__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gt-note-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.gt-note-right small {
+  font-size: var(--fs-caption);
+  color: var(--gt-text-tertiary);
+}
+.gt-primary {
+  color: var(--gt-blue) !important;
+}
+.gt-seg {
+  width: 9rem;
+}
+.gt-legal h1 {
+  font-size: var(--fs-title);
+}
+.gt-legal h2 {
+  font-size: var(--fs-headline);
+  margin-top: var(--sp-6);
+}
+.gt-legal p,
+.gt-legal li {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--gt-text);
+}
+.gt-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

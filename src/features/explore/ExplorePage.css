@@ -1,0 +1,84 @@
+.gt-range {
+  margin: 0 var(--sp-2) var(--sp-2);
+  --background: rgba(255, 255, 255, 0.2);
+}
+.gt-range ion-segment-button {
+  --color: #fff;
+  --color-checked: var(--gt-blue);
+  --indicator-color: #fff;
+  font-size: 12px;
+  min-width: 0;
+}
+.gt-card {
+  margin: var(--sp-4);
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--gt-surface);
+}
+.gt-card__head h2 {
+  margin: 0;
+  font-size: var(--fs-headline);
+  font-weight: 700;
+}
+.gt-card__head p {
+  margin: 2px 0 var(--sp-3);
+  font-size: var(--fs-footnote);
+  color: var(--gt-text-secondary);
+}
+.gt-card__empty {
+  color: var(--gt-text-secondary);
+  font-size: var(--fs-footnote);
+}
+.gt-card__list {
+  margin: 0 calc(-1 * var(--sp-4));
+  background: transparent;
+}
+.gt-chart {
+  position: relative;
+  height: 200px;
+  margin-top: var(--sp-2);
+}
+.gt-stat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+.gt-stat__value {
+  font-size: var(--fs-large-title);
+  font-weight: 700;
+}
+.gt-stat__label {
+  color: var(--gt-text-secondary);
+}
+.gt-hbars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+.gt-hbars li {
+  display: grid;
+  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr) 2.5rem;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-footnote);
+}
+.gt-hbars__name {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.gt-hbars__track {
+  height: 12px;
+}
+.gt-hbars__bar {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: 0 4px 4px 0;
+}
+.gt-hbars__value {
+  text-align: right;
+  color: var(--gt-text);
+}

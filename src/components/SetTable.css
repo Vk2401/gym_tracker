@@ -1,0 +1,127 @@
+.gt-sets {
+  padding: 0 var(--sp-2);
+}
+.gt-sets__head,
+.gt-set__grid {
+  display: grid;
+  grid-template-columns: var(--gt-set-cols);
+  gap: var(--sp-2);
+  align-items: center;
+}
+.gt-sets__head {
+  padding: var(--sp-2) var(--sp-2) var(--sp-1);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--gt-text-secondary);
+  text-align: center;
+}
+.gt-sets__head span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gt-sets__head small {
+  font-weight: 400;
+  font-size: 0.6875rem;
+}
+.gt-sets__list {
+  padding: 0;
+  background: transparent;
+}
+.gt-set {
+  --padding-start: var(--sp-2);
+  --inner-padding-end: var(--sp-2);
+  --min-height: 52px;
+  --background: transparent;
+}
+.gt-set--done {
+  --background: color-mix(in srgb, var(--gt-blue) 9%, transparent);
+}
+.gt-set__grid {
+  width: 100%;
+}
+.gt-set__num {
+  text-align: center;
+  font-weight: 600;
+  color: var(--gt-text-secondary);
+}
+.gt-set--warmup .gt-set__num {
+  color: var(--gt-blue);
+}
+.gt-set__cell {
+  min-width: 0;
+}
+.gt-input {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--gt-surface-2);
+  color: var(--gt-text);
+  text-align: center;
+  padding: 0 var(--sp-1);
+  outline: none;
+}
+.gt-input::placeholder {
+  color: var(--gt-text-tertiary);
+}
+.gt-input:focus {
+  box-shadow: 0 0 0 2px var(--gt-blue);
+}
+/* PD-15: empty blue-outlined circle → filled blue circle with white mark */
+.gt-check {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: transparent;
+  cursor: pointer;
+}
+.gt-check ion-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--gt-blue);
+  font-size: 20px;
+  box-sizing: border-box;
+  transition: background 120ms ease;
+}
+.gt-check--on ion-icon {
+  background: var(--gt-blue);
+  color: #fff;
+}
+
+/*
+ * Dense data row: text follows the controlled scale but is capped so values never clip at
+ * the largest text size on a 320 px screen (device-independence §2.5). Inputs stay ≥ 16px.
+ */
+.gt-set .gt-input {
+  font-size: 16px;
+  padding: 0 2px;
+  letter-spacing: -0.01em;
+}
+.gt-sets__head {
+  font-size: min(var(--fs-caption), 12px);
+}
+.gt-sets__head small {
+  font-size: 10px;
+}
+.gt-set__num {
+  font-size: min(var(--fs-body), 18px);
+}
+@media (max-width: 360px) {
+  .gt-sets {
+    padding: 0;
+  }
+  .gt-sets__head,
+  .gt-set__grid {
+    gap: 4px;
+  }
+}

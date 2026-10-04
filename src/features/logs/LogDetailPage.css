@@ -1,0 +1,27 @@
+.gt-inline-field {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 7.5rem;
+}
+.gt-inline-field--wide {
+  width: 9rem;
+}
+.gt-unit {
+  color: var(--gt-text-secondary);
+  font-size: var(--fs-footnote);
+  min-width: 1.5rem;
+}
+.gt-notes {
+  color: var(--gt-text-secondary);
+  font-size: var(--fs-footnote);
+}
+.gt-session-note {
+  margin: 0 0 var(--sp-2);
+  color: var(--gt-text);
+  font-style: italic;
+}
+.gt-hint {
+  color: var(--gt-text-secondary);
+  font-size: var(--fs-footnote);
+}

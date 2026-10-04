@@ -1,0 +1,88 @@
+.gt-cal {
+  background: var(--gt-surface);
+  padding: 0 var(--sp-2) 0;
+  border-bottom: 0.5px solid var(--gt-separator);
+}
+.gt-cal__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gt-cal__title {
+  margin: 0;
+  font-size: var(--fs-headline);
+  font-weight: 600;
+}
+.gt-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  justify-items: center;
+}
+.gt-cal__head {
+  font-size: var(--fs-caption);
+  color: var(--gt-text-secondary);
+  padding-bottom: var(--sp-1);
+}
+.gt-day {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 0;
+  background: none;
+  border: 0;
+  color: var(--gt-text);
+  cursor: pointer;
+}
+.gt-day__num {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  border-radius: 50%;
+  font-size: var(--fs-subhead);
+  text-align: center;
+  overflow: hidden;
+}
+.gt-day--today .gt-day__num {
+  color: var(--gt-blue);
+  font-weight: 700;
+}
+/* LG-3: logged days are filled blue circles */
+.gt-day--logged .gt-day__num {
+  background: var(--gt-blue);
+  color: #fff;
+}
+/* LG-5: selected date is a darker blue circle */
+.gt-day--selected .gt-day__num {
+  background: var(--gt-blue-strong);
+  color: #fff;
+  font-weight: 700;
+}
+.gt-day__dots {
+  display: flex;
+  gap: 2px;
+  height: 6px;
+}
+.gt-day__dots .gt-dot {
+  width: 6px;
+  height: 6px;
+}
+.gt-cal__handle {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 24px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.gt-cal__handle span {
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--gt-separator);
+  margin-top: 8px;
+}

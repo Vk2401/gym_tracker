@@ -1,0 +1,10 @@
+.gt-cats {
+  display: flex;
+  gap: var(--sp-3);
+}
+.gt-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  white-space: nowrap;
+}

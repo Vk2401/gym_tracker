@@ -29,6 +29,11 @@ export default tseslint.config(
     },
   },
   {
+    // Playwright page.evaluate callbacks reach into the untyped window.__gt test hook.
+    files: ['tests/e2e/**'],
+    rules: { '@typescript-eslint/no-explicit-any': 'off' },
+  },
+  {
     files: ['src/native/**', 'capacitor.config.ts'],
     rules: { 'no-restricted-imports': 'off' },
   },

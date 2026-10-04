@@ -1,0 +1,29 @@
+.gt-block__head {
+  --min-height: 52px;
+}
+.gt-block__title {
+  font-weight: 700 !important;
+  font-size: var(--fs-subhead) !important;
+  letter-spacing: 0.02em;
+}
+.gt-block--superset {
+  border-left: 4px solid var(--gt-blue);
+}
+.gt-block__actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--sp-2) var(--sp-2);
+}
+.gt-block__actions ion-button {
+  min-height: var(--tap-min);
+  font-size: min(var(--fs-subhead), 17px);
+  white-space: nowrap;
+}
+.gt-badge {
+  display: inline-block;
+  color: var(--gt-blue) !important;
+  font-size: var(--fs-caption) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

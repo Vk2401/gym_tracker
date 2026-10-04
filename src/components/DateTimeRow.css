@@ -1,0 +1,17 @@
+.gt-dt__label {
+  flex: 0 0 auto !important;
+  white-space: nowrap;
+  margin-right: var(--sp-2);
+}
+.gt-dt ion-datetime-button {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+}
+.gt-dt ion-datetime-button::part(native) {
+  background: var(--gt-surface-2);
+  color: var(--gt-text);
+  font-size: var(--fs-subhead);
+  padding: 6px 10px;
+  margin: 2px 0;
+}

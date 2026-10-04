@@ -13,7 +13,7 @@ test('NAV-1/2: five tabs and the seeded exercise library (Gate 1)', async ({ pag
 
   await page.locator('ion-tab-button', { hasText: 'Exercises' }).click();
   // EX-2 / AC-4 order
-  const items = page.locator('ion-item ion-label');
+  const items = page.locator('ion-item h2');
   await expect(items.first()).toHaveText('3/4 Sit-Up');
   await expect(items.nth(1)).toHaveText('90/90 Hamstring');
   await expect(items.nth(2)).toHaveText('Ab Crunch Machine');
