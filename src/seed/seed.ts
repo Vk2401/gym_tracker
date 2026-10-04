@@ -5,11 +5,17 @@ import { SEED_EXERCISES } from './exercises';
 export const DEFAULT_GROUP_ID = 'grp-default';
 
 /**
- * Loads the pre-loaded library (BRD §11) and the Default workout group (VR-11) once.
- * Idempotent: rows that already exist are left untouched.
+ * Loads the pre-loaded library (BRD §11) and the Default workout group (VR-11) into a fresh
+ * database only. The Default group cannot be deleted, so its presence means "already seeded";
+ * library items the user deleted later (VR-9, VR-10, ST-4) are never brought back.
  */
-export async function seed(db: Db): Promise<void> {
-  await db.transaction(async () => {
+export async function seed(db: Db, opts: { inTransaction?: boolean } = {}): Promise<void> {
+  const [seeded] = await db.query<{ n: number }>(
+    'SELECT COUNT(*) AS n FROM workout_group WHERE id = ?',
+    [DEFAULT_GROUP_ID],
+  );
+  if (seeded?.n) return;
+  const body = async () => {
     await db.run(
       `INSERT OR IGNORE INTO workout_group (id, name, color, sort_order, expanded, is_default)
        VALUES (?, 'Default', '#1e7bf2', 0, 1, 1)`,
@@ -38,6 +44,8 @@ export async function seed(db: Db): Promise<void> {
         );
       }
     }
-  });
+  };
+  if (opts.inTransaction) return body();
+  await db.transaction(body);
   await db.persist();
 }

@@ -37,4 +37,10 @@ export const MSG_EXTRA = {
   nameLength: 'Enter a name between 1 and 60 characters.',
   duplicateCategory: (name: string) => `A category called "${name}" already exists.`,
   sessionTooLong: 'A workout can last at most 24 hours.',
+  backupReminder: (n: number) =>
+    `You've logged ${n} workouts since your last backup. Back up now so you don't lose your history.`,
+  emptySession: 'Complete at least one set to save this workout.',
+  noWorkoutsMatch: (q: string) => `No workouts match "${q}".`,
+  workoutInProgress: 'A workout is in progress',
+  resumeOrFinish: 'Resume the current workout, or finish it before starting a new one.',
 } as const;

@@ -11,6 +11,9 @@ export interface Preferences {
   haptics: boolean;
   keepAwake: boolean;
   appearance: Appearance;
+  healthEnabled: boolean;
+  /** BRD §15: null until the user answered the first-launch question. */
+  analyticsOptIn: boolean | null;
 }
 
 interface Row {
@@ -23,6 +26,8 @@ interface Row {
   haptics: number;
   keep_awake: number;
   appearance: Appearance;
+  health_enabled: number;
+  analytics_opt_in: number | null;
 }
 
 const COLUMN: Record<keyof Preferences, keyof Row> = {
@@ -35,6 +40,8 @@ const COLUMN: Record<keyof Preferences, keyof Row> = {
   haptics: 'haptics',
   keepAwake: 'keep_awake',
   appearance: 'appearance',
+  healthEnabled: 'health_enabled',
+  analyticsOptIn: 'analytics_opt_in',
 };
 
 export async function loadPreferences(db: Db): Promise<Preferences> {
@@ -50,6 +57,8 @@ export async function loadPreferences(db: Db): Promise<Preferences> {
     haptics: !!r.haptics,
     keepAwake: !!r.keep_awake,
     appearance: r.appearance,
+    healthEnabled: !!r.health_enabled,
+    analyticsOptIn: r.analytics_opt_in === null ? null : !!r.analytics_opt_in,
   };
 }
 
@@ -58,7 +67,6 @@ export async function savePreference<K extends keyof Preferences>(
   key: K,
   value: Preferences[K],
 ): Promise<void> {
-  const v = typeof value === 'boolean' ? (value ? 1 : 0) : (value as string | number);
+  const v = typeof value === 'boolean' ? (value ? 1 : 0) : (value as string | number | null);
   await db.run(`UPDATE preferences SET ${COLUMN[key]} = ? WHERE id = 1`, [v]);
-  await db.persist();
 }
