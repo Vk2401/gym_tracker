@@ -129,7 +129,6 @@ How BRD items were implemented where the platform forced a choice:
 
 Still open (needs you or a real device):
 
-1. Vercel project + real production URL in `app.config.json` (`appUrl`), then rebuild the APK.
 2. `supportEmail` in `app.config.json` (the Contact Support row is hidden while empty).
 3. iOS: build on a Mac (Xcode), enable the HealthKit capability for the signing team,
    TestFlight. App icon / splash artwork and store listing assets.
@@ -187,5 +186,5 @@ Migration 0002 adds `logged_exercise.kind / wod_title / wod_description / wod_re
 2. Brand blue `#1e7bf2` is estimated from the description; share the screenshots or the
    exact hex if you have them.
 3. Android: APK is built by CI; store release still out of BRD 1.0 scope.
-4. Hosted URL: Vercel. Put the real production URL in `app.config.json` (`appUrl`)
-   once the Vercel project exists (placeholder: `https://gym-tracker.vercel.app/`).
+4. Hosted URL: Vercel production `https://gym-tracker-mocha-one.vercel.app/`
+   (`app.config.json` → `appUrl`).

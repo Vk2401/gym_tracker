@@ -70,7 +70,7 @@
 	<false/>
 	<key>WKAppBoundDomains</key>
 	<array>
-		<string>gym-tracker.vercel.app</string>
+		<string>gym-tracker-mocha-one.vercel.app</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
