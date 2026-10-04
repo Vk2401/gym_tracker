@@ -16,3 +16,6 @@ android/local.properties
 *.jks
 *.p12
 *.mobileprovision
+shell/
+dev-dist/
+public/assets/sql-wasm.wasm

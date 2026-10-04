@@ -1,0 +1,62 @@
+/* Maps design tokens onto Ionic variables (iOS mode). */
+:root,
+:root[data-theme='dark'] {
+  --ion-font-family: 'Inter Variable', -apple-system, system-ui, sans-serif;
+  --ion-color-primary: var(--gt-blue);
+  --ion-color-primary-rgb: var(--gt-blue-rgb);
+  --ion-color-primary-contrast: var(--gt-on-blue);
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--gt-blue-strong);
+  --ion-color-primary-tint: var(--gt-blue);
+  --ion-color-danger: var(--gt-danger);
+  --ion-color-success: var(--gt-success);
+
+  --ion-background-color: var(--gt-bg-grouped);
+  --ion-text-color: var(--gt-text);
+  --ion-item-background: var(--gt-surface);
+  --ion-border-color: var(--gt-separator);
+  --ion-toolbar-background: var(--gt-blue);
+  --ion-toolbar-color: var(--gt-on-blue);
+  --ion-toolbar-border-color: transparent;
+  --ion-tab-bar-background: var(--gt-surface);
+  --ion-tab-bar-color: var(--gt-tab-inactive);
+  --ion-tab-bar-color-selected: var(--gt-blue);
+  --ion-tab-bar-border-color: var(--gt-separator);
+  --ion-card-background: var(--gt-surface);
+}
+
+ion-toolbar {
+  --color: var(--gt-on-blue);
+}
+ion-toolbar ion-button,
+ion-toolbar ion-back-button {
+  --color: var(--gt-on-blue);
+  min-height: var(--tap-min);
+}
+ion-searchbar.gt-search {
+  --background: rgba(255, 255, 255, 0.92);
+  --color: #111;
+  --placeholder-color: #6b6b70;
+  --icon-color: #6b6b70;
+}
+:root[data-theme='dark'] ion-searchbar.gt-search {
+  --background: rgba(0, 0, 0, 0.25);
+  --color: #fff;
+  --placeholder-color: rgba(255, 255, 255, 0.7);
+  --icon-color: rgba(255, 255, 255, 0.7);
+}
+ion-tab-button {
+  min-height: var(--tap-min);
+  font-size: 10px; /* fixed chrome: px, never scales (device-independence §2.4) */
+}
+ion-list-header,
+.gt-section-header {
+  font-size: var(--fs-footnote);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--gt-text-secondary);
+}
+ion-item {
+  --min-height: var(--tap-min);
+  font-size: var(--fs-body);
+}

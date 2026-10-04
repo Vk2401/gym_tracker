@@ -1,0 +1,92 @@
+name: Android APK
+
+# Builds the native Android shell. The shell loads the hosted web app from APP_URL in its
+# WebView; Capacitor provides only the native features.
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: 'Web app URL loaded by the WebView (https)'
+        required: false
+        type: string
+
+concurrency:
+  group: apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      APP_URL: ${{ inputs.app_url || vars.APP_URL || 'https://vk2401.github.io/gym_tracker/' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - uses: android-actions/setup-android@v3
+
+      - run: npm ci
+
+      - name: Generate native shell and sync plugins
+        run: |
+          npm run build:shell
+          npx cap sync android
+
+      - name: Read version
+        id: version
+        run: echo "name=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Restore release keystore
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "path=$RUNNER_TEMP/release.jks" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build APKs
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ steps.keystore.outputs.path }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          TASKS="assembleDebug"
+          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then TASKS="$TASKS assembleRelease"; fi
+          ./gradlew $TASKS --no-daemon --stacktrace \
+            -PversionCode=${{ github.run_number }} \
+            -PversionName=${{ steps.version.outputs.name }}
+
+      - name: Rename APKs
+        run: |
+          mkdir -p out
+          V=${{ steps.version.outputs.name }}-${{ github.run_number }}
+          cp android/app/build/outputs/apk/debug/app-debug.apk "out/gym-tracker-$V-debug.apk"
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk "out/gym-tracker-$V-release.apk"
+          fi
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gym-tracker-apk-${{ steps.version.outputs.name }}-${{ github.run_number }}
+          path: out/*.apk
+          retention-days: 30

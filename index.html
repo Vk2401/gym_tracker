@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    <meta name="theme-color" content="#1e7bf2" />
+    <link rel="icon" type="image/svg+xml" href="icon.svg" />
+    <title>Gym Tracker</title>
+    <script>
+      // Apply the stored appearance before first paint to avoid a theme flash (ST-7).
+      (function () {
+        var a = 'system';
+        try {
+          a = localStorage.getItem('gt-appearance') || 'system';
+        } catch (e) {}
+        var dark =
+          a === 'dark' || (a === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

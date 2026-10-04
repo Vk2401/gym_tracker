@@ -1,0 +1,55 @@
+/* Device-independence §1 baseline. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Controlled text scale: OS text size clamped to 0.85–1.35 (§2). */
+  font-size: calc(16px * var(--gt-text-scale, 1));
+}
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  background: var(--gt-bg-grouped);
+  color: var(--gt-text);
+  font-family:
+    'Inter Variable',
+    -apple-system,
+    system-ui,
+    sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+}
+ion-app,
+ion-item,
+ion-button,
+ion-tab-button,
+ion-toolbar,
+.ui {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  font-size: max(16px, var(--fs-body)); /* ≥16px stops iOS focus-zoom */
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+html.keyboard-open .hide-on-keyboard {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

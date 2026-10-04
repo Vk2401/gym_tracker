@@ -6,17 +6,19 @@ checklist is green.
 
 ## 0. Key decisions
 
-| Topic | Decision | Why |
-| --- | --- | --- |
-| App type | Capacitor 8 + Ionic React 9 (iOS mode) + React 19 + TypeScript + Vite | One codebase, native iOS look (large titles, swipe, reorder, sheets) out of the box; Android comes almost free later |
-| Platform | iOS first (BRD NFR-7); Android project generated and kept building, not released in 1.0 | BRD scope |
-| Storage | SQLite (`@capacitor-community/sqlite`), versioned migrations | Durable on-device data (NFR-2/3); WebView storage can be evicted by iOS |
-| State | Zustand for UI/session; SQLite is the only persistent store | Simple, fast re-renders for set taps (NFR-1) |
-| Business rules | Pure functions in `src/domain/`, unit-tested (≥ 80 %) | BRD §16 coverage target |
-| Device settings | Controlled text scale (0.85–1.35), own theme control, no force-dark, portrait lock, fixed 24h + decimal formats | User request + NFR-5/6 |
-| Charts | Chart.js, lazy-loaded | Light, works offline |
-| Tests | Vitest + Playwright (iPhone viewport), one E2E spec per acceptance criterion | AC-1..AC-20 traceability |
-| Build limits | iOS build needs macOS + Xcode (your Mac); container builds web + Android | Linux environment |
+| Topic           | Decision                                                                                                                                            | Why                                                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| App type        | Capacitor 8 + Ionic React 9 (iOS mode) + React 19 + TypeScript + Vite                                                                               | One codebase, native iOS look (large titles, swipe, reorder, sheets) out of the box; Android comes almost free later |
+| Loading         | Web app hosted (GitHub Pages) and loaded by the WebView via `server.url`; Capacitor only for native features; service worker + bundled offline page | Your decision: web updates without store releases; offline still works after first launch                            |
+| Android APK     | GitHub Actions builds debug APK on every push (signed release APK when keystore secrets are set)                                                    | Your request                                                                                                         |
+| Platform        | iOS first (BRD NFR-7); Android project generated and kept building, not released in 1.0                                                             | BRD scope                                                                                                            |
+| Storage         | SQLite (`@capacitor-community/sqlite`), versioned migrations                                                                                        | Durable on-device data (NFR-2/3); WebView storage can be evicted by iOS                                              |
+| State           | Zustand for UI/session; SQLite is the only persistent store                                                                                         | Simple, fast re-renders for set taps (NFR-1)                                                                         |
+| Business rules  | Pure functions in `src/domain/`, unit-tested (≥ 80 %)                                                                                               | BRD §16 coverage target                                                                                              |
+| Device settings | Controlled text scale (0.85–1.35), own theme control, no force-dark, portrait lock, fixed 24h + decimal formats                                     | User request + NFR-5/6                                                                                               |
+| Charts          | Chart.js, lazy-loaded                                                                                                                               | Light, works offline                                                                                                 |
+| Tests           | Vitest + Playwright (iPhone viewport), one E2E spec per acceptance criterion                                                                        | AC-1..AC-20 traceability                                                                                             |
+| Build limits    | iOS build needs macOS + Xcode (your Mac); container builds web + Android                                                                            | Linux environment                                                                                                    |
 
 ## 1. Project skills and guides (done in this commit)
 
@@ -30,7 +32,7 @@ checklist is green.
 
 ## 2. Phases
 
-### Phase 1 — Foundation setup (next step, waiting for your go)
+### Phase 1 — Foundation setup ✅ done
 
 1. Scaffold Vite + React + TS (strict), add Ionic React (iOS mode), router, tab shell with
    5 tabs and placeholder pages (NAV-1..3).
@@ -45,10 +47,13 @@ checklist is green.
    fallback (jeep-sqlite), seed loader for categories + equipment + exercise library.
 7. `src/domain/`: formatters (BR-8/9/10), duration (BR-4), unit conversion (BR-9),
    validation (VR-1..4), Epley 1RM, totals (BR-3/12), messages (§14) — with unit tests.
-8. CI script (GitHub Actions): lint, typecheck, unit tests, web build.
+8. GitHub Actions: CI (lint, typecheck, unit + coverage, build, E2E), Android APK build,
+   GitHub Pages deploy of the web app.
 
 **Gate 1:** app runs in browser and on Android emulator with 5 tabs, theme switching,
 text-scale clamp verified, DB migrates and seeds, domain tests green.
+Status: verified in browser (unit + E2E). Android APK is built by CI only (the dev container
+cannot download the Android SDK); install it on a phone to finish the gate.
 
 ### Phase 2 — Library and templates (Exercises + Workouts)
 
@@ -73,8 +78,8 @@ text-scale clamp verified, DB migrates and seeds, domain tests green.
 - Workout log detail: header actions (WL-1), start/end pickers + body weight +
   measurements (WL-2, PD-14), exercise blocks with ··· menu (WL-3, PD-10), focus-driven set
   table (WL-4), pre-filled editable sets + RPE (WL-5), completion toggle (WL-6, PD-15),
-  + Add Warmup / + Add Set (WL-7, AC-10), + Add Exercise (WL-8), log gear menu (PD-11),
-  share (WL-9).
+  - Add Warmup / + Add Set (WL-7, AC-10), + Add Exercise (WL-8), log gear menu (PD-11),
+    share (WL-9).
 - Rest timer bar + local notification + haptics/sound (SS-1/2), keep-awake (ST-3).
 - Finish flow: unfinished sets prompt (VR-5), empty session (VR-6), summary with duration,
   sets, volume, new PRs, Update Template (SS-4, PD-4); Last Completed update (BR-2).
@@ -111,42 +116,43 @@ See `CLAUDE.md` → Folder layout.
 
 ## 4. Database schema (migration 0001)
 
-| Table | Columns (main) |
-| --- | --- |
-| `workout_group` | id, name, color, sort_order, expanded, is_default |
-| `workout_template` | id, group_id, name, note, last_completed_utc, sort_order |
-| `template_item` | id, template_id, kind (exercise/superset/wod), exercise_id, superset_id, wod_title, wod_description, sort_order |
-| `template_set` | id, template_item_id, set_number, type (warmup/working), reps, weight_kg, time_s, distance_km |
-| `exercise` | id, name, primary_focus, secondary_focus, equipment_id, note, is_custom, deleted_at |
-| `category` | id, name, color |
-| `exercise_category` | exercise_id, category_id |
-| `equipment` | id, name |
-| `workout_log` | id, template_id, name, start_utc, start_offset_min, end_utc, end_offset_min, body_weight_kg, rest_time_s, created_at |
-| `logged_exercise` | id, log_id, exercise_id, name_snapshot, primary_focus_snapshot, secondary_focus_snapshot, equipment_snapshot, categories_snapshot, superset_group, session_note, sort_order |
-| `log_set` | id, logged_exercise_id, set_number, type, reps, weight_kg, time_s, distance_km, rpe, completed, completed_at |
-| `measurement` | id, log_id, type, value, unit |
-| `personal_record` | id, exercise_id, record_type, value, reps, achieved_utc, log_set_id |
-| `preferences` | single row: weight_unit, distance_unit, week_start, show_dots, rest_s, sound, haptics, keep_awake, appearance, health_enabled, analytics_opt_in |
-| `active_session` | single row: log_id, rest_end_utc, current_logged_exercise_id |
+| Table               | Columns (main)                                                                                                                                                              |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workout_group`     | id, name, color, sort_order, expanded, is_default                                                                                                                           |
+| `workout_template`  | id, group_id, name, note, last_completed_utc, sort_order                                                                                                                    |
+| `template_item`     | id, template_id, kind (exercise/superset/wod), exercise_id, superset_id, wod_title, wod_description, sort_order                                                             |
+| `template_set`      | id, template_item_id, set_number, type (warmup/working), reps, weight_kg, time_s, distance_km                                                                               |
+| `exercise`          | id, name, primary_focus, secondary_focus, equipment_id, note, is_custom, deleted_at                                                                                         |
+| `category`          | id, name, color                                                                                                                                                             |
+| `exercise_category` | exercise_id, category_id                                                                                                                                                    |
+| `equipment`         | id, name                                                                                                                                                                    |
+| `workout_log`       | id, template_id, name, start_utc, start_offset_min, end_utc, end_offset_min, body_weight_kg, rest_time_s, created_at                                                        |
+| `logged_exercise`   | id, log_id, exercise_id, name_snapshot, primary_focus_snapshot, secondary_focus_snapshot, equipment_snapshot, categories_snapshot, superset_group, session_note, sort_order |
+| `log_set`           | id, logged_exercise_id, set_number, type, reps, weight_kg, time_s, distance_km, rpe, completed, completed_at                                                                |
+| `measurement`       | id, log_id, type, value, unit                                                                                                                                               |
+| `personal_record`   | id, exercise_id, record_type, value, reps, achieved_utc, log_set_id                                                                                                         |
+| `preferences`       | single row: weight_unit, distance_unit, week_start, show_dots, rest_s, sound, haptics, keep_awake, appearance, health_enabled, analytics_opt_in                             |
+| `active_session`    | single row: log_id, rest_end_utc, current_logged_exercise_id                                                                                                                |
 
 ## 5. Requirement → phase map
 
-| Area | IDs | Phase |
-| --- | --- | --- |
-| Navigation | NAV-1..4 | 1 (shell), 2–3 (FABs) |
-| Workouts / templates | WO-1..7, WT-1..7, PD-5..8 | 2 (WO-7 in 3) |
-| Exercises | EX-1..5, ED-1..6 | 2 |
-| Logs / sessions | LG-1..8, WL-1..9, SS-1..4, PD-1..4, PD-9..15 | 3 |
-| Explore | XP-1..8 | 4 |
-| Settings | ST-1..8 | 4 (ST-2/3 basics in 3) |
-| Business rules | BR-1..13 | 1 (domain), applied 2–4 |
-| Validation | VR-1..17 | 2–4 as screens arrive |
-| Non-functional | NFR-1..8 | every phase; audited in 5 |
-| Acceptance | AC-1..20 | gates 2–4 |
+| Area                 | IDs                                          | Phase                     |
+| -------------------- | -------------------------------------------- | ------------------------- |
+| Navigation           | NAV-1..4                                     | 1 (shell), 2–3 (FABs)     |
+| Workouts / templates | WO-1..7, WT-1..7, PD-5..8                    | 2 (WO-7 in 3)             |
+| Exercises            | EX-1..5, ED-1..6                             | 2                         |
+| Logs / sessions      | LG-1..8, WL-1..9, SS-1..4, PD-1..4, PD-9..15 | 3                         |
+| Explore              | XP-1..8                                      | 4                         |
+| Settings             | ST-1..8                                      | 4 (ST-2/3 basics in 3)    |
+| Business rules       | BR-1..13                                     | 1 (domain), applied 2–4   |
+| Validation           | VR-1..17                                     | 2–4 as screens arrive     |
+| Non-functional       | NFR-1..8                                     | every phase; audited in 5 |
+| Acceptance           | AC-1..20                                     | gates 2–4                 |
 
-## 6. Open points to confirm with you
+## 6. Open points (defaults in use until you say otherwise)
 
-1. App id `com.webronian.gymtracker` and display name `Gym Tracker` — OK?
+1. App id `com.webronian.gymtracker` and display name `Gym Tracker` (in use).
 2. Brand blue `#1e7bf2` is estimated from the description; share the screenshots or the
    exact hex if you have them.
-3. Android: keep it buildable only (BRD), or also test/release it alongside iOS?
+3. Android: APK is built by CI; store release still out of BRD 1.0 scope.
+4. Hosted URL: GitHub Pages of this repo; change with the `APP_URL` repo variable.

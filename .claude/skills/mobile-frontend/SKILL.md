@@ -27,27 +27,36 @@ no raw px font sizes.
 ```css
 :root {
   /* brand */
-  --gt-blue: #1e7bf2;           /* header bar, active tab, completed set, accents */
-  --gt-blue-strong: #0b5ed7;    /* selected calendar date (LG-5) */
+  --gt-blue: #1e7bf2; /* header bar, active tab, completed set, accents */
+  --gt-blue-strong: #0b5ed7; /* selected calendar date (LG-5) */
   --gt-blue-tint: #e6f0fe;
   /* surfaces (light) */
-  --gt-bg-grouped: #f2f2f7;     /* section background */
-  --gt-surface: #ffffff;        /* content rows */
+  --gt-bg-grouped: #f2f2f7; /* section background */
+  --gt-surface: #ffffff; /* content rows */
   --gt-separator: #c6c6c8;
   --gt-text: #111111;
   --gt-text-secondary: #6b6b70;
   --gt-danger: #e5383b;
   --gt-success: #22a06b;
   /* spacing scale (4-pt grid) */
-  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
   /* radius */
-  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-pill: 999px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
   /* type scale — rem based, so the controlled text scale applies (device-independence §2) */
-  --fs-caption: 0.75rem;   /* 12 */
-  --fs-footnote: 0.8125rem;/* 13 – section headers (NOTE, SETTINGS…) */
-  --fs-body: 1.0625rem;    /* 17 – rows, inputs */
-  --fs-headline: 1.0625rem;/* 17 semibold */
-  --fs-title: 1.375rem;    /* 22 */
+  --fs-caption: 0.75rem; /* 12 */
+  --fs-footnote: 0.8125rem; /* 13 – section headers (NOTE, SETTINGS…) */
+  --fs-body: 1.0625rem; /* 17 – rows, inputs */
+  --fs-headline: 1.0625rem; /* 17 semibold */
+  --fs-title: 1.375rem; /* 22 */
   --fs-large-title: 2.125rem; /* 34 – collapsing large titles */
   --tap-min: 44px;
 }
@@ -84,21 +93,21 @@ by the OS directly — see device-independence §3). Map tokens onto Ionic varia
 
 ## 3. Key components (build once in `src/components/`)
 
-| Component | Notes |
-| --- | --- |
-| `ListRow` | Title, up to 2 secondary lines, trailing chevron; min-height 44px; truncates with ellipsis (VR-16) |
-| `GroupHeader` | Collapsible workout group (WO-2): name + rotating chevron, state persisted |
-| `SearchBar` | `IonSearchbar` iOS style, filters as you type, debounced 100 ms (WO-4, EX-4) |
-| `SetTable` | Columns derived from focus via `domain/setColumns.ts` (WL-4, BR-7). Row = set # (or **W** for warm-up, PD-9), value inputs, RPE placeholder, completion control |
+| Component           | Notes                                                                                                                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ListRow`           | Title, up to 2 secondary lines, trailing chevron; min-height 44px; truncates with ellipsis (VR-16)                                                                                       |
+| `GroupHeader`       | Collapsible workout group (WO-2): name + rotating chevron, state persisted                                                                                                               |
+| `SearchBar`         | `IonSearchbar` iOS style, filters as you type, debounced 100 ms (WO-4, EX-4)                                                                                                             |
+| `SetTable`          | Columns derived from focus via `domain/setColumns.ts` (WL-4, BR-7). Row = set # (or **W** for warm-up, PD-9), value inputs, RPE placeholder, completion control                          |
 | `SetCompleteButton` | 44×44 target; empty blue-outlined circle / filled blue circle with white check (PD-15); fires light haptic; state change must render < 200 ms (NFR-1) — optimistic UI, write to DB after |
-| `NumberField` | `inputmode="decimal"`, select-all on focus, locale-tolerant parsing (device-independence §7), inline range error from `domain/validation.ts` (VR-2) |
-| `TimeField` | HH:MM:SS segmented input (BR-8) |
-| `CategoryDot` | 8px dot in category colour; used in lists, detail, calendar (ED-2, LG-4) |
-| `MonthCalendar` | Custom (not IonDatetime): Sun–Sat or Mon–Sun per ST-2, filled blue circles for logged days, darker selected day, dots row, collapse handle (LG-2..6) |
-| `EmptyState` | Icon, BRD §14 message, single primary action |
-| `ConfirmDelete` | `IonAlert` with `Delete "{name}"? This can't be undone.` |
-| `RestTimerBar` | Countdown from stored end-timestamp, +15 s / −15 s / Skip (SS-1) |
-| `NoteField` | Auto-growing textarea; collapsed view truncates to 3 lines + More (VR-16) |
+| `NumberField`       | `inputmode="decimal"`, select-all on focus, locale-tolerant parsing (device-independence §7), inline range error from `domain/validation.ts` (VR-2)                                      |
+| `TimeField`         | HH:MM:SS segmented input (BR-8)                                                                                                                                                          |
+| `CategoryDot`       | 8px dot in category colour; used in lists, detail, calendar (ED-2, LG-4)                                                                                                                 |
+| `MonthCalendar`     | Custom (not IonDatetime): Sun–Sat or Mon–Sun per ST-2, filled blue circles for logged days, darker selected day, dots row, collapse handle (LG-2..6)                                     |
+| `EmptyState`        | Icon, BRD §14 message, single primary action                                                                                                                                             |
+| `ConfirmDelete`     | `IonAlert` with `Delete "{name}"? This can't be undone.`                                                                                                                                 |
+| `RestTimerBar`      | Countdown from stored end-timestamp, +15 s / −15 s / Skip (SS-1)                                                                                                                         |
+| `NoteField`         | Auto-growing textarea; collapsed view truncates to 3 lines + More (VR-16)                                                                                                                |
 
 ## 4. Interaction rules
 

@@ -1,0 +1,17 @@
+.gt-boot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-6);
+  text-align: center;
+  background: var(--gt-bg-grouped);
+  color: var(--gt-text);
+}
+.gt-boot__detail {
+  font-size: var(--fs-footnote);
+  color: var(--gt-text-secondary);
+}

@@ -1,0 +1,7 @@
+dist
+shell
+android
+ios
+coverage
+docs/BRD.md
+package-lock.json

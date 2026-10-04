@@ -7,7 +7,7 @@ description: Rules that stop phone/OS settings from breaking the Gym Tracker app
 
 Goal: the app looks and behaves the same on every phone regardless of the user's device
 settings, **while still honouring accessibility** (BRD NFR-5 requires Dynamic Type). We do
-that by taking control: the OS setting is *read*, then applied by us within limits we have
+that by taking control: the OS setting is _read_, then applied by us within limits we have
 designed and tested — never applied blindly by the WebView.
 
 ## 1. Viewport and WebView baseline
@@ -15,7 +15,10 @@ designed and tested — never applied blindly by the WebView.
 `index.html`:
 
 ```html
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+/>
 <meta name="color-scheme" content="light dark" />
 <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
 ```
@@ -23,10 +26,28 @@ designed and tested — never applied blindly by the WebView.
 Global CSS (`src/theme/base.css`):
 
 ```css
-html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
-.ui, ion-item, ion-button, ion-tab-button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-input, textarea { -webkit-user-select: text; user-select: text; font-size: max(16px, var(--fs-body)); } /* ≥16px stops iOS focus-zoom */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ui,
+ion-item,
+ion-button,
+ion-tab-button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+  font-size: max(16px, var(--fs-body));
+} /* ≥16px stops iOS focus-zoom */
 ```
 
 ## 2. Text size (system font size / Dynamic Type / display zoom)
@@ -36,8 +57,8 @@ set tables; iOS WKWebView ignores Dynamic Type unless we apply it.
 
 Rule: **neutralise the automatic scaling, then apply our own clamped scale.**
 
-1. Android: in `MainActivity.java` set `webView.getSettings().setTextZoom(100)` after bridge
-   load so the system font scale is not applied by the WebView.
+1. Android: `MainActivity.java` sets `setTextZoom(100)` (done) so the system font scale is
+   not applied by the WebView.
 2. `native/textZoom.ts`: read `TextZoom.getPreferred()` (iOS Dynamic Type / Android font
    scale), clamp to **0.85 – 1.35**, then set
    `document.documentElement.style.setProperty('--gt-text-scale', value)` and
@@ -48,7 +69,7 @@ Rule: **neutralise the automatic scaling, then apply our own clamped scale.**
    uses `rem`; fixed chrome (tab bar height, icons, FAB) uses `px` so it never overflows.
 5. Layouts must survive the max clamp: set tables use `minmax()` grid columns, labels
    truncate with ellipsis, numeric cells never wrap.
-6. iOS *Display Zoom* ("Larger Text" screen mode) only changes the CSS viewport width
+6. iOS _Display Zoom_ ("Larger Text" screen mode) only changes the CSS viewport width
    (e.g. 320 pt) — handled by testing at 320 px width.
 
 ## 3. Dark mode / force-dark / appearance
@@ -64,7 +85,7 @@ Rule: **neutralise the automatic scaling, then apply our own clamped scale.**
   Otherwise Samsung/MIUI "dark mode for apps" inverts our colours.
 - Every colour comes from tokens with explicit light and dark values; no reliance on
   browser default colours (inputs, scrollbars → set `color-scheme` per theme).
-- iOS *Increase Contrast* / *Bold Text*: tokens must keep ≥ 4.5:1 contrast; layouts must
+- iOS _Increase Contrast_ / _Bold Text_: tokens must keep ≥ 4.5:1 contrast; layouts must
   tolerate bold glyph widths (truncate, don't overflow).
 
 ## 4. Orientation and screen geometry
@@ -109,7 +130,7 @@ Rule: **neutralise the automatic scaling, then apply our own clamped scale.**
   animation frame / 250 ms — Low Power Mode or throttled JS never makes it drift.
 - Background alerts rely on scheduled local notifications, not JS timers (SS-2).
 - Keep-awake (ST-3) only while a session is active; release on finish/background.
-- Respect *Reduce Motion* via `prefers-reduced-motion`; respect our own haptics/sound
+- Respect _Reduce Motion_ via `prefers-reduced-motion`; respect our own haptics/sound
   toggles (ST-3), not just the system silent switch.
 
 ## 9. Storage and OS cleanup

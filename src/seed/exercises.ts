@@ -1,0 +1,673 @@
+import type { FocusMetric } from '@/domain/types';
+
+export interface SeedExercise {
+  id: string;
+  name: string;
+  primary: FocusMetric;
+  secondary: FocusMetric | null;
+  equipment: string; // equipment id
+  categories: readonly string[]; // category ids
+  note: string;
+}
+
+const rw = { primary: 'reps', secondary: 'weight' } as const;
+const r = { primary: 'reps', secondary: null } as const;
+const t = { primary: 'time', secondary: null } as const;
+const td = { primary: 'time', secondary: 'distance' } as const;
+
+const ex = (
+  id: string,
+  name: string,
+  focus: { primary: FocusMetric; secondary: FocusMetric | null },
+  equipment: string,
+  categories: string[],
+  steps: string[],
+): SeedExercise => ({
+  id: `ex-${id}`,
+  name,
+  ...focus,
+  equipment: `eq-${equipment}`,
+  categories: categories.map((c) => `cat-${c}`),
+  note: steps.map((s, i) => `${i + 1}. ${s}`).join('\n'),
+});
+
+// Pre-loaded exercise library (BRD §11). Names from the reference screens are included
+// (3/4 Sit-Up, 90/90 Hamstring, Ab Crunch Machine, Cable Crunch, Rope Jumping).
+export const SEED_EXERCISES: readonly SeedExercise[] = [
+  ex(
+    '3-4-sit-up',
+    '3/4 Sit-Up',
+    rw,
+    'none',
+    ['abs-lower'],
+    [
+      'Lie on your back with knees bent and feet flat on the floor.',
+      'Curl your torso up until it is about three-quarters of the way to upright.',
+      'Pause, then lower slowly without letting your shoulders rest on the floor.',
+    ],
+  ),
+  ex(
+    '90-90-hamstring',
+    '90/90 Hamstring',
+    t,
+    'none',
+    ['hamstrings'],
+    [
+      'Lie on your back and raise one leg so hip and knee are both at 90 degrees.',
+      'Hold behind the thigh and straighten the knee until you feel a stretch.',
+      'Hold, breathe slowly, then switch legs.',
+    ],
+  ),
+  ex(
+    'ab-crunch-machine',
+    'Ab Crunch Machine',
+    rw,
+    'machine',
+    ['abs-upper'],
+    [
+      'Sit in the machine and grip the handles, feet secured.',
+      'Crunch forward by flexing your spine, keeping hips still.',
+      'Return slowly to the start under control.',
+    ],
+  ),
+  ex(
+    'cable-crunch',
+    'Cable Crunch',
+    rw,
+    'cable',
+    ['abs-upper', 'abs-lower'],
+    [
+      'Kneel facing a high pulley holding a rope beside your head.',
+      'Crunch down, bringing elbows towards your thighs.',
+      'Return slowly, keeping hips fixed.',
+    ],
+  ),
+  ex(
+    'hanging-leg-raise',
+    'Hanging Leg Raise',
+    r,
+    'pullup-bar',
+    ['abs-lower'],
+    [
+      'Hang from a bar with straight arms.',
+      'Raise your legs until thighs pass parallel, tilting the pelvis up.',
+      'Lower slowly without swinging.',
+    ],
+  ),
+  ex(
+    'plank',
+    'Plank',
+    t,
+    'none',
+    ['abs-upper', 'abs-lower'],
+    [
+      'Support yourself on forearms and toes, body in a straight line.',
+      'Brace your core and squeeze your glutes.',
+      'Hold for the target time.',
+    ],
+  ),
+  ex(
+    'russian-twist',
+    'Russian Twist',
+    rw,
+    'none',
+    ['obliques'],
+    [
+      'Sit with knees bent, lean back slightly and lift feet.',
+      'Rotate your torso side to side, touching the weight beside each hip.',
+    ],
+  ),
+  ex(
+    'bench-press',
+    'Bench Press',
+    rw,
+    'barbell',
+    ['chest', 'triceps', 'front-delts'],
+    [
+      'Lie on the bench, eyes under the bar, feet flat.',
+      'Lower the bar to mid-chest with elbows about 45 degrees.',
+      'Press back up to straight arms.',
+    ],
+  ),
+  ex(
+    'incline-db-press',
+    'Incline Dumbbell Press',
+    rw,
+    'dumbbell',
+    ['chest', 'front-delts'],
+    [
+      'Set the bench to 30–45 degrees and press dumbbells above your chest.',
+      'Lower to the upper chest, then press back up.',
+    ],
+  ),
+  ex(
+    'cable-fly',
+    'Cable Fly',
+    rw,
+    'cable',
+    ['chest'],
+    [
+      'Stand between pulleys with handles at chest height.',
+      'Bring hands together in a wide arc with soft elbows.',
+      'Return slowly to a stretch.',
+    ],
+  ),
+  ex(
+    'chest-press-machine',
+    'Chest Press Machine',
+    rw,
+    'machine',
+    ['chest', 'triceps'],
+    [
+      'Adjust the seat so handles are at mid-chest.',
+      'Press forward to straight arms, then return under control.',
+    ],
+  ),
+  ex(
+    'push-up',
+    'Push-Up',
+    r,
+    'none',
+    ['chest', 'triceps'],
+    [
+      'Hands under shoulders, body straight.',
+      'Lower your chest to just above the floor, then push back up.',
+    ],
+  ),
+  ex(
+    'dips',
+    'Dips',
+    rw,
+    'none',
+    ['chest', 'triceps'],
+    [
+      'Support yourself on parallel bars with straight arms.',
+      'Lower until shoulders are just below elbows, then press up.',
+    ],
+  ),
+  ex(
+    'lat-pulldown',
+    'Lat Pulldown',
+    rw,
+    'cable',
+    ['lats', 'biceps'],
+    [
+      'Grip the bar slightly wider than shoulders and sit under the pad.',
+      'Pull the bar to your upper chest, driving elbows down.',
+      'Return to straight arms under control.',
+    ],
+  ),
+  ex(
+    'pull-up',
+    'Pull-Up',
+    rw,
+    'pullup-bar',
+    ['lats', 'biceps'],
+    [
+      'Hang with an overhand grip, shoulder-width.',
+      'Pull until your chin passes the bar, then lower fully.',
+    ],
+  ),
+  ex(
+    'straight-arm-pulldown',
+    'Straight-Arm Pulldown',
+    rw,
+    'cable',
+    ['lats'],
+    [
+      'Face a high pulley holding a bar with straight arms.',
+      'Sweep the bar down to your thighs, keeping arms straight.',
+    ],
+  ),
+  ex(
+    'barbell-row',
+    'Barbell Row',
+    rw,
+    'barbell',
+    ['upper-back', 'lats'],
+    [
+      'Hinge forward with a flat back, bar hanging at arm length.',
+      'Row the bar to your lower ribs, then lower under control.',
+    ],
+  ),
+  ex(
+    'seated-cable-row',
+    'Seated Cable Row',
+    rw,
+    'cable',
+    ['upper-back', 'lats'],
+    [
+      'Sit tall holding the handle with straight arms.',
+      'Row to your stomach, squeezing shoulder blades together.',
+    ],
+  ),
+  ex(
+    'one-arm-db-row',
+    'One-Arm Dumbbell Row',
+    rw,
+    'dumbbell',
+    ['lats', 'upper-back'],
+    ['Support one hand and knee on a bench.', 'Row the dumbbell to your hip, then lower fully.'],
+  ),
+  ex(
+    't-bar-row',
+    'T-Bar Row',
+    rw,
+    'machine',
+    ['upper-back', 'trapezius'],
+    [
+      'Straddle the bar with chest on the pad if available.',
+      'Row the handles to your chest, then lower slowly.',
+    ],
+  ),
+  ex(
+    'deadlift',
+    'Deadlift',
+    rw,
+    'barbell',
+    ['hamstrings', 'glutes', 'lower-back'],
+    [
+      'Stand with mid-foot under the bar, grip just outside knees.',
+      'Brace, push the floor away and stand up tall.',
+      'Lower the bar along your legs to the floor.',
+    ],
+  ),
+  ex(
+    'romanian-deadlift',
+    'Romanian Deadlift',
+    rw,
+    'barbell',
+    ['hamstrings', 'glutes'],
+    [
+      'Hold the bar at hip height with soft knees.',
+      'Push hips back, sliding the bar down your thighs until hamstrings stretch.',
+      'Drive hips forward to stand.',
+    ],
+  ),
+  ex(
+    'back-extension',
+    'Back Extension',
+    rw,
+    'machine',
+    ['lower-back', 'glutes'],
+    [
+      'Set hips on the pad, body straight.',
+      'Lower your torso, then raise back to a straight line.',
+    ],
+  ),
+  ex(
+    'shrug',
+    'Barbell Shrug',
+    rw,
+    'barbell',
+    ['trapezius'],
+    ['Hold the bar at arm length.', 'Lift shoulders straight up towards your ears, pause, lower.'],
+  ),
+  ex(
+    'face-pull',
+    'Face Pull',
+    rw,
+    'cable',
+    ['rear-delts', 'trapezius'],
+    ['Set a rope at face height.', 'Pull towards your face, elbows high, rotating hands outward.'],
+  ),
+  ex(
+    'reverse-pec-deck',
+    'Reverse Pec Deck',
+    rw,
+    'machine',
+    ['rear-delts'],
+    [
+      'Sit facing the pad, arms straight in front.',
+      'Open arms out to the sides, squeeze, return slowly.',
+    ],
+  ),
+  ex(
+    'overhead-press',
+    'Overhead Press',
+    rw,
+    'barbell',
+    ['front-delts', 'triceps'],
+    [
+      'Hold the bar at shoulder height, elbows slightly forward.',
+      'Press overhead to lockout, head through at the top.',
+    ],
+  ),
+  ex(
+    'db-shoulder-press',
+    'Dumbbell Shoulder Press',
+    rw,
+    'dumbbell',
+    ['front-delts', 'side-delts'],
+    ['Sit upright with dumbbells at shoulder height.', 'Press overhead, then lower to the start.'],
+  ),
+  ex(
+    'lateral-raise',
+    'Lateral Raise',
+    rw,
+    'dumbbell',
+    ['side-delts'],
+    [
+      'Hold dumbbells at your sides with soft elbows.',
+      'Raise arms out to shoulder height, then lower slowly.',
+    ],
+  ),
+  ex(
+    'cable-lateral-raise',
+    'Cable Lateral Raise',
+    rw,
+    'cable',
+    ['side-delts'],
+    [
+      'Stand side-on to a low pulley holding the handle across your body.',
+      'Raise the arm out to shoulder height, lower under control.',
+    ],
+  ),
+  ex(
+    'front-raise',
+    'Front Raise',
+    rw,
+    'dumbbell',
+    ['front-delts'],
+    [
+      'Hold dumbbells in front of thighs.',
+      'Raise to shoulder height with straight arms, lower slowly.',
+    ],
+  ),
+  ex(
+    'barbell-curl',
+    'Barbell Curl',
+    rw,
+    'barbell',
+    ['biceps'],
+    [
+      'Hold the bar at arm length, elbows at your sides.',
+      'Curl to shoulder height without swinging, lower fully.',
+    ],
+  ),
+  ex(
+    'db-curl',
+    'Dumbbell Curl',
+    rw,
+    'dumbbell',
+    ['biceps'],
+    ['Hold dumbbells at your sides, palms forward.', 'Curl up, squeeze, then lower slowly.'],
+  ),
+  ex(
+    'hammer-curl',
+    'Hammer Curl',
+    rw,
+    'dumbbell',
+    ['biceps', 'forearms'],
+    [
+      'Hold dumbbells with palms facing each other.',
+      'Curl up keeping the neutral grip, lower slowly.',
+    ],
+  ),
+  ex(
+    'preacher-curl',
+    'Preacher Curl',
+    rw,
+    'ez-bar',
+    ['biceps'],
+    [
+      'Rest upper arms on the preacher pad.',
+      'Curl the bar up, then lower to almost straight arms.',
+    ],
+  ),
+  ex(
+    'triceps-pushdown',
+    'Triceps Pushdown',
+    rw,
+    'cable',
+    ['triceps'],
+    [
+      'Face a high pulley, elbows at your sides.',
+      'Push the bar down to straight arms, return to 90 degrees.',
+    ],
+  ),
+  ex(
+    'skull-crusher',
+    'Skull Crusher',
+    rw,
+    'ez-bar',
+    ['triceps'],
+    [
+      'Lie on a bench holding the bar over your chest.',
+      'Bend elbows to lower the bar towards your forehead, then extend.',
+    ],
+  ),
+  ex(
+    'overhead-triceps-ext',
+    'Overhead Triceps Extension',
+    rw,
+    'cable',
+    ['triceps'],
+    [
+      'Face away from a pulley holding a rope behind your head.',
+      'Extend arms overhead, then return slowly.',
+    ],
+  ),
+  ex(
+    'wrist-curl',
+    'Wrist Curl',
+    rw,
+    'dumbbell',
+    ['forearms'],
+    ['Rest forearms on your thighs, palms up.', 'Curl the wrists up, then lower fully.'],
+  ),
+  ex(
+    'back-squat',
+    'Back Squat',
+    rw,
+    'barbell',
+    ['quads', 'glutes'],
+    [
+      'Bar on upper back, feet shoulder-width.',
+      'Sit down between your hips until thighs are at least parallel.',
+      'Drive up through the whole foot.',
+    ],
+  ),
+  ex(
+    'front-squat',
+    'Front Squat',
+    rw,
+    'barbell',
+    ['quads'],
+    [
+      'Rack the bar on the front of your shoulders, elbows high.',
+      'Squat down keeping your torso upright, then stand.',
+    ],
+  ),
+  ex(
+    'leg-press',
+    'Leg Press',
+    rw,
+    'machine',
+    ['quads', 'glutes'],
+    [
+      'Feet shoulder-width on the platform.',
+      'Lower until knees reach about 90 degrees, press back up without locking.',
+    ],
+  ),
+  ex(
+    'hack-squat',
+    'Hack Squat',
+    rw,
+    'machine',
+    ['quads'],
+    ['Shoulders under the pads, feet mid-platform.', 'Squat down deep, then drive back up.'],
+  ),
+  ex(
+    'leg-extension',
+    'Leg Extension',
+    rw,
+    'machine',
+    ['quads'],
+    [
+      'Pad on lower shins, knees in line with the pivot.',
+      'Extend legs fully, squeeze, lower slowly.',
+    ],
+  ),
+  ex(
+    'bulgarian-split-squat',
+    'Bulgarian Split Squat',
+    rw,
+    'dumbbell',
+    ['quads', 'glutes'],
+    [
+      'Rear foot on a bench, front foot forward.',
+      'Lower the back knee towards the floor, drive up through the front foot.',
+    ],
+  ),
+  ex(
+    'walking-lunge',
+    'Walking Lunge',
+    rw,
+    'dumbbell',
+    ['quads', 'glutes'],
+    [
+      'Step forward and lower until both knees are at 90 degrees.',
+      'Drive through the front foot into the next step.',
+    ],
+  ),
+  ex(
+    'lying-leg-curl',
+    'Lying Leg Curl',
+    rw,
+    'machine',
+    ['hamstrings'],
+    ['Lie face down, pad above your heels.', 'Curl heels towards your glutes, lower slowly.'],
+  ),
+  ex(
+    'seated-leg-curl',
+    'Seated Leg Curl',
+    rw,
+    'machine',
+    ['hamstrings'],
+    [
+      'Sit with the pad above your heels and thigh pad secured.',
+      'Curl down and back, then return slowly.',
+    ],
+  ),
+  ex(
+    'hip-thrust',
+    'Hip Thrust',
+    rw,
+    'barbell',
+    ['glutes'],
+    [
+      'Upper back on a bench, bar across hips.',
+      'Drive hips up until your body is straight from knees to shoulders, squeeze, lower.',
+    ],
+  ),
+  ex(
+    'standing-calf-raise',
+    'Standing Calf Raise',
+    rw,
+    'machine',
+    ['calves'],
+    [
+      'Balls of the feet on the edge, shoulders under the pads.',
+      'Rise as high as possible, pause, lower into a full stretch.',
+    ],
+  ),
+  ex(
+    'seated-calf-raise',
+    'Seated Calf Raise',
+    rw,
+    'machine',
+    ['calves'],
+    [
+      'Sit with the pad on your knees, balls of feet on the platform.',
+      'Raise heels as high as possible, lower fully.',
+    ],
+  ),
+  ex(
+    'hip-adduction',
+    'Hip Adduction Machine',
+    rw,
+    'machine',
+    ['adductors'],
+    ['Sit with pads on the inside of your knees.', 'Squeeze legs together, return slowly.'],
+  ),
+  ex(
+    'hip-abduction',
+    'Hip Abduction Machine',
+    rw,
+    'machine',
+    ['abductors', 'glutes'],
+    ['Sit with pads on the outside of your knees.', 'Push legs apart, return slowly.'],
+  ),
+  ex(
+    'kettlebell-swing',
+    'Kettlebell Swing',
+    rw,
+    'kettlebell',
+    ['glutes', 'hamstrings'],
+    [
+      'Hinge and hike the kettlebell between your legs.',
+      'Snap hips forward to swing it to chest height.',
+    ],
+  ),
+  ex(
+    'rope-jumping',
+    'Rope Jumping',
+    td,
+    'jump-rope',
+    ['cardio', 'calves'],
+    [
+      'Hold the handles at hip height, rope behind you.',
+      'Turn the rope with your wrists and jump just high enough to clear it.',
+    ],
+  ),
+  ex(
+    'treadmill-run',
+    'Treadmill Run',
+    td,
+    'machine',
+    ['cardio'],
+    ['Start at a walking pace and build to your target speed.', 'Run tall with relaxed shoulders.'],
+  ),
+  ex(
+    'rowing-machine',
+    'Rowing Machine',
+    td,
+    'machine',
+    ['cardio', 'upper-back'],
+    [
+      'Drive with the legs, then lean back and pull the handle to your ribs.',
+      'Return arms, body, then legs.',
+    ],
+  ),
+  ex(
+    'stationary-bike',
+    'Stationary Bike',
+    td,
+    'machine',
+    ['cardio', 'quads'],
+    ['Set the saddle so your knee is slightly bent at the bottom.', 'Pedal at a steady cadence.'],
+  ),
+  ex(
+    'foam-roll-quads',
+    'Foam Roll Quads',
+    t,
+    'foam-roll',
+    ['quads'],
+    [
+      'Lie face down with the roller under your thighs.',
+      'Roll slowly from hip to knee, pausing on tight spots.',
+    ],
+  ),
+  ex(
+    'foam-roll-upper-back',
+    'Foam Roll Upper Back',
+    t,
+    'foam-roll',
+    ['upper-back'],
+    [
+      'Lie on your back with the roller under your shoulder blades.',
+      'Roll slowly between mid-back and shoulders.',
+    ],
+  ),
+];

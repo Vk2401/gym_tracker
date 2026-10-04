@@ -1,0 +1,21 @@
+.gt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-6);
+  text-align: center;
+}
+.gt-empty__icon {
+  font-size: 48px;
+  color: var(--gt-text-tertiary);
+}
+.gt-empty__message {
+  margin: 0;
+  max-width: 20rem;
+  font-size: var(--fs-body);
+  color: var(--gt-text-secondary);
+}
+.gt-empty ion-button {
+  min-height: var(--tap-min);
+}
