@@ -33,6 +33,7 @@ import { useAppStore } from '@/store/appStore';
 import { BottomBars } from './BottomBars';
 import { PermissionsPrompt } from './PermissionsPrompt';
 import { RootTabButton } from './RootTabButton';
+import { WriteErrorToast } from './WriteErrorToast';
 import { ActionMenuHost } from '@/components/ActionMenu';
 import './App.css';
 
@@ -136,6 +137,7 @@ export default function App() {
           <BottomBars />
           <AnalyticsPrompt />
           <PermissionsPrompt />
+          <WriteErrorToast />
           <ActionMenuHost />
         </IonReactHashRouter>
       )}

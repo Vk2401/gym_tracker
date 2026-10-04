@@ -33,6 +33,9 @@ export const MSG = {
 } as const;
 
 /** Not in §14; needed for VR-1 length/empty checks and VR-3 max length. */
+/** NFR-3: shown when a change could not be written to storage. Not in §14. */
+export const SAVE_FAILED = "Couldn't save that change. Please try again.";
+
 /** PD-20: device permissions for native features. Not in §14. */
 export const PERMISSIONS = {
   section: 'Permissions',

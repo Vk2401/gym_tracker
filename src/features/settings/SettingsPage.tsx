@@ -33,7 +33,7 @@ import {
   VibrateIcon,
   Volume2Icon,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RowIcon } from '@/components/RowIcon';
 import { ScreenTitle } from '@/components/ScreenTitle';
 import appConfig from '../../../app.config.json';
@@ -80,8 +80,19 @@ function Segment<T extends string>({
   onChange: (v: T) => void;
   label: string;
 }) {
+  // A tapped segment keeps its own value; when the store ends up elsewhere (a save failed and
+  // was rolled back) React sees no prop change, so put the stored value back explicitly.
+  const ref = useRef<HTMLIonSegmentElement>(null);
+  useEffect(() => {
+    if (ref.current && ref.current.value !== value) ref.current.value = value;
+  });
   return (
-    <IonSegment aria-label={label} value={value} onIonChange={(e) => onChange(e.detail.value as T)}>
+    <IonSegment
+      ref={ref}
+      aria-label={label}
+      value={value}
+      onIonChange={(e) => onChange(e.detail.value as T)}
+    >
       {options.map(([v, l]) => (
         <IonSegmentButton key={v} value={v}>
           <IonLabel>{l}</IonLabel>
@@ -120,7 +131,14 @@ export default function SettingsPage() {
     key: K,
     value: Parameters<typeof setPref<K>>[1],
   ) => {
-    void setPref(key, value);
+    // a segment tap can fire its change twice: the second one has nothing to save
+    if (useAppStore.getState().prefs?.[key] === value) return;
+    // a failed save restores the stored value and shows the write-error toast
+    void setPref(key, value)
+      .then(() => {
+        if (key === 'appearance') setAppearance(useAppStore.getState().prefs!.appearance);
+      })
+      .catch(() => setAppearance(useAppStore.getState().prefs!.appearance));
     track('setting_changed', { setting: key });
   };
 
