@@ -81,3 +81,43 @@ export const MONTHS_LONG = [
   'November',
   'December',
 ] as const;
+
+export interface LocalParts {
+  year: number;
+  month: number; // 1-based
+  day: number;
+  hour: number;
+  minute: number;
+}
+
+/** Local calendar parts of an instant in a fixed offset (VR-15). */
+export function localParts(utc: string, offsetMin: number): LocalParts {
+  const d = new Date(Date.parse(utc) + offsetMin * 60_000);
+  return {
+    year: d.getUTCFullYear(),
+    month: d.getUTCMonth() + 1,
+    day: d.getUTCDate(),
+    hour: d.getUTCHours(),
+    minute: d.getUTCMinutes(),
+  };
+}
+
+/** Builds the UTC instant for local parts in a fixed offset; the day is clamped to the month. */
+export function partsToUtc(p: LocalParts, offsetMin: number): string {
+  const maxDay = new Date(Date.UTC(p.year, p.month, 0)).getUTCDate();
+  const day = Math.min(p.day, maxDay);
+  return new Date(
+    Date.UTC(p.year, p.month - 1, day, p.hour, p.minute) - offsetMin * 60_000,
+  ).toISOString();
+}
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+/** "Sun, 04 Oct 2026 · 15:05" — BR-10 date and 24-hour time with weekday. */
+export function formatPartsLong(p: LocalParts): string {
+  const maxDay = new Date(Date.UTC(p.year, p.month, 0)).getUTCDate();
+  const day = Math.min(p.day, maxDay);
+  const wd = WEEKDAYS[new Date(Date.UTC(p.year, p.month - 1, day)).getUTCDay()];
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${wd}, ${pad(day)} ${MONTHS_SHORT[p.month - 1]} ${p.year} · ${pad(p.hour)}:${pad(p.minute)}`;
+}

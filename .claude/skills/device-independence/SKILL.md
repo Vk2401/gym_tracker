@@ -114,7 +114,8 @@ Rule: **neutralise the automatic scaling, then apply our own clamped scale.**
 - Store UTC + original offset; display in the session's original local time (VR-15).
   A session belongs to its start date (VR-14).
 - Durations computed from timestamps (BR-4), never from running counters.
-- `IonDatetime` must be given `hourCycle="h23"` and `locale="en-GB"`.
+- Date/time input uses `DateTimeSheet` (react-mobile-picker wheels, 24-hour, session offset);
+  never the OS picker or `<input type="time">`, which follow the device 12/24-hour setting.
 
 ## 7. Numbers and units
 

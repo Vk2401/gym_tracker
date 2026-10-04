@@ -1,13 +1,12 @@
-import { IonDatetime, IonDatetimeButton, IonItem, IonLabel, IonModal } from '@ionic/react';
-import { formatInTimeZone } from 'date-fns-tz';
-import { useId } from 'react';
-import { offsetToZone } from '@/domain/format';
-import { localToUtc } from '@/domain/time';
+import { IonItem, IonLabel } from '@ionic/react';
+import { useState } from 'react';
+import { clockAt, dateKeyAt, formatDateKeyLong } from '@/domain/time';
+import { DateTimeSheet } from './DateTimeSheet';
 import './DateTimeRow.css';
 
 /**
- * WL-2: date + time pickers editing a stored stamp in the session's own local time (VR-15),
- * always 24-hour (BR-10, device-independence §6).
+ * WL-2: date + time chips; tapping either opens the wheel picker. Shown and edited in the
+ * session's own local time (VR-15), always 24-hour (BR-10).
  */
 export function DateTimeRow({
   label,
@@ -22,36 +21,47 @@ export function DateTimeRow({
   placeholder?: string;
   onChange: (utc: string) => void;
 }) {
-  const id = `dt-${useId().replace(/:/g, '')}`;
-  const local = utc
-    ? formatInTimeZone(utc, offsetToZone(offsetMin), "yyyy-MM-dd'T'HH:mm:ss")
-    : undefined;
+  const [open, setOpen] = useState(false);
   return (
     <IonItem className="gt-dt">
       <IonLabel className="gt-dt__label">{label}</IonLabel>
       {utc ? (
-        <IonDatetimeButton slot="end" datetime={id} />
+        <div slot="end" className="gt-dt__chips">
+          <button
+            type="button"
+            className="gt-chip num"
+            aria-label={`${label} date`}
+            onClick={() => setOpen(true)}
+          >
+            {formatDateKeyLong(dateKeyAt(utc, offsetMin))}
+          </button>
+          <button
+            type="button"
+            className="gt-chip num"
+            aria-label={`${label} time`}
+            onClick={() => setOpen(true)}
+          >
+            {clockAt(utc, offsetMin)}
+          </button>
+        </div>
       ) : (
         <IonLabel slot="end" color="medium">
           {placeholder}
         </IonLabel>
       )}
-      <IonModal keepContentsMounted>
-        <IonDatetime
-          id={id}
-          presentation="date-time"
-          hourCycle="h23"
-          locale="en-GB"
-          value={local}
-          showDefaultButtons
-          onIonChange={(e) => {
-            const v = e.detail.value;
-            if (typeof v !== 'string' || v === local) return;
-            const [date, time = '00:00:00'] = v.split('T');
-            onChange(localToUtc(date!, time.slice(0, 8), offsetMin));
+      {utc && (
+        <DateTimeSheet
+          isOpen={open}
+          title={label}
+          utc={utc}
+          offsetMin={offsetMin}
+          onDismiss={() => setOpen(false)}
+          onDone={(next) => {
+            setOpen(false);
+            if (next !== utc) onChange(next);
           }}
         />
-      </IonModal>
+      )}
     </IonItem>
   );
 }

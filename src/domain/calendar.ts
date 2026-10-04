@@ -45,3 +45,7 @@ export function monthRange(year: number, month: number): { from: string; to: str
   const mm = String(month).padStart(2, '0');
   return { from: `${year}-${mm}-01`, to: `${year}-${mm}-${String(days).padStart(2, '0')}` };
 }
+
+/** Number of days in a month (month is 1-based). */
+export const daysInMonth = (year: number, month: number): number =>
+  new Date(Date.UTC(year, month, 0)).getUTCDate();

@@ -39,7 +39,9 @@ for (const scheme of ['dark', 'light'] as const) {
     test(`alerts, action sheets and footer CTA are readable (${scheme})`, async ({ page }) => {
       await openApp(page);
       await expect(page.locator('html')).toHaveAttribute('data-theme', scheme);
-      await expect(page.locator('html')).toHaveClass(scheme === 'dark' ? /ion-palette-dark/ : /^(?!.*ion-palette-dark).*$/);
+      await expect(page.locator('html')).toHaveClass(
+        scheme === 'dark' ? /ion-palette-dark/ : /^(?!.*ion-palette-dark).*$/,
+      );
 
       // alert (the reported case)
       await view(page).getByRole('button', { name: 'Add', exact: true }).click();
@@ -53,13 +55,19 @@ for (const scheme of ['dark', 'light'] as const) {
       // action sheet
       await view(page).getByRole('button', { name: 'Add', exact: true }).click();
       await expect(page.locator('ion-action-sheet .action-sheet-button').first()).toBeVisible();
-      const s = await colors(page, 'ion-action-sheet .action-sheet-button', 'ion-action-sheet .action-sheet-group');
+      const s = await colors(
+        page,
+        'ion-action-sheet .action-sheet-button',
+        'ion-action-sheet .action-sheet-group',
+      );
       expect(contrast(s.text, s.bg), `sheet ${JSON.stringify(s)}`).toBeGreaterThanOrEqual(3);
       await page.locator('ion-action-sheet').getByRole('button', { name: 'Cancel' }).click();
       await expect(page.locator('ion-action-sheet')).toHaveCount(0);
 
       // page text and the Start Workout CTA
-      const t = await seedTemplate(page, 'Push', [{ id: 'ex-bench-press', sets: [{ reps: 5, weightKg: 60 }] }]);
+      const t = await seedTemplate(page, 'Push', [
+        { id: 'ex-bench-press', sets: [{ reps: 5, weightKg: 60 }] },
+      ]);
       await page.goto(`/#/workouts/${t}`);
       await page.reload();
       await view(page).locator('h1.gt-large-title').waitFor();
@@ -74,7 +82,10 @@ for (const scheme of ['dark', 'light'] as const) {
           const cs = getComputedStyle(inner);
           return { text: cs.color, bg: cs.backgroundColor };
         });
-      expect(contrast(ctaColors.text, ctaColors.bg), `cta ${JSON.stringify(ctaColors)}`).toBeGreaterThanOrEqual(3);
+      expect(
+        contrast(ctaColors.text, ctaColors.bg),
+        `cta ${JSON.stringify(ctaColors)}`,
+      ).toBeGreaterThanOrEqual(3);
       expect(luminance(ctaColors.bg)).toBeLessThan(0.5); // brand blue, never white
     });
   });

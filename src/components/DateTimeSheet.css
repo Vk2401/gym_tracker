@@ -1,0 +1,65 @@
+.gt-dts {
+  padding: var(--sp-2) var(--sp-4) var(--sp-6);
+}
+.gt-dts__preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0 var(--sp-3);
+  font-size: min(var(--fs-headline), 18px);
+  font-weight: 600;
+  color: var(--gt-text);
+}
+.gt-wheel {
+  position: relative;
+}
+/* Selection band drawn by us (theme tokens), replacing the library's grey lines. */
+.gt-wheel__band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 22px);
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--gt-surface-2);
+  pointer-events: none;
+}
+.gt-wheel [style*='217, 217, 217'] {
+  display: none;
+}
+.gt-wheel__col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.gt-wheel__col--wide {
+  flex: 1.4 1 0;
+}
+.gt-wheel__item {
+  height: 44px;
+  line-height: 44px;
+  text-align: center;
+  /* fixed chrome: wheels must never overflow at large text sizes */
+  font-size: 20px;
+  color: var(--gt-text-tertiary);
+  transition: color 120ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.gt-wheel__item--on {
+  color: var(--gt-text);
+  font-weight: 600;
+}
+.gt-wheel__gap {
+  width: var(--sp-3);
+  flex: none;
+}
+.gt-wheel__colon {
+  flex: none;
+  align-self: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--gt-text);
+  position: relative;
+  z-index: 1;
+}

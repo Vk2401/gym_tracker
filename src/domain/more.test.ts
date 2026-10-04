@@ -350,3 +350,23 @@ describe('sessionBests (XP-5)', async () => {
     });
   });
 });
+
+describe('date-time picker helpers (WL-2, VR-15)', async () => {
+  const { localParts, partsToUtc, formatPartsLong } = await import('./time');
+  const { daysInMonth } = await import('./calendar');
+  it('round-trips local parts in the session offset', () => {
+    const p = localParts('2026-10-04T09:35:00.000Z', 330);
+    expect(p).toEqual({ year: 2026, month: 10, day: 4, hour: 15, minute: 5 });
+    expect(partsToUtc(p, 330)).toBe('2026-10-04T09:35:00.000Z');
+    expect(formatPartsLong(p)).toBe('Sun, 04 Oct 2026 · 15:05');
+  });
+  it('clamps the day to the month', () => {
+    expect(partsToUtc({ year: 2026, month: 2, day: 31, hour: 0, minute: 0 }, 0)).toBe(
+      '2026-02-28T00:00:00.000Z',
+    );
+    expect(formatPartsLong({ year: 2026, month: 2, day: 31, hour: 7, minute: 0 })).toBe(
+      'Sat, 28 Feb 2026 · 07:00',
+    );
+    expect(daysInMonth(2028, 2)).toBe(29);
+  });
+});

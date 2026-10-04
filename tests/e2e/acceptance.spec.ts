@@ -401,3 +401,32 @@ test('AC-20 (VR-9): deleted exercise disappears; past logs keep it', async ({ pa
   await expect(view(page).locator('.gt-block__title', { hasText: 'HACK SQUAT' })).toBeVisible();
   await expect(view(page).getByLabel('Hack Squat set 1 weight')).toHaveValue('120.0');
 });
+
+test('AC-18 (VR-3): End Time earlier than Start Time is blocked via the wheel picker', async ({
+  page,
+}) => {
+  await openApp(page);
+  const logId = await seedLog(page, {
+    date: '2026-09-10',
+    start: '10:30',
+    end: '11:45',
+    exercises: [{ id: 'ex-plank', sets: [{ timeS: 60 }] }],
+  });
+  await nav(page, `#/logs/${logId}`);
+  const v = view(page);
+  await expect(v.getByRole('button', { name: 'End Time time' })).toHaveText('11:45');
+  await v.getByRole('button', { name: 'End Time time' }).click();
+  const sheet = page.locator('ion-modal', { hasText: 'End Time' });
+  await expect(sheet).toContainText('Thu, 10 Sep 2026 · 11:45');
+  await sheet.getByRole('listbox', { name: 'Hour' }).getByRole('option', { name: '09' }).click();
+  await expect(sheet).toContainText('Thu, 10 Sep 2026 · 09:45');
+  await sheet.getByRole('button', { name: 'Done' }).click();
+  await expect(page.locator('ion-toast')).toContainText('End time must be after start time.');
+  await expect(v.getByRole('button', { name: 'End Time time' })).toHaveText('11:45');
+
+  // a valid change is saved
+  await v.getByRole('button', { name: 'End Time time' }).click();
+  await sheet.getByRole('listbox', { name: 'Hour' }).getByRole('option', { name: '12' }).click();
+  await sheet.getByRole('button', { name: 'Done' }).click();
+  await expect(v.getByRole('button', { name: 'End Time time' })).toHaveText('12:45');
+});

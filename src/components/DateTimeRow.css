@@ -3,15 +3,25 @@
   white-space: nowrap;
   margin-right: var(--sp-2);
 }
-.gt-dt ion-datetime-button {
+.gt-dt__chips {
+  /* date and time chips stack on narrow screens instead of squeezing the label */
+  max-width: 64%;
+  display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--sp-1);
+  margin: 4px 0;
 }
-.gt-dt ion-datetime-button::part(native) {
+.gt-chip {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--r-sm);
   background: var(--gt-surface-2);
   color: var(--gt-text);
-  font-size: var(--fs-subhead);
-  padding: 6px 10px;
-  margin: 2px 0;
+  font-size: min(var(--fs-subhead), 17px);
+  cursor: pointer;
+}
+.gt-chip:active {
+  background: var(--gt-blue-tint);
 }
