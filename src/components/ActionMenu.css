@@ -11,9 +11,16 @@ ion-modal.gt-menu {
 ion-modal.gt-menu .ion-page {
   position: relative;
   display: block;
-  contain: content;
+  contain: none; /* paint containment would cut the panel's upward shadow into a line */
+  overflow: visible;
+  background: transparent;
+}
+ion-modal.gt-menu::part(content) {
+  overflow: visible;
 }
 .gt-menu__panel {
+  touch-action: none; /* the panel is dragged down to close (sheetDrag) */
+  will-change: transform;
   margin: 0 10px calc(10px + var(--ion-safe-area-bottom, 0px));
   padding: 10px 10px 12px;
   border-radius: 34px;
@@ -26,6 +33,10 @@ ion-modal.gt-menu .ion-page {
   height: 5px;
   margin: 2px auto 12px;
   border-radius: 3px;
+  background: #d5dbe8;
+  cursor: grab;
+}
+:root[data-theme='dark'] .gt-menu__handle {
   background: var(--gt-separator);
 }
 .gt-menu__head {

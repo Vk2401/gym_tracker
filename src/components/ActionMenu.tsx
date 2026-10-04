@@ -4,31 +4,49 @@ import { useRef } from 'react';
 import { useMenuStore } from '@/store/menuStore';
 import { Icon } from './Icon';
 import { MENU_ICONS } from './menuIcons';
+import { sheetEnter, sheetLeave, useSheetDrag } from './sheetDrag';
 import './ActionMenu.css';
 
 /**
  * Bottom menu of the design ("Create" / "Add to workout"): title with a close button, then
  * options with a tinted icon tile, optional subtitle and a chevron. Slides up as an Ionic
- * modal, so the backdrop, hardware back button and focus handling come for free.
+ * modal (backdrop, hardware back button and focus handling for free); the panel can be
+ * dragged down and closes smoothly from wherever it is released.
  */
 export function ActionMenuHost() {
   const menu = useMenuStore((s) => s.menu);
   const modal = useRef<HTMLIonModalElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
   const picked = useRef<string | null>(null);
   const close = () => void modal.current?.dismiss();
+  const drag = useSheetDrag(modal, panel, close);
   return (
     <IonModal
       ref={modal}
       isOpen={menu !== null}
       className="gt-menu"
+      enterAnimation={sheetEnter}
+      leaveAnimation={sheetLeave}
+      onWillPresent={() => {
+        const list = panel.current?.querySelector<HTMLElement>('.gt-menu__list');
+        // A list that can scroll keeps native panning; otherwise the whole panel drags.
+        if (list) list.style.touchAction = list.scrollHeight > list.clientHeight ? 'pan-y' : '';
+      }}
       onDidDismiss={() => {
+        drag.reset();
         menu?.resolve(picked.current);
         picked.current = null;
         useMenuStore.setState({ menu: null });
       }}
     >
       {menu && (
-        <div className="gt-menu__panel" role="dialog" aria-label={menu.header ?? 'Options'}>
+        <div
+          ref={panel}
+          className="gt-menu__panel"
+          role="dialog"
+          aria-label={menu.header ?? 'Options'}
+          {...drag.handlers}
+        >
           <div className="gt-menu__handle" aria-hidden="true" />
           <div className="gt-menu__head">
             <h2 className="gt-menu__title">{menu.header ?? ''}</h2>
