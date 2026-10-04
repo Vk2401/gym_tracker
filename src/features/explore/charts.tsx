@@ -70,6 +70,8 @@ interface ChartProps {
   /** XP-8: index of the tapped point. */
   onPick?: (index: number) => void;
   ariaLabel: string;
+  /** Whole-number axis (counts). */
+  integer?: boolean;
 }
 
 function baseOptions(
@@ -123,6 +125,7 @@ function baseOptions(
         ticks: {
           color: t.text,
           maxTicksLimit: 5,
+          precision: p.integer ? 0 : undefined,
           callback: (v) => p.format(Number(v)),
           font: { family: t.font, size: 11 },
         },

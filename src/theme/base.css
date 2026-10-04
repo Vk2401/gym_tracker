@@ -69,16 +69,15 @@ ion-footer {
   height: 96px;
 }
 .gt-footer {
-  --background: var(--gt-bg-grouped);
-  padding: var(--sp-2) var(--sp-4);
+  background: var(--gt-bg-grouped);
+  padding: var(--sp-2) var(--sp-4) calc(var(--sp-2) + 0px);
 }
 .gt-footer ion-button {
   min-height: 48px;
   font-weight: 600;
-  /* Ionic paints solid toolbar buttons with the (white) toolbar colour; keep the CTA blue. */
-  --background: var(--gt-blue) !important;
-  --background-activated: var(--gt-blue-strong) !important;
-  --color: #fff !important;
+  --background: var(--gt-blue);
+  --background-activated: var(--gt-blue-strong);
+  --color: #fff;
   --border-radius: var(--r-md);
 }
 .gt-dot {

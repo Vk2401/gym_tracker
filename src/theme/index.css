@@ -5,6 +5,9 @@
 @import '@ionic/react/css/padding.css';
 @import '@ionic/react/css/flex-utils.css';
 @import '@ionic/react/css/display.css';
+/* Ionic's own dark palette (alerts, sheets, pickers, toasts …), switched by our appearance
+   controller via .ion-palette-dark — never by the OS directly (device-independence §3). */
+@import '@ionic/react/css/palettes/dark.class.css';
 @import '@fontsource-variable/inter/index.css';
 @import './tokens.css';
 @import './ionic.css';

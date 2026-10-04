@@ -241,6 +241,7 @@ export default function ExplorePage() {
           </div>
           <ColumnChart
             ariaLabel="Workouts per week"
+            integer
             labels={weekLabels}
             series={[{ label: 'Workouts', values: view.perWeek.map((w) => w.count) }]}
             format={(v) => String(Math.round(v))}

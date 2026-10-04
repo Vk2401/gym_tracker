@@ -11,7 +11,9 @@ function resolve(a: Appearance): 'light' | 'dark' {
 }
 
 function paint(): void {
-  document.documentElement.setAttribute('data-theme', resolve(current));
+  const theme = resolve(current);
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.toggle('ion-palette-dark', theme === 'dark');
   void applyStatusBar();
 }
 

@@ -9,7 +9,10 @@
   --ion-color-primary-shade: var(--gt-blue-strong);
   --ion-color-primary-tint: var(--gt-blue);
   --ion-color-danger: var(--gt-danger);
+  --ion-color-danger-contrast: #fff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
   --ion-color-success: var(--gt-success);
+  --ion-color-success-contrast: #fff;
 
   --ion-background-color: var(--gt-bg-grouped);
   --ion-text-color: var(--gt-text);

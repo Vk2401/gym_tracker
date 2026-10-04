@@ -14,7 +14,6 @@ import {
   IonPage,
   IonReorder,
   IonReorderGroup,
-  IonToolbar,
   useIonRouter,
 } from '@ionic/react';
 import { calendarOutline, ellipsisHorizontal, settingsOutline, shareOutline } from 'ionicons/icons';
@@ -428,11 +427,11 @@ export default function LogDetailPage() {
 
       {active && (
         <IonFooter className="ion-no-border hide-on-keyboard">
-          <IonToolbar className="gt-footer">
+          <div className="gt-footer">
             <IonButton expand="block" fill="solid" onClick={() => void onFinish()}>
               Finish Workout
             </IonButton>
-          </IonToolbar>
+          </div>
         </IonFooter>
       )}
 

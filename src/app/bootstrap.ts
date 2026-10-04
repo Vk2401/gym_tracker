@@ -9,11 +9,13 @@ import { useAppStore } from '@/store/appStore';
 import { useSessionStore } from '@/store/sessionStore';
 import { onResume } from '@/native/lifecycle';
 import { track } from './analytics';
+import { installOverlayA11yGuard } from './overlayA11y';
 import { initAppearance } from './appearance';
 import { initTextScale } from './textScale';
 
 /** Opens storage, migrates, seeds and applies device-independence controllers. */
 export async function bootstrap(): Promise<void> {
+  installOverlayA11yGuard();
   initTextScale();
   initKeyboard();
   try {

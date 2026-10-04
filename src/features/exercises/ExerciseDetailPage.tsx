@@ -70,7 +70,8 @@ export default function ExerciseDetailPage() {
   const remove = async () => {
     if (!(await confirmDelete(e.name))) return;
     await mutate((db) => lib.deleteExercise(db, e.id));
-    router.goBack();
+    if (router.canGoBack()) router.goBack();
+    else router.push('/exercises', 'root');
   };
   const share = () =>
     shareText(

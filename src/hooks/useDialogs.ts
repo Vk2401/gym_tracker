@@ -26,7 +26,7 @@ export function useDialogs() {
       kind?: 'exercise' | 'category';
     }) =>
       new Promise<string | null>((resolve) => {
-        let done = false;
+        let value: string | null = null;
         void alert({
           header: opts.header,
           inputs: [
@@ -48,13 +48,12 @@ export function useDialogs() {
                   error(check.message);
                   return false;
                 }
-                done = true;
-                resolve(v.name.trim());
+                value = v.name.trim();
                 return true;
               },
             },
           ],
-          onDidDismiss: () => !done && resolve(null),
+          onDidDismiss: () => resolve(value),
         });
       }),
     [alert, error],
@@ -64,31 +63,35 @@ export function useDialogs() {
   const confirmDelete = useCallback(
     (name: string, message?: string) =>
       new Promise<boolean>((resolve) => {
+        let ok = false;
         void alert({
           header: message ? `Delete "${name}"?` : MSG.deleteConfirm(name),
           message,
           buttons: [
-            { text: 'Cancel', role: 'cancel', handler: () => resolve(false) },
-            { text: 'Delete', role: 'destructive', handler: () => resolve(true) },
+            { text: 'Cancel', role: 'cancel' },
+            { text: 'Delete', role: 'destructive', handler: () => void (ok = true) },
           ],
-          onDidDismiss: () => resolve(false),
+          onDidDismiss: () => resolve(ok),
         });
       }),
     [alert],
   );
 
+  // Results resolve on didDismiss, so a follow-up overlay never opens while this one is still
+  // animating out (Ionic would otherwise leave the page aria-hidden for screen readers).
   const choose = useCallback(
     <T extends string>(header: string | undefined, buttons: ChoiceButton<T>[], message?: string) =>
       new Promise<T | null>((resolve) => {
+        let picked: T | null = null;
         void alert({
           header,
           message,
           buttons: buttons.map((b) => ({
             text: b.text,
             role: b.role,
-            handler: () => resolve(b.role === 'cancel' ? null : b.value),
+            handler: () => void (picked = b.role === 'cancel' ? null : b.value),
           })),
-          onDidDismiss: () => resolve(null),
+          onDidDismiss: () => resolve(picked),
         });
       }),
     [alert],
@@ -97,17 +100,18 @@ export function useDialogs() {
   const actions = useCallback(
     <T extends string>(header: string | undefined, buttons: ChoiceButton<T>[]) =>
       new Promise<T | null>((resolve) => {
+        let picked: T | null = null;
         void sheet({
           header,
           buttons: [
             ...buttons.map((b) => ({
               text: b.text,
               role: b.role,
-              handler: () => resolve(b.value),
+              handler: () => void (picked = b.value),
             })),
-            { text: 'Cancel', role: 'cancel', handler: () => resolve(null) },
+            { text: 'Cancel', role: 'cancel' },
           ],
-          onDidDismiss: () => resolve(null),
+          onDidDismiss: () => resolve(picked),
         });
       }),
     [sheet],

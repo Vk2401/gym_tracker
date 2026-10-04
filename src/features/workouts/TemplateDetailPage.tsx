@@ -18,7 +18,6 @@ import {
   IonPage,
   IonReorder,
   IonReorderGroup,
-  IonToolbar,
 } from '@ionic/react';
 import { add, barbellOutline, ellipsisHorizontal, shareOutline } from 'ionicons/icons';
 import { useState } from 'react';
@@ -347,7 +346,7 @@ export default function TemplateDetailPage() {
       </IonContent>
 
       <IonFooter className="ion-no-border hide-on-keyboard">
-        <IonToolbar className="gt-footer">
+        <div className="gt-footer">
           {editing ? (
             <IonButton
               expand="block"
@@ -368,7 +367,7 @@ export default function TemplateDetailPage() {
               Start Workout
             </IonButton>
           )}
-        </IonToolbar>
+        </div>
       </IonFooter>
 
       <ExercisePicker

@@ -394,6 +394,7 @@ test('AC-20 (VR-9): deleted exercise disappears; past logs keep it', async ({ pa
   await nav(page, '#/exercises/ex-hack-squat');
   await view(page).getByText('Delete Exercise').click();
   await page.locator('ion-alert').getByRole('button', { name: 'Delete' }).click();
+  await expect(page).toHaveURL(/#\/exercises$/); // deleted, then navigated back
   await nav(page, '#/exercises');
   await expect(view(page).locator('ion-item h2', { hasText: 'Hack Squat' })).toHaveCount(0);
   await nav(page, `#/logs/${logId}`);
